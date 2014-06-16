@@ -2,8 +2,7 @@
 #define DISPLAY_H
 
 #include "pointmatcher/PointMatcher.h"
-
-typedef PointMatcher<float> PM;
+#include "definitions.h"
 
 class Display
 {

@@ -2,15 +2,12 @@
 #define VOXEL_H
 
 #include "pointmatcher/PointMatcher.h"
-
-typedef PointMatcher<float> PM;
+#include "definitions.h"
 
 class Voxel
 {
 private:
-    float lowerCornerX;
-    float lowerCornerY;
-    float lowerCornerZ;
+    Vector3 lowerCorner;
     int nbPoints;
 
 public:
@@ -18,15 +15,6 @@ public:
           float lowerCornerY=0,
           float lowerCornerZ=0,
           int nbPoints=0);
-
-    float getLowerCornerX() const;
-    void setLowerCornerX(float value);
-    float getLowerCornerY() const;
-    void setLowerCornerY(float value);
-    float getLowerCornerZ() const;
-    void setLowerCornerZ(float value);
-    int getNbPoints() const;
-    void setNbPoints(int value);
 
     void incrementNbPoints();
 };
