@@ -22,5 +22,6 @@
 
 # QtCreator
 *.txt.user
+*.autosave
 
 build/
