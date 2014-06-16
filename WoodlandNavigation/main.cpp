@@ -24,20 +24,14 @@ int main(int argc, char *argv[])
             boost::posix_time::second_clock::local_time();
 ////////////////////////////////////////////////////////////////////////////////
 
-//    PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
+    PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
 
-//    float voxelSize = 1.0;
-//    VoxelGridPointCloud voxelCloud(inputDataPoints, voxelSize);
+    Display::printAllInfo(inputDataPoints);
+
+    VoxelGridPointCloud voxelCloud(inputDataPoints, 1,1,1);
 
 //    PM::DataPoints outputDataPoints = voxelCloud.getSinglePointPerVoxel();
 //    outputDataPoints.save(argv[argc-1]);
-
-    Vector3 test = Vector3::Zero();
-    Vector3 test2 = test;
-    test(1) = 2;
-    cout << test << endl;
-    cout << test2 << endl;
-
 
 ////////////////////////////////////////////////////////////////////////////////
     boost::posix_time::ptime endTime =

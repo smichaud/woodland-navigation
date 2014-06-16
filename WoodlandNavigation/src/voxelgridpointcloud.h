@@ -16,13 +16,26 @@ private:
     std::vector<std::vector<std::vector<Voxel> > > voxels;
 
 public:
-    VoxelGridPointCloud(const PM::DataPoints &dataPoints, Vector3 voxelSize);
+    VoxelGridPointCloud();
+    VoxelGridPointCloud(const PM::DataPoints &dataPoints,
+                        used_type voxelSizeX=0, used_type voxelSizeY=0,
+                        used_type voxelSizeZ=0);
+    VoxelGridPointCloud(const PM::DataPoints &dataPoints,
+                        Vector3 voxelSize = Vector3::Zero());
 
     PM::DataPoints getSinglePointPerVoxel();
 
 private:
-    void getPointsBoundingBoxMin(const PM::Matrix &pointCloud);
-    void getPointsBoundingBoxMax(const PM::Matrix &pointCloud);
+    Vector3 getPointsBoundingBoxMin(const PM::Matrix &features);
+    Vector3 getPointsBoundingBoxMax(const PM::Matrix &features);
+
+    void getGridMinCorner(const Vector3 &voxelSize,
+                          const PM::Matrix &features);
+    void getGridMaxCorner(const Vector3 &voxelSize,
+                          const PM::Matrix &features);
+
+    void setVoxelsCorners(Vector3 voxelSize, Vector3 nbVoxel);
+    void buildVoxelGridStructure(Vector3 voxelSize);
 };
 
 

@@ -1,10 +1,17 @@
 #include "voxel.h"
 
-Voxel::Voxel(float cornerX, float cornerY, float cornerZ, int nbPoints) {
-    this->lowerCorner << cornerX, cornerY, cornerZ;
-    this->nbPoints = nbPoints;
+Voxel::Voxel(Vector3 lowerCorner, int nbPoints) : nbPoints(nbPoints) {
 }
 
+Vector3 Voxel::getLowerCorner() const
+{
+    return lowerCorner;
+}
+
+void Voxel::setLowerCorner(const Vector3 &value)
+{
+    lowerCorner = value;
+}
 
 void Voxel::incrementNbPoints()
 {
