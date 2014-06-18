@@ -2,10 +2,10 @@
 #include "pointmatcher/PointMatcher.h"
 #include "boost/timer.hpp"
 
-#include "display.h"
-#include "util.h"
-#include "voxelgridpointcloud.h"
 #include "definitions.h"
+#include "display.h"
+#include "voxelgridpointcloud.h"
+#include "mathutil.h"
 
 using namespace std;
 
@@ -24,11 +24,9 @@ int main(int argc, char *argv[])
             boost::posix_time::second_clock::local_time();
 ////////////////////////////////////////////////////////////////////////////////
 
-    PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
+//    PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
 
-    Display::printAllInfo(inputDataPoints);
-
-    VoxelGridPointCloud voxelCloud(inputDataPoints, 1,1,1);
+//    VoxelGridPointCloud voxelCloud(inputDataPoints, 1,1,1);
 
 //    PM::DataPoints outputDataPoints = voxelCloud.getSinglePointPerVoxel();
 //    outputDataPoints.save(argv[argc-1]);

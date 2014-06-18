@@ -24,7 +24,8 @@ void Display::printFeatures(const PM::DataPoints &dataPoints)
     cout << "Number of features: " << dataPoints.descriptorLabels.size()
          << endl;
     cout << "Feature labels : " << endl;
-    for(int i=0 ; i < dataPoints.featureLabels.size() ; i++){
+    for(int i=0 ; i < static_cast<int>(dataPoints.featureLabels.size()) ;
+        ++i){
         cout << "   - " << dataPoints.featureLabels[i].text << endl;
     }
     cout << "-------------------------" << endl;
@@ -36,7 +37,8 @@ void Display::printDescriptors(const PM::DataPoints &dataPoints)
     cout << "Number of descriptors: " << dataPoints.descriptorLabels.size()
          << endl;
     cout << "Descriptor labels: " << endl;
-    for(int i=0 ; i < dataPoints.descriptorLabels.size() ; i++){
+    for(int i=0 ; i < static_cast<int>(dataPoints.descriptorLabels.size()) ;
+        ++i){
         string descriptorName = dataPoints.descriptorLabels[i].text;
         cout << "   - " << descriptorName
              << " (of size "

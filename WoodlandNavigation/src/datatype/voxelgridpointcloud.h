@@ -21,21 +21,20 @@ public:
                         used_type voxelSizeX=0, used_type voxelSizeY=0,
                         used_type voxelSizeZ=0);
     VoxelGridPointCloud(const PM::DataPoints &dataPoints,
-                        Vector3 voxelSize = Vector3::Zero());
+                        const Vector3 &voxelSize = Vector3::Zero());
 
-    PM::DataPoints getSinglePointPerVoxel();
-
-private:
     Vector3 getPointsBoundingBoxMin(const PM::Matrix &features);
     Vector3 getPointsBoundingBoxMax(const PM::Matrix &features);
+    Vector3 getNbVoxel();
 
-    void getGridMinCorner(const Vector3 &voxelSize,
-                          const PM::Matrix &features);
-    void getGridMaxCorner(const Vector3 &voxelSize,
-                          const PM::Matrix &features);
+private:
+    void computeGridMinMaxCorners(const PM::Matrix &features);
 
-    void setVoxelsCorners(Vector3 voxelSize, Vector3 nbVoxel);
-    void buildVoxelGridStructure(Vector3 voxelSize);
+    // I am not sure it is useful to have to voxel class right now...
+//    void setVoxelsCorners(Vector3 voxelSize, Vector3 nbVoxel);
+    void buildVoxelGridStructure(const PM::DataPoints &dataPoints,
+                                 const Vector3 &nbVoxel);
+    Vector3 getVoxelIndice(Vector3 pointsPosition);
 };
 
 

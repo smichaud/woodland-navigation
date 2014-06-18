@@ -8,6 +8,7 @@ typedef float used_type;
 
 typedef PointMatcher<used_type> PM;
 typedef Eigen::Matrix<used_type, 3, 1> Vector3;
+typedef Eigen::Matrix<unsigned long int,3,1> Vector3uli;
 
 const int xIndice = 0;
 const int yIndice = 1;

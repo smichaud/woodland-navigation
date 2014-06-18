@@ -1,14 +1,14 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef POINTCLOUDUTIL_H
+#define POINTCLOUDUTIL_H
 
-#include "pointmatcher/PointMatcher.h"
 #include "definitions.h"
 
-class Util
+class PointCloudUtil
 {
 public:
     static void appendDescriptorRGBA(PM::DataPoints &dataPoints, float red,
                                      float green, float blue, float alpha);
+    static PM::DataPoints getSinglePointPerVoxel();
 };
 
 #endif
