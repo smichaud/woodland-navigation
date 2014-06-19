@@ -21,11 +21,10 @@ void Display::printNumberOfPoints(const PM::DataPoints &dataPoints)
 void Display::printFeatures(const PM::DataPoints &dataPoints)
 {
     cout << "----- Features " << endl;
-    cout << "Number of features: " << dataPoints.descriptorLabels.size()
+    cout << "Number of features: " << dataPoints.featureLabels.size()
          << endl;
     cout << "Feature labels : " << endl;
-    for(int i=0 ; i < static_cast<int>(dataPoints.featureLabels.size()) ;
-        ++i){
+    for(unsigned long int i=0 ; i < dataPoints.featureLabels.size() ; ++i){
         cout << "   - " << dataPoints.featureLabels[i].text << endl;
     }
     cout << "-------------------------" << endl;

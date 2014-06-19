@@ -5,46 +5,41 @@
 
 using namespace std;
 
+
 VoxelGridPointCloud::VoxelGridPointCloud() :
-    voxelSize(Vector3::Zero()),
-    minCorner(Vector3::Zero()),
-    maxCorner(Vector3::Zero()),
-    completeDataPoints(),
-    voxels() {
+    completeDataPoints(), pointCloudBoundingBoxMin(Vector3::Zero()),
+    pointCloudBoundingBoxMax(Vector3::Zero()), voxelSize(Vector3::Zero()),
+    nbOfVoxels(Vector3uli::Zero()), minVoxelLowerCorner(Vector3::Zero()),
+    maxVoxelLowerCorner(Vector3::Zero()), voxels() {
 }
 
 VoxelGridPointCloud::VoxelGridPointCloud(
         const PM::DataPoints &dataPoints,
-        used_type voxelSizeX, used_type voxelSizeY,
-        used_type voxelSizeZ) {
-    Vector3 voxelSize;
+        used_type voxelSizeX, used_type voxelSizeY, used_type voxelSizeZ) {
     voxelSize << voxelSizeX, voxelSizeY, voxelSizeZ;
-
-    VoxelGridPointCloud(dataPoints, voxelSize);
+    buildVoxelGridPointCloud(voxelSize);
 }
 
-VoxelGridPointCloud::VoxelGridPointCloud(
-        const PM::DataPoints &dataPoints,
-        const Vector3 &voxelSize) : voxelSize(voxelSize) {
+VoxelGridPointCloud::VoxelGridPointCloud(const PM::DataPoints &dataPoints,
+                                         const Vector3 &voxelSize) :
+    completeDataPoints(dataPoints){
+    buildVoxelGridPointCloud(voxelSize);
+}
+
+void VoxelGridPointCloud::buildVoxelGridPointCloud(const Vector3 &voxelSize) {
     try{
-//        this->getGridMinCorner(dataPoints.features);
-//        this->getGridMaxCorner(dataPoints.features);
+        this->computePointCloudBoundingBox(this->completeDataPoints.features);
+        this->computeNbOfVoxels();
+        this->computeGridMinMaxCorners();
 
-        Vector3uli nbVoxel;
-        nbVoxel = MathUtil::convertToIndice((maxCorner.array() -
-                                             minCorner.array())/
-                                            this->voxelSize.array() +
-                                            Vector3::Ones().array());
+        this->voxels.resize(this->nbOfVoxels[xIndice]);
+        for (unsigned long int i = 0; i < this->nbOfVoxels[xIndice]; ++i) {
+            this->voxels[i].resize(this->nbOfVoxels[yIndice]);
 
-        this->voxels.resize(nbVoxel[xIndice]);
-        for (unsigned long int i = 0; i < nbVoxel[xIndice]; ++i) {
-            this->voxels[i].resize(nbVoxel[yIndice]);
-
-            for (unsigned long int j = 0; j < nbVoxel[yIndice]; ++j)
-                this->voxels[i][j].resize(nbVoxel[zIndice]);
+            for (unsigned long int j = 0; j < this->nbOfVoxels[yIndice]; ++j)
+                this->voxels[i][j].resize(this->nbOfVoxels[zIndice]);
         }
 
-        //        this->setVoxelsCorners(voxelSize, nbVoxel);
         //        this->buildVoxelGridStructure(dataPoints, nbVoxel);
     } catch(exception& e){
         cerr << "unable to build the VoxelGridPointCloud : "
@@ -52,42 +47,54 @@ VoxelGridPointCloud::VoxelGridPointCloud(
     }
 }
 
-Vector3 VoxelGridPointCloud::getPointsBoundingBoxMin(
+void VoxelGridPointCloud::computePointCloudBoundingBox(
         const PM::Matrix &features) {
-    return features.rowwise().minCoeff().block(0,0,3,1);
+    this->pointCloudBoundingBoxMin =
+            features.rowwise().minCoeff().block(0,0,3,1);
+    this->pointCloudBoundingBoxMax =
+            features.rowwise().maxCoeff().block(0,0,3,1);
 }
 
-Vector3 VoxelGridPointCloud::getPointsBoundingBoxMax(
-        const PM::Matrix &features) {
-    return features.rowwise().minCoeff().block(0,0,3,1);
+void VoxelGridPointCloud::computeNbOfVoxels() {
+    Vector3 nbVoxelsDecimal =
+            (this->pointCloudBoundingBoxMax - this->pointCloudBoundingBoxMin).
+            cwiseQuotient(voxelSize);
+
+    Vector3 nbVoxels = Vector3::Ones()
+            + MathUtil::floorVector(nbVoxelsDecimal);
+
+    this->nbOfVoxels = MathUtil::convertToIndice(nbVoxels);
 }
 
-Vector3 VoxelGridPointCloud::getNbVoxel() {
+void VoxelGridPointCloud::computeGridMinMaxCorners() {
+    Vector3 nbVoxelsDecimal =
+            (this->pointCloudBoundingBoxMax - this->pointCloudBoundingBoxMin).
+            cwiseQuotient(voxelSize);
+    //    Vector3 nbVoxels = this->nbOfVoxels.cast<used_type>();
+    //    Vector3 padding = ((nbVoxels - nbVoxelsDecimal)/2).
+    //            cwiseProduct(voxelSize);
 
+    //    this->minVoxelLowerCorner = this->pointCloudBoundingBoxMin - padding;
+    //    this->maxVoxelLowerCorner = this->pointCloudBoundingBoxMin
+    //            + (nbVoxels - Vector3::Ones()).cwiseProduct(voxelSize);
+
+    //    cout << "========================================" << endl;
+    //    cout << "Min: " << endl << this->pointCloudBoundingBoxMin << endl;
+    //    cout << "Max: " << endl << this->pointCloudBoundingBoxMax << endl;
+    //    cout << "NbOfVoxels: " << endl << this->nbOfVoxels << endl;
+    //    cout << "Padding: " << endl << padding << endl;
+    //    cout << "minCorner: " << endl << this->minVoxelLowerCorner << endl;
+    //    cout << "maxCorner: " << endl << this->maxVoxelLowerCorner << endl;
+    //    cout << "========================================" << endl;
 }
 
-void VoxelGridPointCloud::computeGridMinMaxCorners(const PM::Matrix& features) {
-    Vector3 pointsMin = getPointsBoundingBoxMin(features);
-    Vector3 pointsMax = getPointsBoundingBoxMax(features);
-
-    minCorner = MathUtil::floorVector(pointsMin.array()/voxelSize.array()).
-            array() * voxelSize.array();
+Vector3 VoxelGridPointCloud::getVoxelSize() const{
+    return this->voxelSize;
 }
 
-//void VoxelGridPointCloud::setVoxelsCorners(Vector3 voxelSize,
-//                                           Vector3 nbVoxel) {
-//    for (int i = 0; i < nbVoxel[xIndice] ; ++i) {
-//        for (int j = 0; j <  nbVoxel[yIndice] ; ++j) {
-//            for (int k = 0; k < nbVoxel[zIndice] ; ++k) {
-//                Voxel &voxel = voxels[i][j][k];
-//                Vector3 indices;
-//                indices << i,j,k;
-//                voxel.setLowerCorner(minCorner.array()+(indices.array()
-//                                                        *voxelSize.array()));
-//            }
-//        }
-//    }
-//}
+Vector3uli VoxelGridPointCloud::getNbOfVoxels() const {
+    return this->nbOfVoxels;
+}
 
 void VoxelGridPointCloud::buildVoxelGridStructure(
         const PM::DataPoints &dataPoints, const Vector3 &nbVoxel) {

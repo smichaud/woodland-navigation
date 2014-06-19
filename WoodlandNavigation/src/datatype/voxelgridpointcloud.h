@@ -4,15 +4,24 @@
 #include "voxel.h"
 #include "definitions.h"
 
+
+// 1. The current center of the voxel grid is the center of the point cloud
+// bounding box.
+// 2 . The Voxel structure only contains the indices of the points contained
+// in the voxel and some general info/stats about this voxel
 class VoxelGridPointCloud
 {
 private:
-    Vector3 voxelSize;
-
-    Vector3 minCorner;
-    Vector3 maxCorner;
-
     PM::DataPoints completeDataPoints;
+
+    Vector3 pointCloudBoundingBoxMin;
+    Vector3 pointCloudBoundingBoxMax;
+
+    Vector3 voxelSize;
+    Vector3uli nbOfVoxels;
+    Vector3 minVoxelLowerCorner;
+    Vector3 maxVoxelLowerCorner;
+
     std::vector<std::vector<std::vector<Voxel> > > voxels;
 
 public:
@@ -23,17 +32,20 @@ public:
     VoxelGridPointCloud(const PM::DataPoints &dataPoints,
                         const Vector3 &voxelSize = Vector3::Zero());
 
-    Vector3 getPointsBoundingBoxMin(const PM::Matrix &features);
-    Vector3 getPointsBoundingBoxMax(const PM::Matrix &features);
-    Vector3 getNbVoxel();
+    Vector3 getVoxelSize() const;
+//    Vector3uli getNbVoxels() const;
+
+    Vector3uli getNbOfVoxels() const;
 
 private:
-    void computeGridMinMaxCorners(const PM::Matrix &features);
+    void buildVoxelGridPointCloud(const Vector3 &voxelSize);
+    void computePointCloudBoundingBox(const PM::Matrix &features);
+    void computeNbOfVoxels();
+    void computeGridMinMaxCorners();
 
-    // I am not sure it is useful to have to voxel class right now...
-//    void setVoxelsCorners(Vector3 voxelSize, Vector3 nbVoxel);
     void buildVoxelGridStructure(const PM::DataPoints &dataPoints,
                                  const Vector3 &nbVoxel);
+
     Vector3 getVoxelIndice(Vector3 pointsPosition);
 };
 
