@@ -26,13 +26,14 @@ int main(int argc, char *argv[])
 
     PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
 
-//    Display::printAllInfo(inputDataPoints);
-    Vector3 voxelSize;
-    voxelSize << 2,2,2;
-    VoxelGridPointCloud voxelCloud(inputDataPoints,voxelSize);
-//    Vector3uli test = voxelCloud.getNbVoxels();
+    //    Display::printAllInfo(inputDataPoints);
+    VoxelGridPointCloud voxelCloud(inputDataPoints,0,0,0);
+//    Eigen::Matrix4f test;
+//    test << 1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16;
     cout << voxelCloud.getNbOfVoxels() << endl;
     cout << voxelCloud.getVoxelSize() << endl;
+
+//    cout << test.col(3).head(3) << endl;
 
 
     //    PM::DataPoints outputDataPoints = voxelCloud.getSinglePointPerVoxel();

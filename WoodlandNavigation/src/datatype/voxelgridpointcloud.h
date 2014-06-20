@@ -1,3 +1,10 @@
+/* Notes:
+ * 1. The current center of the voxel grid is the center of the point cloud
+ *    bounding box.
+ * 2.If the voxelSize is <= 0 in a certain orientation, the voxel will be the
+ *   size of the pointcloud boundingbox in this direction
+*/
+
 #ifndef VOXELGRIDPOINTCLOUD_H
 #define VOXELGRIDPOINTCLOUD_H
 
@@ -5,10 +12,6 @@
 #include "definitions.h"
 
 
-// 1. The current center of the voxel grid is the center of the point cloud
-// bounding box.
-// 2 . The Voxel structure only contains the indices of the points contained
-// in the voxel and some general info/stats about this voxel
 class VoxelGridPointCloud
 {
 private:
@@ -24,6 +27,8 @@ private:
 
     std::vector<std::vector<std::vector<Voxel> > > voxels;
 
+    static const used_type minPadding;
+
 public:
     VoxelGridPointCloud();
     VoxelGridPointCloud(const PM::DataPoints &dataPoints,
@@ -33,20 +38,19 @@ public:
                         const Vector3 &voxelSize = Vector3::Zero());
 
     Vector3 getVoxelSize() const;
-//    Vector3uli getNbVoxels() const;
-
     Vector3uli getNbOfVoxels() const;
 
+    void initVoxels();
 private:
-    void buildVoxelGridPointCloud(const Vector3 &voxelSize);
-    void computePointCloudBoundingBox(const PM::Matrix &features);
+    void buildVoxelGridPointCloud();
+    void computePointCloudBoundingBox();
+    void verifyVoxelSize();
     void computeNbOfVoxels();
     void computeGridMinMaxCorners();
 
-    void buildVoxelGridStructure(const PM::DataPoints &dataPoints,
-                                 const Vector3 &nbVoxel);
+    void buildVoxelGridStructure();
 
-    Vector3 getVoxelIndice(Vector3 pointsPosition);
+    Vector3uli getVoxelIndice(Vector3 pointPosition);
 };
 
 

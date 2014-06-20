@@ -6,16 +6,17 @@
 
 class Voxel
 {
-private:
+public:
     Vector3 lowerCorner;
-    int nbPoints;
+    std::vector<unsigned long int> pointIndices;
 
 public:
-    Voxel(Vector3 lowerCorner = Vector3::Zero(), int nbPoints=0);
+    Voxel(Vector3 lowerCorner = Vector3::Zero());
 
-    void incrementNbPoints();
     Vector3 getLowerCorner() const;
     void setLowerCorner(const Vector3 &value);
+
+    void addPointIndices(unsigned long int indice);
 };
 
 #endif

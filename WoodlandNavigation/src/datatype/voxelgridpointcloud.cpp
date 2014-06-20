@@ -5,6 +5,7 @@
 
 using namespace std;
 
+const used_type VoxelGridPointCloud::minPadding = static_cast<used_type>(0.001);
 
 VoxelGridPointCloud::VoxelGridPointCloud() :
     completeDataPoints(), pointCloudBoundingBoxMin(Vector3::Zero()),
@@ -14,45 +15,55 @@ VoxelGridPointCloud::VoxelGridPointCloud() :
 }
 
 VoxelGridPointCloud::VoxelGridPointCloud(
-        const PM::DataPoints &dataPoints,
-        used_type voxelSizeX, used_type voxelSizeY, used_type voxelSizeZ) {
+        const PM::DataPoints &dataPoints,used_type voxelSizeX,
+        used_type voxelSizeY, used_type voxelSizeZ) :
+    completeDataPoints(dataPoints) {
     voxelSize << voxelSizeX, voxelSizeY, voxelSizeZ;
-    buildVoxelGridPointCloud(voxelSize);
+    buildVoxelGridPointCloud();
 }
 
-VoxelGridPointCloud::VoxelGridPointCloud(const PM::DataPoints &dataPoints,
-                                         const Vector3 &voxelSize) :
-    completeDataPoints(dataPoints){
-    buildVoxelGridPointCloud(voxelSize);
+VoxelGridPointCloud::VoxelGridPointCloud(
+        const PM::DataPoints &dataPoints, const Vector3 &voxelSize) :
+    completeDataPoints(dataPoints), voxelSize(voxelSize){
+    buildVoxelGridPointCloud();
 }
 
-void VoxelGridPointCloud::buildVoxelGridPointCloud(const Vector3 &voxelSize) {
+void VoxelGridPointCloud::buildVoxelGridPointCloud() {
     try{
-        this->computePointCloudBoundingBox(this->completeDataPoints.features);
+        this->computePointCloudBoundingBox();
+        this->verifyVoxelSize();
         this->computeNbOfVoxels();
         this->computeGridMinMaxCorners();
 
-        this->voxels.resize(this->nbOfVoxels[xIndice]);
-        for (unsigned long int i = 0; i < this->nbOfVoxels[xIndice]; ++i) {
-            this->voxels[i].resize(this->nbOfVoxels[yIndice]);
+        this->initVoxels();
 
-            for (unsigned long int j = 0; j < this->nbOfVoxels[yIndice]; ++j)
-                this->voxels[i][j].resize(this->nbOfVoxels[zIndice]);
-        }
-
-        //        this->buildVoxelGridStructure(dataPoints, nbVoxel);
+        this->buildVoxelGridStructure();
     } catch(exception& e){
-        cerr << "unable to build the VoxelGridPointCloud : "
+        cerr << "Unable to build the VoxelGridPointCloud : "
              << e.what() << endl;
     }
 }
 
-void VoxelGridPointCloud::computePointCloudBoundingBox(
-        const PM::Matrix &features) {
+void VoxelGridPointCloud::computePointCloudBoundingBox() {
+    PM::Matrix &features = this->completeDataPoints.features;
     this->pointCloudBoundingBoxMin =
-            features.rowwise().minCoeff().block(0,0,3,1);
+            features.rowwise().minCoeff().head(3);
     this->pointCloudBoundingBoxMax =
-            features.rowwise().maxCoeff().block(0,0,3,1);
+            features.rowwise().maxCoeff().head(3);
+}
+
+void VoxelGridPointCloud::verifyVoxelSize() {
+    Vector3 defaultSize = pointCloudBoundingBoxMax - pointCloudBoundingBoxMin
+            + Vector3::Ones()*minPadding;
+    if(voxelSize[xIndice] <= 0) {
+        voxelSize[xIndice] = defaultSize[xIndice];
+    }
+    if(voxelSize[yIndice] <= 0) {
+        voxelSize[yIndice] = defaultSize[yIndice];
+    }
+    if(voxelSize[zIndice] <= 0) {
+        voxelSize[zIndice] = defaultSize[zIndice];
+    }
 }
 
 void VoxelGridPointCloud::computeNbOfVoxels() {
@@ -70,22 +81,23 @@ void VoxelGridPointCloud::computeGridMinMaxCorners() {
     Vector3 nbVoxelsDecimal =
             (this->pointCloudBoundingBoxMax - this->pointCloudBoundingBoxMin).
             cwiseQuotient(voxelSize);
-    //    Vector3 nbVoxels = this->nbOfVoxels.cast<used_type>();
-    //    Vector3 padding = ((nbVoxels - nbVoxelsDecimal)/2).
-    //            cwiseProduct(voxelSize);
+    Vector3 nbVoxels = this->nbOfVoxels.cast<used_type>();
+    Vector3 padding = ((nbVoxels - nbVoxelsDecimal)/2).
+            cwiseProduct(voxelSize);
 
-    //    this->minVoxelLowerCorner = this->pointCloudBoundingBoxMin - padding;
-    //    this->maxVoxelLowerCorner = this->pointCloudBoundingBoxMin
-    //            + (nbVoxels - Vector3::Ones()).cwiseProduct(voxelSize);
+    this->minVoxelLowerCorner = this->pointCloudBoundingBoxMin - padding;
+    this->maxVoxelLowerCorner = this->pointCloudBoundingBoxMin
+            + (nbVoxels - Vector3::Ones()).cwiseProduct(voxelSize);
+}
 
-    //    cout << "========================================" << endl;
-    //    cout << "Min: " << endl << this->pointCloudBoundingBoxMin << endl;
-    //    cout << "Max: " << endl << this->pointCloudBoundingBoxMax << endl;
-    //    cout << "NbOfVoxels: " << endl << this->nbOfVoxels << endl;
-    //    cout << "Padding: " << endl << padding << endl;
-    //    cout << "minCorner: " << endl << this->minVoxelLowerCorner << endl;
-    //    cout << "maxCorner: " << endl << this->maxVoxelLowerCorner << endl;
-    //    cout << "========================================" << endl;
+void VoxelGridPointCloud::initVoxels() {
+    this->voxels.resize(this->nbOfVoxels[xIndice]);
+    for (unsigned long int i = 0; i < this->nbOfVoxels[xIndice]; ++i) {
+        this->voxels[i].resize(this->nbOfVoxels[yIndice]);
+
+        for (unsigned long int j = 0; j < this->nbOfVoxels[yIndice]; ++j)
+            this->voxels[i][j].resize(this->nbOfVoxels[zIndice]);
+    }
 }
 
 Vector3 VoxelGridPointCloud::getVoxelSize() const{
@@ -96,52 +108,21 @@ Vector3uli VoxelGridPointCloud::getNbOfVoxels() const {
     return this->nbOfVoxels;
 }
 
-void VoxelGridPointCloud::buildVoxelGridStructure(
-        const PM::DataPoints &dataPoints, const Vector3 &nbVoxel) {
-    //    std::vector<std::vector<std::vector<std::vector<int> > > >
-    //            voxelPointIndices;
+void VoxelGridPointCloud::buildVoxelGridStructure() {
+    unsigned long int nbOfPoints = completeDataPoints.features.cols();
+    for(unsigned long int i = 0 ; i < nbOfPoints; ++i){
+        Vector3 point = completeDataPoints.features.col(i).head(3);
+        Vector3uli indice = this->getVoxelIndice(point);
 
-    //    voxelPoints.resize(nbVoxel[xIndice]);
-    //    for (int i = 0; i < nbVoxel[xIndice]; ++i) {
-    //        voxels[i].resize(nbVoxel[yIndice]);
-
-    //        for (int j = 0; j < nbVoxel[yIndice]; ++j)
-    //            voxels[i][j].resize(nbVoxel[zIndice]);
-    //    }
-
-    //    //You dont want to resize the datapoint all the time
-    //    //Keep only indices, then create the newcloud
-    //    completeDataPoints;
-
-    //    int nbMaxPoints = 0;
-    //    for(int i = 0 ; i < pointCloud.cols(); ++i){
-    //        float x = pointCloud(xIndice, i);
-    //        float y = pointCloud(yIndice, i);
-    //        float z = pointCloud(zIndice, i);
-
-    //        int xVoxelIndice = floor((x-minCornerX)/voxelSize);
-    //        int yVoxelIndice = floor((y-minCornerY)/voxelSize);
-    //        int zVoxelIndice = floor((z-minCornerZ)/voxelSize);
-
-    //        Voxel *voxel =
-    //                &(voxels[xVoxelIndice][yVoxelIndice][zVoxelIndice]);
-    //        voxel->incrementNbPoints();
-
-    //        if(voxel->getNbPoints() > nbMaxPoints) {
-    //            nbMaxPoints = voxel->getNbPoints();
-    //        }
-    //    }
-    //    cout << "The maximum number of points in a voxel is : " << nbMaxPoints
-    //         << endl;
+        Voxel &voxel =
+                this->voxels[indice[xIndice]][indice[yIndice]][indice[zIndice]];
+        voxel.addPointIndices(i);
+    }
 }
 
-Vector3 VoxelGridPointCloud::getVoxelIndice(Vector3 pointsPosition) {
-    //    Vector3i gridIndice;
-    //    gridIndice[xIndice] = floor((pointsPosition[xIndice]-minCorner[xIndice])/
-    //                                voxelSize);
-    //    gridIndice[yIndice] = floor((pointsPosition[yIndice]-minCorner[yIndice])/
-    //                                voxelSize);
-    //    gridIndice[zIndice] = floor((pointsPosition[zIndice]-minCorner[zIndice])/
-    //                                voxelSize);
-    return Vector3::Zero();
+Vector3uli VoxelGridPointCloud::getVoxelIndice(Vector3 pointPosition) {
+    Vector3 gridIndice = MathUtil::floorVector(
+                (pointPosition-minVoxelLowerCorner).cwiseQuotient(voxelSize));
+
+    return MathUtil::convertToIndice(gridIndice);
 }
