@@ -37,7 +37,7 @@ void VoxelGridPointCloud::buildVoxelGridPointCloud() {
 
         this->initVoxels();
 
-        this->buildVoxelGridStructure();
+        this->buildVoxels();
     } catch(exception& e){
         cerr << "Unable to build the VoxelGridPointCloud : "
              << e.what() << endl;
@@ -100,15 +100,7 @@ void VoxelGridPointCloud::initVoxels() {
     }
 }
 
-Vector3 VoxelGridPointCloud::getVoxelSize() const{
-    return this->voxelSize;
-}
-
-Vector3uli VoxelGridPointCloud::getNbOfVoxels() const {
-    return this->nbOfVoxels;
-}
-
-void VoxelGridPointCloud::buildVoxelGridStructure() {
+void VoxelGridPointCloud::buildVoxels() {
     unsigned long int nbOfPoints = completeDataPoints.features.cols();
     for(unsigned long int i = 0 ; i < nbOfPoints; ++i){
         Vector3 point = completeDataPoints.features.col(i).head(3);
@@ -118,6 +110,14 @@ void VoxelGridPointCloud::buildVoxelGridStructure() {
                 this->voxels[indice[xIndice]][indice[yIndice]][indice[zIndice]];
         voxel.addPointIndices(i);
     }
+}
+
+Vector3 VoxelGridPointCloud::getVoxelSize() const{
+    return this->voxelSize;
+}
+
+Vector3uli VoxelGridPointCloud::getNbOfVoxels() const {
+    return this->nbOfVoxels;
 }
 
 Vector3uli VoxelGridPointCloud::getVoxelIndice(Vector3 pointPosition) {

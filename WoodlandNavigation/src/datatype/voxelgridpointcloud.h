@@ -40,7 +40,7 @@ public:
     Vector3 getVoxelSize() const;
     Vector3uli getNbOfVoxels() const;
 
-    void initVoxels();
+
 private:
     void buildVoxelGridPointCloud();
     void computePointCloudBoundingBox();
@@ -48,7 +48,8 @@ private:
     void computeNbOfVoxels();
     void computeGridMinMaxCorners();
 
-    void buildVoxelGridStructure();
+    void initVoxels();
+    void buildVoxels();
 
     Vector3uli getVoxelIndice(Vector3 pointPosition);
 };

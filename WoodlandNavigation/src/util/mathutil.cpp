@@ -20,3 +20,31 @@ Vector3 MathUtil::floorVector(Vector3 vector) {
 
     return floorVector;
 }
+
+unsigned long int MathUtil::getRoundedQuantileRelatedIndice(
+        std::vector<indexAndValue> indexesAndValues, float quantile) {
+    if(quantile < 0 || quantile > 1) {
+        std::string msg = "Quantile must be between 0 and 1";
+        throw std::invalid_argument(msg);
+    }
+
+
+    int quantileIndice = static_cast<int>(
+                round(static_cast<double>(indexesAndValues.size()-1)
+                      *quantile));
+
+    std::nth_element (indexesAndValues.begin(),
+                      indexesAndValues.begin()+quantileIndice,
+                      indexesAndValues.end(), MathUtil::compareValues);
+
+    std::vector<indexAndValue>::iterator it=
+            (indexesAndValues.begin()+quantileIndice);
+
+    return it->first;
+}
+
+bool MathUtil::compareValues(indexAndValue i,indexAndValue j) {
+    return (i.second < j.second);
+}
+
+

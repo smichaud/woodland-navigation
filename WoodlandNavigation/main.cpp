@@ -27,17 +27,20 @@ int main(int argc, char *argv[])
     PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
 
     //    Display::printAllInfo(inputDataPoints);
-    VoxelGridPointCloud voxelCloud(inputDataPoints,0,0,0);
-//    Eigen::Matrix4f test;
-//    test << 1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16;
-    cout << voxelCloud.getNbOfVoxels() << endl;
-    cout << voxelCloud.getVoxelSize() << endl;
-
-//    cout << test.col(3).head(3) << endl;
-
-
-    //    PM::DataPoints outputDataPoints = voxelCloud.getSinglePointPerVoxel();
+    VoxelGridPointCloud voxelCloud(inputDataPoints, 0.5f,0.5f,0);
     //    outputDataPoints.save(argv[argc-1]);
+
+    vector<indexAndValue > vect;
+    vect.push_back(indexAndValue(5,0.0f));
+    vect.push_back(indexAndValue(4,2.2f));
+    vect.push_back(indexAndValue(3,4.4f));
+    vect.push_back(indexAndValue(2,6.6f));
+    vect.push_back(indexAndValue(1,8.8f));
+    vect.push_back(indexAndValue(0,10.0f));
+
+    cout << "Quantile index: "
+         << MathUtil::getRoundedQuantileRelatedIndice(vect, 0.3f)
+         << endl;
 
     ////////////////////////////////////////////////////////////////////////////
     boost::posix_time::ptime endTime =
