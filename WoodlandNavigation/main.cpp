@@ -5,6 +5,7 @@
 #include "definitions.h"
 #include "display.h"
 #include "voxelgridpointcloud.h"
+#include "groundprocessing.h"
 #include "mathutil.h"
 
 using namespace std;
@@ -26,21 +27,13 @@ int main(int argc, char *argv[])
 
     PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
 
-    //    Display::printAllInfo(inputDataPoints);
-    VoxelGridPointCloud voxelCloud(inputDataPoints, 0.5f,0.5f,0);
-    //    outputDataPoints.save(argv[argc-1]);
+    PointCloud pointCloud(inputDataPoints);
 
-    vector<indexAndValue > vect;
-    vect.push_back(indexAndValue(5,0.0f));
-    vect.push_back(indexAndValue(4,2.2f));
-    vect.push_back(indexAndValue(3,4.4f));
-    vect.push_back(indexAndValue(2,6.6f));
-    vect.push_back(indexAndValue(1,8.8f));
-    vect.push_back(indexAndValue(0,10.0f));
+    Display::printAllInfo(pointCloud);
+//    VoxelGridPointCloud voxelCloud(inputDataPoints, 0.25f,0.25f,0);
+//    GroundProcessing::addGroundDescriptor(voxelCloud);
+//    voxelCloud.getCompleteDataPoints().save(argv[argc-1]);
 
-    cout << "Quantile index: "
-         << MathUtil::getRoundedQuantileRelatedIndice(vect, 0.3f)
-         << endl;
 
     ////////////////////////////////////////////////////////////////////////////
     boost::posix_time::ptime endTime =

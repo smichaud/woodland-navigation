@@ -2,46 +2,46 @@
 
 using namespace std;
 
-void Display::printAllInfo(const PM::DataPoints &dataPoints)
+void Display::printAllInfo(const PointCloud &pointcloud)
 {
     cout << "All informations:" << endl;
-    Display::printNumberOfPoints(dataPoints);
-    Display::printFeatures(dataPoints);
-    Display::printDescriptors(dataPoints);
+    Display::printNumberOfPoints(pointcloud);
+    Display::printFeatures(pointcloud);
+    Display::printDescriptors(pointcloud);
 }
 
-void Display::printNumberOfPoints(const PM::DataPoints &dataPoints)
+void Display::printNumberOfPoints(const PointCloud &pointcloud)
 {
     cout << "----- Number of points " << endl;
     cout << "Number of points/columns: "
-         << dataPoints.features.cols() << endl;
+         << pointcloud.getNbPoints() << endl;
     cout << "-------------------------" << endl;
 }
 
-void Display::printFeatures(const PM::DataPoints &dataPoints)
+void Display::printFeatures(const PointCloud &pointcloud)
 {
     cout << "----- Features " << endl;
-    cout << "Number of features: " << dataPoints.featureLabels.size()
+    cout << "Number of features: " << pointcloud.getNbFeatures()
          << endl;
     cout << "Feature labels : " << endl;
-    for(unsigned long int i=0 ; i < dataPoints.featureLabels.size() ; ++i){
-        cout << "   - " << dataPoints.featureLabels[i].text << endl;
+    for(unsigned int i=0 ; i < pointcloud.getNbFeatures() ; ++i){
+        cout << "   - " << pointcloud.getFeatureName(i) << endl;
     }
     cout << "-------------------------" << endl;
 }
 
-void Display::printDescriptors(const PM::DataPoints &dataPoints)
+void Display::printDescriptors(const PointCloud &pointcloud)
 {
     cout << "----- Descriptors " << endl;
-    cout << "Number of descriptors: " << dataPoints.descriptorLabels.size()
+    cout << "Number of descriptors: " << pointcloud.getNbDescriptors()
          << endl;
     cout << "Descriptor labels: " << endl;
-    for(int i=0 ; i < static_cast<int>(dataPoints.descriptorLabels.size()) ;
+    for(unsigned int i = 0 ; i < pointcloud.getNbDescriptors() ;
         ++i){
-        string descriptorName = dataPoints.descriptorLabels[i].text;
+        std::string descriptorName = pointcloud.getDescriptorName(i);
         cout << "   - " << descriptorName
              << " (of size "
-             << dataPoints.getDescriptorDimension(descriptorName) << ")"
+             << pointcloud.getDescriptorSize(descriptorName) << ")"
              << endl;
     }
     cout << "-------------------------" << endl;

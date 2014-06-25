@@ -6,8 +6,6 @@
 class PointCloudUtil
 {
 public:
-    static void appendDescriptorRGBA(PM::DataPoints &dataPoints, float red,
-                                     float green, float blue, float alpha);
     static PM::DataPoints getSinglePointPerVoxel();
 };
 

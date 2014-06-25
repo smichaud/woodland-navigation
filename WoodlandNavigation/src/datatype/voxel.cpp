@@ -11,6 +11,10 @@ void Voxel::setLowerCorner(const Vector3 &value) {
     lowerCorner = value;
 }
 
-void Voxel::addPointIndices(unsigned long indice) {
-    this->pointIndices.push_back(indice);
+uli Voxel::getNbPoints() const {
+    return this->pointIndexes.size();
+}
+
+void Voxel::addPointIndex(unsigned long index) {
+    this->pointIndexes.push_back(index);
 }

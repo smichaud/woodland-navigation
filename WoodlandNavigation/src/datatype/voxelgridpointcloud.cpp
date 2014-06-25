@@ -55,14 +55,14 @@ void VoxelGridPointCloud::computePointCloudBoundingBox() {
 void VoxelGridPointCloud::verifyVoxelSize() {
     Vector3 defaultSize = pointCloudBoundingBoxMax - pointCloudBoundingBoxMin
             + Vector3::Ones()*minPadding;
-    if(voxelSize[xIndice] <= 0) {
-        voxelSize[xIndice] = defaultSize[xIndice];
+    if(voxelSize[xIndex] <= 0) {
+        voxelSize[xIndex] = defaultSize[xIndex];
     }
-    if(voxelSize[yIndice] <= 0) {
-        voxelSize[yIndice] = defaultSize[yIndice];
+    if(voxelSize[yIndex] <= 0) {
+        voxelSize[yIndex] = defaultSize[yIndex];
     }
-    if(voxelSize[zIndice] <= 0) {
-        voxelSize[zIndice] = defaultSize[zIndice];
+    if(voxelSize[zIndex] <= 0) {
+        voxelSize[zIndex] = defaultSize[zIndex];
     }
 }
 
@@ -74,7 +74,7 @@ void VoxelGridPointCloud::computeNbOfVoxels() {
     Vector3 nbVoxels = Vector3::Ones()
             + MathUtil::floorVector(nbVoxelsDecimal);
 
-    this->nbOfVoxels = MathUtil::convertToIndice(nbVoxels);
+    this->nbOfVoxels = MathUtil::convertToIndex(nbVoxels);
 }
 
 void VoxelGridPointCloud::computeGridMinMaxCorners() {
@@ -91,38 +91,69 @@ void VoxelGridPointCloud::computeGridMinMaxCorners() {
 }
 
 void VoxelGridPointCloud::initVoxels() {
-    this->voxels.resize(this->nbOfVoxels[xIndice]);
-    for (unsigned long int i = 0; i < this->nbOfVoxels[xIndice]; ++i) {
-        this->voxels[i].resize(this->nbOfVoxels[yIndice]);
+    this->voxels.resize(this->nbOfVoxels[xIndex]);
+    for (uli i = 0; i < this->nbOfVoxels[xIndex]; ++i) {
+        this->voxels[i].resize(this->nbOfVoxels[yIndex]);
 
-        for (unsigned long int j = 0; j < this->nbOfVoxels[yIndice]; ++j)
-            this->voxels[i][j].resize(this->nbOfVoxels[zIndice]);
+        for (uli j = 0; j < this->nbOfVoxels[yIndex]; ++j)
+            this->voxels[i][j].resize(this->nbOfVoxels[zIndex]);
     }
 }
 
 void VoxelGridPointCloud::buildVoxels() {
-    unsigned long int nbOfPoints = completeDataPoints.features.cols();
-    for(unsigned long int i = 0 ; i < nbOfPoints; ++i){
+    uli nbOfPoints = completeDataPoints.features.cols();
+    for(uli i = 0 ; i < nbOfPoints; ++i){
         Vector3 point = completeDataPoints.features.col(i).head(3);
-        Vector3uli indice = this->getVoxelIndice(point);
+        Vector3uli index = this->getVoxelIndex(point);
 
         Voxel &voxel =
-                this->voxels[indice[xIndice]][indice[yIndice]][indice[zIndice]];
-        voxel.addPointIndices(i);
+                this->voxels[index[xIndex]][index[yIndex]][index[zIndex]];
+        voxel.addPointIndex(i);
     }
 }
 
-Vector3 VoxelGridPointCloud::getVoxelSize() const{
+void VoxelGridPointCloud::addDescriptor(const std::string name,
+                                        VectorX descriptorDefaultValue) {
+    uli nbPoints = this->completeDataPoints.features.cols();
+    uli nbValuesPerPoint = descriptorDefaultValue.size();
+
+    PM::Matrix descriptors;
+    descriptors.setOnes(nbValuesPerPoint, nbPoints);
+
+    for(uli i = 0; i < nbValuesPerPoint; ++i) {
+        descriptors.row(i) = descriptors.row(i)*descriptorDefaultValue[i];
+    }
+
+    this->completeDataPoints.addDescriptor(name, descriptors);
+}
+
+PM::DataPoints & VoxelGridPointCloud::getCompleteDataPoints() {
+    return this->completeDataPoints;
+}
+
+Vector3 VoxelGridPointCloud::getVoxelSize() const {
     return this->voxelSize;
 }
 
-Vector3uli VoxelGridPointCloud::getNbOfVoxels() const {
+Vector3uli VoxelGridPointCloud::getNbVoxels() const {
     return this->nbOfVoxels;
 }
 
-Vector3uli VoxelGridPointCloud::getVoxelIndice(Vector3 pointPosition) {
-    Vector3 gridIndice = MathUtil::floorVector(
+Voxel VoxelGridPointCloud::getVoxel(uli x, uli y, uli z) {
+    if(x >= this->nbOfVoxels[xIndex] ||
+            y >= this->nbOfVoxels[yIndex] ||
+            z >= this->nbOfVoxels[zIndex]) {
+        std::string msg = "Voxel index out of range";
+        throw std::invalid_argument(msg);
+    } else {
+        return this->voxels[x][y][z];
+    }
+
+}
+
+Vector3uli VoxelGridPointCloud::getVoxelIndex(Vector3 pointPosition) {
+    Vector3 gridIndex = MathUtil::floorVector(
                 (pointPosition-minVoxelLowerCorner).cwiseQuotient(voxelSize));
 
-    return MathUtil::convertToIndice(gridIndice);
+    return MathUtil::convertToIndex(gridIndex);
 }

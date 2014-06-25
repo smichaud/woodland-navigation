@@ -8,7 +8,7 @@ class Voxel
 {
 public:
     Vector3 lowerCorner;
-    std::vector<unsigned long int> pointIndices;
+    std::vector<uli> pointIndexes;
 
 public:
     Voxel(Vector3 lowerCorner = Vector3::Zero());
@@ -16,7 +16,9 @@ public:
     Vector3 getLowerCorner() const;
     void setLowerCorner(const Vector3 &value);
 
-    void addPointIndices(unsigned long int indice);
+    uli getNbPoints() const;
+
+    void addPointIndex(uli index);
 };
 
 #endif

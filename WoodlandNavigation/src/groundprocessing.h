@@ -6,6 +6,7 @@
 class GroundProcessing
 {
 public:
+    //TODO I assume there is one voxel in height
     static void addGroundDescriptor(VoxelGridPointCloud &scene);
 };
 

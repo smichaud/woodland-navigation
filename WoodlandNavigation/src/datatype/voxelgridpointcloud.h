@@ -37,8 +37,12 @@ public:
     VoxelGridPointCloud(const PM::DataPoints &dataPoints,
                         const Vector3 &voxelSize = Vector3::Zero());
 
+    void addDescriptor(const std::string name, VectorX descriptorDefaultValue);
+
+    PM::DataPoints &getCompleteDataPoints();
     Vector3 getVoxelSize() const;
-    Vector3uli getNbOfVoxels() const;
+    Vector3uli getNbVoxels() const;
+    Voxel getVoxel(uli x, uli y, uli z);
 
 
 private:
@@ -51,7 +55,7 @@ private:
     void initVoxels();
     void buildVoxels();
 
-    Vector3uli getVoxelIndice(Vector3 pointPosition);
+    Vector3uli getVoxelIndex(Vector3 pointPosition);
 };
 
 
