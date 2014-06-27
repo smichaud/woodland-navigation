@@ -7,17 +7,12 @@
 class Voxel
 {
 public:
-    Vector3 lowerCorner;
     std::vector<uli> pointIndexes;
 
 public:
-    Voxel(Vector3 lowerCorner = Vector3::Zero());
-
-    Vector3 getLowerCorner() const;
-    void setLowerCorner(const Vector3 &value);
+    Voxel();
 
     uli getNbPoints() const;
-
     void addPointIndex(uli index);
 };
 

@@ -8,6 +8,7 @@
 #ifndef VOXELGRIDPOINTCLOUD_H
 #define VOXELGRIDPOINTCLOUD_H
 
+#include "pointcloud.h"
 #include "voxel.h"
 #include "definitions.h"
 
@@ -15,7 +16,7 @@
 class VoxelGridPointCloud
 {
 private:
-    PM::DataPoints completeDataPoints;
+    PointCloud pointCloud;
 
     Vector3 pointCloudBoundingBoxMin;
     Vector3 pointCloudBoundingBoxMax;
@@ -31,15 +32,15 @@ private:
 
 public:
     VoxelGridPointCloud();
-    VoxelGridPointCloud(const PM::DataPoints &dataPoints,
+    VoxelGridPointCloud(PointCloud &pointCloud,
                         used_type voxelSizeX=0, used_type voxelSizeY=0,
                         used_type voxelSizeZ=0);
-    VoxelGridPointCloud(const PM::DataPoints &dataPoints,
+    VoxelGridPointCloud(PointCloud &pointCloud,
                         const Vector3 &voxelSize = Vector3::Zero());
 
     void addDescriptor(const std::string name, VectorX descriptorDefaultValue);
 
-    PM::DataPoints &getCompleteDataPoints();
+    PointCloud &getPointCloudRef();
     Vector3 getVoxelSize() const;
     Vector3uli getNbVoxels() const;
     Voxel getVoxel(uli x, uli y, uli z);

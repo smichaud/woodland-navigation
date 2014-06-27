@@ -8,23 +8,21 @@ using namespace std;
 const used_type VoxelGridPointCloud::minPadding = static_cast<used_type>(0.001);
 
 VoxelGridPointCloud::VoxelGridPointCloud() :
-    completeDataPoints(), pointCloudBoundingBoxMin(Vector3::Zero()),
+    pointCloud(), pointCloudBoundingBoxMin(Vector3::Zero()),
     pointCloudBoundingBoxMax(Vector3::Zero()), voxelSize(Vector3::Zero()),
     nbOfVoxels(Vector3uli::Zero()), minVoxelLowerCorner(Vector3::Zero()),
     maxVoxelLowerCorner(Vector3::Zero()), voxels() {
 }
 
-VoxelGridPointCloud::VoxelGridPointCloud(
-        const PM::DataPoints &dataPoints,used_type voxelSizeX,
+VoxelGridPointCloud::VoxelGridPointCloud(PointCloud &pointCloud, used_type voxelSizeX,
         used_type voxelSizeY, used_type voxelSizeZ) :
-    completeDataPoints(dataPoints) {
+    pointCloud(pointCloud) {
     voxelSize << voxelSizeX, voxelSizeY, voxelSizeZ;
     buildVoxelGridPointCloud();
 }
 
-VoxelGridPointCloud::VoxelGridPointCloud(
-        const PM::DataPoints &dataPoints, const Vector3 &voxelSize) :
-    completeDataPoints(dataPoints), voxelSize(voxelSize){
+VoxelGridPointCloud::VoxelGridPointCloud(PointCloud &pointCloud, const Vector3 &voxelSize) :
+    pointCloud(pointCloud), voxelSize(voxelSize){
     buildVoxelGridPointCloud();
 }
 
@@ -45,7 +43,7 @@ void VoxelGridPointCloud::buildVoxelGridPointCloud() {
 }
 
 void VoxelGridPointCloud::computePointCloudBoundingBox() {
-    PM::Matrix &features = this->completeDataPoints.features;
+    PM::Matrix &features = this->pointCloud.getFeaturesRef();
     this->pointCloudBoundingBoxMin =
             features.rowwise().minCoeff().head(3);
     this->pointCloudBoundingBoxMax =
@@ -101,9 +99,9 @@ void VoxelGridPointCloud::initVoxels() {
 }
 
 void VoxelGridPointCloud::buildVoxels() {
-    uli nbOfPoints = completeDataPoints.features.cols();
+    uli nbOfPoints = pointCloud.getNbPoints();
     for(uli i = 0 ; i < nbOfPoints; ++i){
-        Vector3 point = completeDataPoints.features.col(i).head(3);
+        Vector3 point = pointCloud.getPoint(i);
         Vector3uli index = this->getVoxelIndex(point);
 
         Voxel &voxel =
@@ -114,21 +112,13 @@ void VoxelGridPointCloud::buildVoxels() {
 
 void VoxelGridPointCloud::addDescriptor(const std::string name,
                                         VectorX descriptorDefaultValue) {
-    uli nbPoints = this->completeDataPoints.features.cols();
-    uli nbValuesPerPoint = descriptorDefaultValue.size();
-
-    PM::Matrix descriptors;
-    descriptors.setOnes(nbValuesPerPoint, nbPoints);
-
-    for(uli i = 0; i < nbValuesPerPoint; ++i) {
-        descriptors.row(i) = descriptors.row(i)*descriptorDefaultValue[i];
-    }
-
-    this->completeDataPoints.addDescriptor(name, descriptors);
+    this->pointCloud.addDescriptorInitToVector(name,
+                                                       descriptorDefaultValue);
 }
 
-PM::DataPoints & VoxelGridPointCloud::getCompleteDataPoints() {
-    return this->completeDataPoints;
+PointCloud &VoxelGridPointCloud::getPointCloudRef() {
+    PointCloud & ref = this->pointCloud;
+    return ref;
 }
 
 Vector3 VoxelGridPointCloud::getVoxelSize() const {
@@ -143,8 +133,7 @@ Voxel VoxelGridPointCloud::getVoxel(uli x, uli y, uli z) {
     if(x >= this->nbOfVoxels[xIndex] ||
             y >= this->nbOfVoxels[yIndex] ||
             z >= this->nbOfVoxels[zIndex]) {
-        std::string msg = "Voxel index out of range";
-        throw std::invalid_argument(msg);
+        throw std::invalid_argument("Voxel index out of range");
     } else {
         return this->voxels[x][y][z];
     }

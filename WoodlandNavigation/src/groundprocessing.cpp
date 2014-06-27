@@ -7,7 +7,7 @@ void GroundProcessing::addGroundDescriptor(VoxelGridPointCloud &scene) {
     descriptorDefaultValue.setZero(1);
     scene.addDescriptor("ground", descriptorDefaultValue);
 
-    PM::DataPoints &dataPoints = scene.getCompleteDataPoints();
+    PointCloud &pointCloud = scene.getPointCloudRef();
     Vector3uli nbVoxels = scene.getNbVoxels();
 
     std::vector<uli> groundIndices;
@@ -19,16 +19,19 @@ void GroundProcessing::addGroundDescriptor(VoxelGridPointCloud &scene) {
             std::vector<indexAndValue> vect;
             for(uli v = 0; v < nbPointsOfVoxel ;  ++v) {
                 uli pointIndex = currentVoxel.pointIndexes[v];
-                used_type zValue = dataPoints.features(zIndex, pointIndex);
+                used_type zValue = pointCloud.getPoint(pointIndex)[zIndex];
                 vect.push_back(indexAndValue(pointIndex,zValue));
             }
             try {
                 uli pi = MathUtil::getRoundedQuantileRelatedIndex(vect,0.05f);
-                used_type zValue = dataPoints.features(zIndex, pi);
+                used_type zValue = pointCloud.getPoint(pi)[zIndex];
                 if(zValue <= 0){
-                    dataPoints.descriptors.
-                            row(dataPoints.
-                                getDescriptorStartingRow("ground"))(pi) = 1.0f;
+//                    pointCloud.descriptors.
+//                            row(pointCloud.
+//                                getDescriptorStartingRow("ground"))(pi) = 1.0f;
+                    pointCloud.setDescriptorValue(
+                                "ground", pi,
+                                Eigen::Matrix<used_type,1,1>::Ones());
                 }
 
             } catch (...) {

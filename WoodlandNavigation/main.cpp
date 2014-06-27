@@ -25,14 +25,15 @@ int main(int argc, char *argv[])
             boost::posix_time::second_clock::local_time();
     ////////////////////////////////////////////////////////////////////////////
 
-    PM::DataPoints inputDataPoints(PM::DataPoints::load(argv[argc-2]));
+    PointCloud pointCloud(PM::DataPoints::load(argv[argc-2]));
+    pointCloud.addDescriptorInitToZero("test", 4);
+    VoxelGridPointCloud voxelCloud(pointCloud, 1.0f,1.0f,0);
+    cout << "voxelSize: " << voxelCloud.getVoxelSize().transpose() << endl;
+    cout << "nbVoxels: " << voxelCloud.getNbVoxels().transpose() << endl;
+    cout << "voxel 10 10 0: " << voxelCloud.getVoxel(10,10,0).getNbPoints() << endl;
 
-    PointCloud pointCloud(inputDataPoints);
 
-    Display::printAllInfo(pointCloud);
-//    VoxelGridPointCloud voxelCloud(inputDataPoints, 0.25f,0.25f,0);
 //    GroundProcessing::addGroundDescriptor(voxelCloud);
-//    voxelCloud.getCompleteDataPoints().save(argv[argc-1]);
 
 
     ////////////////////////////////////////////////////////////////////////////

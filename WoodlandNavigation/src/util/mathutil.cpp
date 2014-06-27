@@ -3,9 +3,7 @@
 
 Vector3uli MathUtil::convertToIndex(Vector3 vector) {
     if(vector[0] < 0 || vector[1] < 0 || vector[2] < 0){
-        std::string msg =
-                "Invalid conversion : (negative float -> uli)";
-        throw std::invalid_argument(msg);
+        throw std::invalid_argument("Invalid conversion from negative float -> uli)");
     }
 
     return vector.cast<uli>();
@@ -24,11 +22,10 @@ Vector3 MathUtil::floorVector(Vector3 vector) {
 uli MathUtil::getRoundedQuantileRelatedIndex(
         std::vector<indexAndValue> indexesAndValues, float quantile) {
     if(quantile < 0 || quantile > 1) {
-        std::string msg = "Quantile must be between 0 and 1";
-        throw std::invalid_argument(msg);
+        throw std::invalid_argument("Quantile must be between 0 and 1");
     } else if (indexesAndValues.size() == 0) {
-        std::string msg = "No quantile index possible for empty vector";
-        throw std::invalid_argument(msg);
+        throw std::invalid_argument("No quantile index possible for empty"
+                                    " vector");
     }
 
     int quantileIndex = static_cast<int>(

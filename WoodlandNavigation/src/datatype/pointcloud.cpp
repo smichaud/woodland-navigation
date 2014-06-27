@@ -20,16 +20,24 @@ bool PointCloud::featureExists(std::string featureName) const{
 
 std::string PointCloud::getFeatureName(unsigned int index) const {
     if(index >= this->getNbFeatures()) {
-        std::string msg = "Feature index out of range";
-        throw std::invalid_argument(msg);
-    } else {
-        return dataPoints.featureLabels[index].text;
+        throw std::out_of_range("Feature index out of range");
     }
+
+    return dataPoints.featureLabels[index].text;
 }
 
 Matrix &PointCloud::getFeaturesRef() {
     Matrix & features = this->dataPoints.features;
     return features;
+}
+
+//TODO make sure the head(3) are indeed x,y,z
+Vector3 PointCloud::getPoint(uli index) const {
+    if(index >= this->getNbPoints()) {
+        throw std::out_of_range("Point index out of range");
+    }
+
+    return dataPoints.features.col(index).head(3);
 }
 
 unsigned int PointCloud::getNbDescriptors() const {
@@ -47,8 +55,7 @@ bool PointCloud::descriptorExists(const std::string descriptorName) const {
 
 std::string PointCloud::getDescriptorName(unsigned int index) const {
     if(index >= this->getNbDescriptors()) {
-        std::string msg = "Descriptor index out of range";
-        throw std::invalid_argument(msg);
+        throw std::out_of_range( "Descriptor index out of range");
     } else {
         return dataPoints.descriptorLabels[index].text;
     }
@@ -60,10 +67,10 @@ Matrix &PointCloud::getDescriptorsRef() {
 }
 
 void PointCloud::addDescriptorInitToZero(const std::string descriptorName,
-                                         int nbValues) {
+                                         int descriptorSize) {
     uli nbPoints = this->getNbPoints();
     this->dataPoints.addDescriptor(descriptorName,
-                                   PM::Matrix::Zero(nbValues, nbPoints));
+                                   PM::Matrix::Zero(descriptorSize, nbPoints));
 }
 
 void PointCloud::addDescriptorInitToVector(
@@ -85,16 +92,41 @@ void PointCloud::addDescriptor(const std::string descriptorName,
     dataPoints.addDescriptor(descriptorName, descriptors);
 }
 
-void PointCloud::appendDescriptorRGBA(used_type red, used_type green,
-                                      used_type blue, used_type alpha) {
+void PointCloud::addDescriptorRGBA(const used_type red,
+                                   const used_type green,
+                                   const used_type blue, used_type alpha) {
     if(red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1
             || alpha < 0 || alpha > 1) {
-        std::string msg = "RGBA values must be between 0 and 1";
-        throw std::invalid_argument(msg);
+        throw std::invalid_argument("RGBA values must be between 0 and 1");
     }
     VectorX colors;
     colors.resize(4);
     colors << red, green, blue, alpha;
 
     this->addDescriptorInitToVector("color", colors);
+}
+
+void PointCloud::setDescriptorValue(const std::string descriptorName,
+                                    const uli index,
+                                    const VectorX descriptorValue) {
+    if(index >= this->getNbPoints()) {
+        throw std::out_of_range("Point index out of bound");
+    }
+    if(!this->descriptorExists(descriptorName)) {
+        throw std::invalid_argument("No such descriptor : " + descriptorName);
+    }
+    if(this->getDescriptorSize(descriptorName) != descriptorValue.size()) {
+        throw std::length_error("The point cloud descriptor is not the same "
+                                "size as the provided descriptor vector");
+    }
+
+    unsigned int descriptorStartingRow =
+            dataPoints.getDescriptorStartingRow(descriptorName);
+    uli descriptorSize = descriptorValue.size();
+    dataPoints.descriptors.block(descriptorStartingRow, index,
+                                 descriptorSize, 1) = descriptorValue;
+}
+
+void PointCloud::save(const std::string filename) const{
+    this->dataPoints.save(filename);
 }

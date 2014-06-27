@@ -4,7 +4,6 @@
 #include "definitions.h"
 #include <iostream>
 
-// This is mainly a user personnal interface of the PointMatcher Datapoints
 class PointCloud
 {
 private:
@@ -20,6 +19,7 @@ public:
     bool featureExists(std::string featureName) const;
     std::string getFeatureName(unsigned int index) const;
     Matrix &getFeaturesRef();
+    Vector3 getPoint(uli index) const;
 
     unsigned int getNbDescriptors() const;
     unsigned int getDescriptorSize(const std::string descriptorName) const;
@@ -29,13 +29,19 @@ public:
 
 
     void addDescriptorInitToZero(const std::string descriptorName,
-                                 int nbValues=1);
+                                 int descriptorSize=1);
     void addDescriptorInitToVector(const std::string descriptorName,
                                    const VectorX descriptorDefaultValue);
     void addDescriptor(const std::string descriptorName,
                        const PM::Matrix descriptors);
-    void appendDescriptorRGBA(used_type red, used_type green, used_type blue,
+    void addDescriptorRGBA(const used_type red,
+                              const used_type green,
+                              const used_type blue,
                               used_type alpha);
+    void setDescriptorValue(const std::string descriptorName, const uli index,
+                            const VectorX descriptorValue);
+
+    void save(const std::string filename) const;
 };
 
 #endif
