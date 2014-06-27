@@ -42,6 +42,9 @@ public:
                             const VectorX descriptorValue);
 
     void save(const std::string filename) const;
+
+private:
+        void checkSaveCompatibility() const;
 };
 
 #endif

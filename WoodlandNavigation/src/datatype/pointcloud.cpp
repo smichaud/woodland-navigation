@@ -128,5 +128,28 @@ void PointCloud::setDescriptorValue(const std::string descriptorName,
 }
 
 void PointCloud::save(const std::string filename) const{
+    checkSaveCompatibility();
     this->dataPoints.save(filename);
+}
+
+void PointCloud::checkSaveCompatibility() const {
+    int nbDescriptors = this->getNbDescriptors();
+    for(int i = 0; i < nbDescriptors ; ++i) {
+        int descriptorSize = this->getDescriptorSize(
+                    this->getDescriptorName(i));
+        std::string descriptorName = this->getDescriptorName(i);
+
+        if((descriptorSize != 1 && descriptorSize != 3) ||
+                (descriptorSize == 4 && descriptorName.compare("color") != 0)) {
+            std::cout << "Not saved" << std::endl;
+            //            if(descriptorSize == 4 && descriptorName.compare("color") != 0) {
+            //                std::cerr << descriptorName << "size is 4, but only the (color)"
+            //                          " descriptor can be of size 4" << std::endl;
+            //            } else {
+            //                std::cerr << "Descriptor (" << descriptorName
+            //                          << ") does not respect any usual descriptor format "
+            //                             "and will not be saved." << std::endl;
+            //            }
+        }
+    }
 }

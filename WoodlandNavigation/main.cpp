@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     PointCloud pointCloud(PM::DataPoints::load(argv[argc-2]));
-    pointCloud.addDescriptorInitToZero("test", 4);
-    VoxelGridPointCloud voxelCloud(pointCloud, 1.0f,1.0f,0);
-    cout << "voxelSize: " << voxelCloud.getVoxelSize().transpose() << endl;
-    cout << "nbVoxels: " << voxelCloud.getNbVoxels().transpose() << endl;
-    cout << "voxel 10 10 0: " << voxelCloud.getVoxel(10,10,0).getNbPoints() << endl;
+    pointCloud.addDescriptorInitToVector("color",
+                                         Eigen::Matrix<float,2,1>::Zero());
+    pointCloud.save(argv[argc-1]);
 
+//    VoxelGridPointCloud voxelCloud(pointCloud, 3,3,0);
 
 //    GroundProcessing::addGroundDescriptor(voxelCloud);
+//    voxelCloud.getPointCloudRef().save(argv[argc-1]);
 
 
     ////////////////////////////////////////////////////////////////////////////
