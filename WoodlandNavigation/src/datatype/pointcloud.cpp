@@ -1,5 +1,7 @@
 #include "pointcloud.h"
 
+using namespace PointMatcherSupport;
+
 PointCloud::PointCloud() : dataPoints(){
 }
 
@@ -8,6 +10,11 @@ PointCloud::PointCloud(PM::DataPoints pointcloud) : dataPoints(pointcloud){
 
 uli PointCloud::getNbPoints() const {
     return dataPoints.features.cols();
+}
+
+PM::DataPoints &PointCloud::getDataPointsRepresentationRef() {
+    PM::DataPoints &datapoints = this->dataPoints;
+    return datapoints;
 }
 
 unsigned int PointCloud::getNbFeatures() const {
@@ -127,6 +134,62 @@ void PointCloud::setDescriptorValue(const std::string descriptorName,
                                  descriptorSize, 1) = descriptorValue;
 }
 
+void PointCloud::addObservationDirectionDescriptors(
+        const used_type xSensorPosition,
+        const used_type ySensorPosition,
+        const used_type zSensorPosition) {
+    PM::DataPointsFilter* filter(
+                PM::get().DataPointsFilterRegistrar.create(
+                    "ObservationDirectionDataPointsFilter",
+                    map_list_of
+                    ("x", toParam(xSensorPosition))
+                    ("y", toParam(ySensorPosition))
+                    ("z", toParam(zSensorPosition))));
+
+    filter->inPlaceFilter(this->dataPoints);
+}
+
+void PointCloud::addKnnEigenRelatedDescriptors(int knnUsed,
+                                               bool keepSurfaceNormals,
+                                               bool keepDensities,
+                                               bool keepEigenValues,
+                                               bool keepEigenVectors) {
+    PM::DataPointsFilter* filter(
+                PM::get().DataPointsFilterRegistrar.create(
+                    "SurfaceNormalDataPointsFilter",
+                    map_list_of
+                    ("knn", toParam(knnUsed))
+                    ("epsilon", toParam(0))
+                    ("keepNormals", toParam(keepSurfaceNormals))
+                    ("keepDensities", toParam(keepDensities))
+                    ("keepEigenValues", toParam(keepEigenValues))
+                    ("keepEigenVectors", toParam(keepEigenVectors))
+                    ("keepMatchedIds", toParam(0))));
+
+    filter->inPlaceFilter(this->dataPoints);
+}
+
+void PointCloud::addSurfaceNormalDescriptors(int knnUsed) {
+    this->addKnnEigenRelatedDescriptors(knnUsed, 1, 0, 0, 0);
+}
+
+void PointCloud::addDensityDescriptors(int knnUsed) {
+    this->addKnnEigenRelatedDescriptors(knnUsed, 0, 1, 0, 0);
+}
+
+void PointCloud::addEigenDescriptors(int knnUsed) {
+    this->addKnnEigenRelatedDescriptors(knnUsed, 0, 0, 1, 1);
+}
+
+void PointCloud::orientSurfaceNormalsRelativeToCenter(bool towardCenter) {
+    PM::DataPointsFilter* filter(
+                PM::get().DataPointsFilterRegistrar.create(
+                    "OrientNormalsDataPointsFilter",
+                    map_list_of("towardCenter", toParam(towardCenter))));
+
+    filter->inPlaceFilter(this->dataPoints);
+}
+
 void PointCloud::save(const std::string filename) const{
     checkSaveCompatibility();
     this->dataPoints.save(filename);
@@ -139,17 +202,12 @@ void PointCloud::checkSaveCompatibility() const {
                     this->getDescriptorName(i));
         std::string descriptorName = this->getDescriptorName(i);
 
-        if((descriptorSize != 1 && descriptorSize != 3) ||
-                (descriptorSize == 4 && descriptorName.compare("color") != 0)) {
-            std::cout << "Not saved" << std::endl;
-            //            if(descriptorSize == 4 && descriptorName.compare("color") != 0) {
-            //                std::cerr << descriptorName << "size is 4, but only the (color)"
-            //                          " descriptor can be of size 4" << std::endl;
-            //            } else {
-            //                std::cerr << "Descriptor (" << descriptorName
-            //                          << ") does not respect any usual descriptor format "
-            //                             "and will not be saved." << std::endl;
-            //            }
+        if(!(descriptorSize == 1 || descriptorSize == 3 || descriptorSize == 9
+             || (descriptorSize == 4
+                 && descriptorName.compare("color") == 0))) {
+            std::cerr << "Descriptor (" << descriptorName
+                      << ") does not respect any usual descriptor format "
+                         "and will not be saved." << std::endl;
         }
     }
 }

@@ -6,7 +6,7 @@
 
 class PointCloud
 {
-private:
+public:
     PM::DataPoints dataPoints;
 
 public:
@@ -14,6 +14,8 @@ public:
     PointCloud(PM::DataPoints pointcloud);
 
     uli getNbPoints() const;
+
+    PM::DataPoints &getDataPointsRepresentationRef();
 
     unsigned int getNbFeatures() const;
     bool featureExists(std::string featureName) const;
@@ -35,16 +37,30 @@ public:
     void addDescriptor(const std::string descriptorName,
                        const PM::Matrix descriptors);
     void addDescriptorRGBA(const used_type red,
-                              const used_type green,
-                              const used_type blue,
-                              used_type alpha);
+                           const used_type green,
+                           const used_type blue,
+                           used_type alpha);
     void setDescriptorValue(const std::string descriptorName, const uli index,
                             const VectorX descriptorValue);
+
+    void addObservationDirectionDescriptors(
+            const used_type xSensorPosition = 0,
+            const used_type ySensorPosition = 0,
+            const used_type zSensorPosition = 0);
+    void addKnnEigenRelatedDescriptors(int knnUsed = 5,
+                                       bool keepSurfaceNormals = 1,
+                                       bool keepDensities = 1,
+                                       bool keepEigenValues = 1,
+                                       bool keepEigenVectors = 1);
+    void addSurfaceNormalDescriptors(int knnUsed = 5);
+    void addDensityDescriptors(int knnUsed = 5);
+    void addEigenDescriptors(int knnUsed = 5);
+    void orientSurfaceNormalsRelativeToCenter(bool towardCenter = 1);
 
     void save(const std::string filename) const;
 
 private:
-        void checkSaveCompatibility() const;
+    void checkSaveCompatibility() const;
 };
 
 #endif
