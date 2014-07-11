@@ -27,6 +27,10 @@ public:
     unsigned int getDescriptorSize(const std::string descriptorName) const;
     bool descriptorExists(const std::string descriptorName) const;
     std::string getDescriptorName(unsigned int index) const;
+
+    VectorX getDescriptorValue(std::string descriptorName, uli index) const;
+    void setDescriptorValue(const std::string descriptorName, const uli index,
+                            const VectorX descriptorValue);
     Matrix &getDescriptorsRef();
 
 
@@ -40,27 +44,37 @@ public:
                            const used_type green,
                            const used_type blue,
                            used_type alpha);
-    void setDescriptorValue(const std::string descriptorName, const uli index,
-                            const VectorX descriptorValue);
 
     void addObservationDirectionDescriptors(
             const used_type xSensorPosition = 0,
             const used_type ySensorPosition = 0,
             const used_type zSensorPosition = 0);
-    void addKnnEigenRelatedDescriptors(int knnUsed = 5,
-                                       bool keepSurfaceNormals = 1,
-                                       bool keepDensities = 1,
-                                       bool keepEigenValues = 1,
-                                       bool keepEigenVectors = 1);
-    void addSurfaceNormalDescriptors(int knnUsed = 5);
-    void addDensityDescriptors(int knnUsed = 5);
-    void addEigenDescriptors(int knnUsed = 5);
-    void orientSurfaceNormalsRelativeToCenter(bool towardCenter = 1);
+    void addKnnEigenRelatedDescriptors(unsigned int knnUsed = 5,
+                                       bool keepSurfaceNormals = true,
+                                       bool keepDensities = true,
+                                       bool keepEigenValues = true,
+                                       bool keepEigenVectors = true);
+    void addSurfaceNormalDescriptors(unsigned int knnUsed = 5);
+    void addDensityDescriptors(unsigned int knnUsed = 5);
+    void addEigenDescriptors(unsigned int knnUsed = 5);
+    void orientSurfaceNormalsRelativeToCenter(bool towardCenter = true);
 
     void save(const std::string filename) const;
 
 private:
-    void checkSaveCompatibility() const;
+    void verifySaveCompatibility() const;
+    void verifyUnsavedDescriptor(int descriptorSize,
+                                 std::string descriptorName) const;
+
+    void verifyPointIndex(uli index) const;
+    void verifyFeatureIndex(unsigned int index) const;
+    void verifyDescriptorIndex(unsigned int index) const;
+    void verifyDescriptorName(std::string descriptorName) const;
+    void verifyDescriptorSize(const VectorX descriptorValue,
+                              const std::string descriptorName) const;
+
+    void verifyColor(used_type alpha, const used_type red,
+                     const used_type green, const used_type blue) const;
 };
 
 #endif
