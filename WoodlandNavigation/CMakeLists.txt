@@ -1,6 +1,8 @@
 project(WoodlandNavigation)
 cmake_minimum_required(VERSION 2.8)
 
+add_definitions(-std=c++0x)
+
 #set(EXECUTABLE_OUTPUT_PATH build/${CMAKE_BUILD_TYPE})
 
 #Set the warning level (all)

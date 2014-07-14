@@ -70,9 +70,9 @@ void VoxelGridPointCloud::computeNbOfVoxels() {
             cwiseQuotient(voxelSize);
 
     Vector3 nbVoxels = Vector3::Ones()
-            + MathUtil::floorVector(nbVoxelsDecimal);
+            + mathutil::floorVector(nbVoxelsDecimal);
 
-    this->nbOfVoxels = MathUtil::convertToIndex(nbVoxels);
+    this->nbOfVoxels = mathutil::convertToIndex(nbVoxels);
 }
 
 void VoxelGridPointCloud::computeGridMinMaxCorners() {
@@ -141,8 +141,8 @@ Voxel VoxelGridPointCloud::getVoxel(uli x, uli y, uli z) {
 }
 
 Vector3uli VoxelGridPointCloud::getVoxelIndex(Vector3 pointPosition) {
-    Vector3 gridIndex = MathUtil::floorVector(
+    Vector3 gridIndex = mathutil::floorVector(
                 (pointPosition-minVoxelLowerCorner).cwiseQuotient(voxelSize));
 
-    return MathUtil::convertToIndex(gridIndex);
+    return mathutil::convertToIndex(gridIndex);
 }

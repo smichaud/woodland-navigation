@@ -2,19 +2,19 @@
 #define MATHUTIL_H
 
 #include "definitions.h"
+#include <exception>
+#include <iostream>
 
-class MathUtil
-{
-public:
-    static Vector3uli convertToIndex(Vector3 vector);
-    static Vector3 floorVector(Vector3 vector);
+namespace mathutil {
+    Vector3uli convertToIndex(Vector3 vector);
+    Vector3 floorVector(Vector3 vector);
 
-    // Quantile must be between [0,1]
-    static uli getRoundedQuantileRelatedIndex(
+    uli getRoundedQuantileRelatedIndex(
             std::vector<indexAndValue> indexesAndValues, float quantile);
-
-private:
-    static bool compareValues(indexAndValue i,indexAndValue j);
-};
+    class empty_container: public std::exception {
+        virtual const char* what() const throw();
+    };
+    bool compareValues(indexAndValue i,indexAndValue j);
+}
 
 #endif

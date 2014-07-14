@@ -1,15 +1,18 @@
 #include "mathutil.h"
 #include <math.h>
 
-Vector3uli MathUtil::convertToIndex(Vector3 vector) {
+namespace mathutil{
+
+Vector3uli convertToIndex(Vector3 vector) {
     if(vector[0] < 0 || vector[1] < 0 || vector[2] < 0){
-        throw std::invalid_argument("Invalid conversion from negative float -> uli)");
+        throw std::invalid_argument(
+                    "Invalid conversion from negative float -> uli)");
     }
 
     return vector.cast<uli>();
 }
 
-Vector3 MathUtil::floorVector(Vector3 vector) {
+Vector3 floorVector(Vector3 vector) {
     Vector3 floorVector;
 
     floorVector << static_cast<used_type>(floor(vector[0])),
@@ -19,13 +22,12 @@ Vector3 MathUtil::floorVector(Vector3 vector) {
     return floorVector;
 }
 
-uli MathUtil::getRoundedQuantileRelatedIndex(
+uli getRoundedQuantileRelatedIndex(
         std::vector<indexAndValue> indexesAndValues, float quantile) {
     if(quantile < 0 || quantile > 1) {
         throw std::invalid_argument("Quantile must be between 0 and 1");
     } else if (indexesAndValues.size() == 0) {
-        throw std::invalid_argument("No quantile index possible for empty"
-                                    " vector");
+        throw empty_container();
     }
 
     int quantileIndex = static_cast<int>(
@@ -34,7 +36,7 @@ uli MathUtil::getRoundedQuantileRelatedIndex(
 
     std::nth_element (indexesAndValues.begin(),
                       indexesAndValues.begin()+quantileIndex,
-                      indexesAndValues.end(), MathUtil::compareValues);
+                      indexesAndValues.end(), compareValues);
 
     std::vector<indexAndValue>::iterator it=
             (indexesAndValues.begin()+quantileIndex);
@@ -42,8 +44,12 @@ uli MathUtil::getRoundedQuantileRelatedIndex(
     return it->first;
 }
 
-bool MathUtil::compareValues(indexAndValue i,indexAndValue j) {
+const char *empty_container::what() const throw(){
+    return "Unable to find quantile for empty container";
+}
+
+bool compareValues(indexAndValue i,indexAndValue j) {
     return (i.second < j.second);
 }
 
-
+}
