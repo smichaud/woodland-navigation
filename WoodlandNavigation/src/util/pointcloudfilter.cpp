@@ -4,7 +4,9 @@
 
 using namespace PointMatcherSupport;
 
-void PointCloudFilter::minRadius(PointCloud &pointcloud, float radius) {
+namespace PointCloudFilter {
+
+void minRadius(PointCloud &pointcloud, float radius) {
     PM::DataPointsFilter* filterMin(
                 PM::get().DataPointsFilterRegistrar.create(
                     "MinDistDataPointsFilter",
@@ -15,7 +17,7 @@ void PointCloudFilter::minRadius(PointCloud &pointcloud, float radius) {
     filterMin->inPlaceFilter(pointcloud.dataPoints);
 }
 
-void PointCloudFilter::maxRadius(PointCloud &pointCloud, float radius) {
+void maxRadius(PointCloud &pointCloud, float radius) {
     PM::DataPointsFilter* filterMax(
                 PM::get().DataPointsFilterRegistrar.create(
                     "MaxDistDataPointsFilter",
@@ -26,7 +28,7 @@ void PointCloudFilter::maxRadius(PointCloud &pointCloud, float radius) {
     filterMax->inPlaceFilter(pointCloud.dataPoints);
 }
 
-void PointCloudFilter::maxDensity(PointCloud &pointCloud, float density) {
+void maxDensity(PointCloud &pointCloud, float density) {
     PM::DataPointsFilter* filter(
                 PM::get().DataPointsFilterRegistrar.create(
                     "MaxDensityDataPointsFilter",
@@ -35,7 +37,7 @@ void PointCloudFilter::maxDensity(PointCloud &pointCloud, float density) {
     filter->inPlaceFilter(pointCloud.dataPoints);
 }
 
-void PointCloudFilter::boundingBox(PointCloud &pointCloud,
+void boundingBox(PointCloud &pointCloud,
                                    float xMin, float xMax,
                                    float yMin, float yMax,
                                    float zMin, float zMax,
@@ -53,4 +55,6 @@ void PointCloudFilter::boundingBox(PointCloud &pointCloud,
                     ("removeInside", toParam(removeInside))));
 
     filter->inPlaceFilter(pointCloud.dataPoints);
+}
+
 }

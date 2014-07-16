@@ -4,15 +4,15 @@
 #include "pointcloud.h"
 #include "definitions.h"
 
-class Display
-{
-public:
-    static void printAllInfo(const PointCloud &pointcloud);
+namespace Display {
 
-    static void printNumberOfPoints(const PointCloud &pointcloud);
+void printAllInfo(const PointCloud &pointcloud);
 
-    static void printFeatures(const PointCloud &pointcloud);
-    static void printDescriptors(const PointCloud &pointcloud);
-};
+void printNumberOfPoints(const PointCloud &pointcloud);
+
+void printFeatures(const PointCloud &pointcloud);
+void printDescriptors(const PointCloud &pointcloud);
+
+}
 
 #endif
