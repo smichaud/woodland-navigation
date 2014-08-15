@@ -6,6 +6,12 @@
 #include "display.h"
 #include "huskya200.h"
 
+#include "pointcloudprocessing.h"
+
+
+#include "stdafx.h"
+#include "dataanalysis.h"
+
 using namespace std;
 
 void usage() {

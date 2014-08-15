@@ -1,9 +1,8 @@
 project(WoodlandNavigation)
 cmake_minimum_required(VERSION 2.8)
 
+# Set compiler to C++11
 add_definitions(-std=c++0x)
-
-#set(EXECUTABLE_OUTPUT_PATH build/${CMAKE_BUILD_TYPE})
 
 #Set the warning level (all)
 if(MSVC)
@@ -20,6 +19,17 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Wconversion")
 endif()
 
+
+# Libpointmatcher
+find_package(pointmatcher 1.1.0 REQUIRED)
+include_directories("${POINTMATCHER_INCLUDE_DIRS}")
+message(STATUS "Using libpointmatcher version ${pointmatcher_VERSION}")
+
+# Ceres Solver
+FIND_PACKAGE(Ceres REQUIRED)
+INCLUDE_DIRECTORIES(${CERES_INCLUDE_DIRS})
+
+
 # CMAKE_CURRENT_SOURCE_DIR: directory of the currently processed CMakeLists.txt
 # GLOB_RECURSE: will search in all folder and subfolder
 file(GLOB_RECURSE
@@ -31,26 +41,20 @@ file(GLOB_RECURSE
      ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 aux_source_directory(. SRC_LIST)
 
-
-
-# Libpointmatcher 
-find_package(pointmatcher 1.1.0 REQUIRED)
-include_directories("${POINTMATCHER_INCLUDE_DIRS}")
-message(STATUS "Using libpointmatcher version ${pointmatcher_VERSION}")
-
 # Either put complete path to headers or call #include "partial/header.h"
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/datatype)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/processing)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/util)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/thirdpartylibraries/alglib)
 
 add_executable(${PROJECT_NAME}
                ${SRC_LIST}
                ${SOURCE_FILES}
                ${HEADER_FILES})
 
-target_link_libraries(${PROJECT_NAME} ${POINTMATCHER_LIBRARIES})
-
+target_link_libraries(${PROJECT_NAME}
+                      ${POINTMATCHER_LIBRARIES}
+                      ${CERES_LIBRARIES})
 
 
 # Include Google Mock/Test
@@ -71,3 +75,4 @@ target_link_libraries(test pthread)
 target_link_libraries(test gmock)
 target_link_libraries(test gtest)
 target_link_libraries(test ${POINTMATCHER_LIBRARIES})
+
