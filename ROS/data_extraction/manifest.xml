@@ -10,10 +10,17 @@
   <url>http://ros.org/wiki/data_extraction</url>
   <depend package="roscpp"/>
   <depend package="rospy"/>
+  
   <depend package="std_msgs"/>
-  <depend package="clearpath_base"/>
-  <depend package="geometry_msgs"/>
   <depend package="sensor_msgs"/>
+  
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="image_transport"/>  
+
+  <depend package="clearpath_base"/>
+  
+  <depend package="geometry_msgs"/>
   <depend package="libpointmatcher"/>
   <depend package="libpointmatcher_ros"/>
 

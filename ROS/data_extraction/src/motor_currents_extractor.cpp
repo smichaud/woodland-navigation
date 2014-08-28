@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class HuskyMotorCurrents {
+class HuskyMotorCurrentsExtractor {
 private:
     vector<ros::Time> timestamps;
     vector<double> leftCurrents;
@@ -16,12 +16,12 @@ private:
     const string subscribeTopic;
 
 public:
-    HuskyMotorCurrents(ros::NodeHandle& subscriberNodeHandle):
+    HuskyMotorCurrentsExtractor(ros::NodeHandle& subscriberNodeHandle):
         subscriberNodeHandle(subscriberNodeHandle),
         subscribeTopic("/husky/data/system_status"){
         subscriber = this->subscriberNodeHandle.subscribe(
                     subscribeTopic, 1000,
-                    &HuskyMotorCurrents::gotCurrent, this);
+                    &HuskyMotorCurrentsExtractor::gotCurrent, this);
     }
     void gotCurrent(const clearpath_base::SystemStatus huskyStatus){
         leftCurrents.push_back(huskyStatus.currents.at(1));
@@ -50,19 +50,19 @@ public:
 };
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "motor_currents");
+    ros::init(argc, argv, "motor_currents_extractor");
 
     ros::NodeHandle nodeHandle("~");
     string fileName;
     nodeHandle.param<string>("output", fileName, "~/.ros/motor_currents.csv");
     cout << fileName << endl;
 
-    HuskyMotorCurrents huskyMotorCurrents(nodeHandle);
+    HuskyMotorCurrentsExtractor huskyMotorCurrentsExtractor(nodeHandle);
 
     ros::spin();
 
-    if(huskyMotorCurrents.haveData()){
-        huskyMotorCurrents.saveCSV(fileName);
+    if(huskyMotorCurrentsExtractor.haveData()){
+        huskyMotorCurrentsExtractor.saveCSV(fileName);
     } else {
         cout << endl << "No data to save ..." <<  endl;
     }
