@@ -1,8 +1,7 @@
 init; % clear all
-dataDirectory = './data/';
 defineDatasetStruct;
 
-loadDataset; % if already loaded and saved
+% loadDataset; % if already loaded and saved
 
 loadRawData; % stock raw data from a folder in the structure "dataset"
 
@@ -11,6 +10,4 @@ extractAreaOfInterest % extract the 3D area to be traversed by the robot
 
 showInfo; % Add image beside
 
-saveDataset;
-
-
+% saveDataset;
