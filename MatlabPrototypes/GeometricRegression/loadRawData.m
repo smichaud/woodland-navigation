@@ -1,6 +1,6 @@
 motorCurrentSuffix = '_motor_currents.csv';
 pointCloudSuffix = '_point_cloud.csv';
-imageSuffix = '.jpg';
+imageSuffix = '_image.jpg';
 
 dirResult = dir(strcat(dataDirectory, '*', motorCurrentSuffix));
 nbOfSamples = size(dirResult,1);

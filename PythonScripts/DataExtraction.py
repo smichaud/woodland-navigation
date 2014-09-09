@@ -47,7 +47,7 @@ for bagFile in bagFiles:
     
     print "Starting the image extractor node..."
     imageExtractorCommand = "rosrun data_extraction image_extractor "
-    imageExtractorCommand = imageExtractorCommand + "_filename:='" + extractedDataDirectory + "/" + bagFileBaseName + ".jpg" "'"
+    imageExtractorCommand = imageExtractorCommand + "_filename:='" + extractedDataDirectory + "/" + bagFileBaseName + "_image.jpg" "'"
     os.system(commandPrefix + imageExtractorCommand + commandSuffix);
 
     os.system("rosbag play --clock " + bagFile)

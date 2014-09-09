@@ -1,5 +1,5 @@
 init; % clear all
-defineDatasetStruct;
+defineDataStruct;
 
 % loadDataset; % if already loaded and saved
 
