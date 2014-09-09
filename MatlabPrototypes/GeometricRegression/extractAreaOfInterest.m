@@ -16,8 +16,9 @@ for i=1:nbOfSamples
     
     % Crop z (height)
     groundHeight = min(pointCloud(:,3));
+    groundThreshold = 0.12; % Lower than half wheel and robot body (12 cm)
     pointCloud = pointCloud(find(pointCloud(:,3) >= ...
-        repmat(groundHeight,size(pointCloud,1),1)), : );
+        repmat(groundHeight + groundThreshold ,size(pointCloud,1),1)), : );
     pointCloud = pointCloud(find(pointCloud(:,3) <= ...
         repmat(groundHeight+areaOfInterest.height, ...
         size(pointCloud,1),1)), : );
