@@ -1,5 +1,5 @@
 standbyCurrent = 0.5900; % normally
-startPeakCurrent = 5.0; % both should be over that value
+startPeakCurrent = 4.0; % both should be over that value
 
 noObstacleDuration = areaOfInterest.distFromRobot/robotSpeed;
 traversabilityCostDuration = areaOfInterest.depth/robotSpeed;

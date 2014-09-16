@@ -14,7 +14,7 @@ for i=1:nbOfSamples
         fileName, motorCurrentSuffix, 'match','split');
     dataset(i).name  = filePrefix{1};
     
-    disp(strcat('Loading : ', dataset(i).name));
+    disp(['Loading : ' dataset(i).name]);
     
     % Currents
     dataset(i).rawCurrents = csvread(strcat(...
