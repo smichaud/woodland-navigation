@@ -8,6 +8,7 @@ nbOfSamples = size(dirResult,1);
 % Init dataset structure (slow to always append)
 dataset = repmat(datasetStruct, nbOfSamples, 1);
 
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     fileName = dirResult(i).name;
     [fileExt, filePrefix] = regexp(...

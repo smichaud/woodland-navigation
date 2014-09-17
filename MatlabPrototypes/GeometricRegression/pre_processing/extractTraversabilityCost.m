@@ -4,6 +4,7 @@ startPeakCurrent = 4.0; % both should be over that value
 noObstacleDuration = areaOfInterest.distFromRobot/robotSpeed;
 traversabilityCostDuration = areaOfInterest.depth/robotSpeed;
 
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     currents = dataset(i).rawCurrents;
     acquisitionTimeSteps = currents(2,1)-currents(1,1);

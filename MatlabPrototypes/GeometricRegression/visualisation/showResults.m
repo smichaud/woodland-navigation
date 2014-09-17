@@ -1,6 +1,8 @@
 densities = [];
 highestPoints = [];
 traversabilityCosts = [];
+
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     densities = [densities dataset(i).features('density')];
     highestPoints = [highestPoints dataset(i).features('highestPoint')];

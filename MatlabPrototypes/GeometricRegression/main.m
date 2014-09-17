@@ -36,9 +36,9 @@ datasetStruct = struct(...
 
 % ========== Set parameters ===============================================
 wantToLoadSavedData = true; % If it exist, of course
-wantToShowData = true; % Image, point cloud area of interest, currents/cost
-wantToShowResults = true; % Feature/cost, regression
-wantToAnalyseData = false; % To check data/regressor information
+wantToShowData = false; % Image, point cloud area of interest, currents/cost
+wantToShowResults = false; % Feature/cost, regression
+wantToAnalyseData = true; % To check data/regressor information
 wantToTrainRegressor = false; % Usually data analysis done first
 wantToSaveData = true; % At the end
 
@@ -52,15 +52,15 @@ else
     loadRawData; % stock raw data from a folder in the structure "dataset"
     extractTraversabilityCost; % add the label to the structure
     extractAreaOfInterest; % extract the 3D area to be traversed by the robot
-    extractFeatures; 
+    extractAllFeatures;
 end
 
 initRegression;
 if wantToAnalyseData
     findLeafSize;
     estimateFeatureImportance;
-    bestFeaturesResults;
-    findOutliers;
+%     bestFeaturesResults;
+%     findOutliers;
 end
 if wantToTrainRegressor
     trainRegressor;

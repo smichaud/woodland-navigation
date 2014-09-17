@@ -1,3 +1,4 @@
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     clf;
     close all;

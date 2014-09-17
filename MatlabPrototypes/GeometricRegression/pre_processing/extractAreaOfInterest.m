@@ -1,3 +1,4 @@
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     pointCloud = dataset(i).rawPointCloud(:,1:3);
     
