@@ -1,6 +1,8 @@
 % This is the main script for traversability cost regression using
 % geometric features. Adjust it in the "Set parameters" section
 
+inputdlg('Prompt','Title', 1, {'20'})
+
 % ========== Init =========================================================
 clear all;
 close all;
@@ -39,6 +41,7 @@ wantToLoadSavedData = true; % If it exist, of course
 wantToShowData = false; % Image, point cloud area of interest, currents/cost
 wantToShowResults = false; % Feature/cost, regression
 wantToAnalyseData = true; % To check data/regressor information
+wantToTestLeaveOneOut = false;
 wantToTrainRegressor = false; % Usually data analysis done first
 wantToSaveData = true; % At the end
 
@@ -62,6 +65,11 @@ if wantToAnalyseData
 %     bestFeaturesResults;
 %     findOutliers;
 end
+
+if wantToTestLeaveOneOut
+    testLeaveOneOut;
+end
+
 if wantToTrainRegressor
     trainRegressor;
 end
