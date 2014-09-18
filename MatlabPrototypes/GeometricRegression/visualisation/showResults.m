@@ -21,3 +21,5 @@ title('Density effect on traversability cost ');
 subplot(1,2,2);
 plot(highestPoints, traversabilityCosts, '*');
 title('Max height effect on traversability cost ');
+
+uiwait;

@@ -1,3 +1,5 @@
+disp('Extracting area of interest (from point cloud)...');
+
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     pointCloud = dataset(i).rawPointCloud(:,1:3);

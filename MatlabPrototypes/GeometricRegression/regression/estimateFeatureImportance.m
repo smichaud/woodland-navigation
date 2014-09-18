@@ -3,18 +3,18 @@ nbOfTrees = 200;
 nbOfLeaves = 5; % Should be the best value from the previous step
 
 regressor = TreeBagger(nbOfTrees,...
-    regressorFeatures,regressorLabels,...
+    regressionInfo.features,regressionInfo.labels,...
     'Method','R',...
     'OOBVarImp','On',...
     'MinLeaf',nbOfLeaves);
 
 % Check everything is still ok
-figure
-plot(oobError(regressor));
-title('Error Curve (still ok ?)');
-xlabel('Number of Grown Trees');
-ylabel('Out-of-Bag Mean Squared Error');
-uiwait;
+% figure
+% plot(oobError(regressor));
+% title('Error Curve (still ok ?)');
+% xlabel('Number of Grown Trees');
+% ylabel('Out-of-Bag Mean Squared Error');
+% uiwait;
 
 % Importance histogram
 figure

@@ -1,3 +1,5 @@
+disp('Extracting all features...');
+
 % Prevent dataset from sharing the features
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
