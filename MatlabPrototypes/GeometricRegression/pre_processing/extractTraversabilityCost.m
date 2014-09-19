@@ -1,3 +1,5 @@
+disp('Extracting traversability cost...');
+
 standbyCurrent = 0.5900; % normally
 startPeakCurrent = 4.0; % both should be over that value
 

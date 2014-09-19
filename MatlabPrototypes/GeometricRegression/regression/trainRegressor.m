@@ -1,3 +1,5 @@
+disp('Training the regressor...');
+
 nbOfTrees = 500; % More you have better result are (with longer processing)
 nbOfLeaves = 5; % Selected from data analysis
 
