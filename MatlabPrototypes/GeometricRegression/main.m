@@ -2,13 +2,13 @@
 
 if ~exist('dataset','var') ... % If there is no dataset, need a reset
         || strcmp(questdlg('Reset all ?', '','Yes','No','No'),'Yes')
-    % ========== Init/Reset ===================================================
+    % ========== Init/Reset ===============================================
     clear all;
     close all;
     clc;
     addpath(genpath('.'));
     
-    % ========== Define global variables and data structures ==================
+    % ========== Define global variables and data structures ==============
     dataDirectory = '../Data/';
     datasetName = 'data.mat';
     regressorName = 'regressor.mat';
@@ -40,6 +40,11 @@ if ~exist('dataset','var') ... % If there is no dataset, need a reset
         'labels', [],...
         'nbOfTrees', 500,...
         'nbOfLeaves', 5);
+    resultStruct = struct(...
+        'name', [],...
+        'labels', [],...
+        'meanSquaredError', []);
+    results = []; % To store all leaveresults
 end
 
 rng(1987,'twister'); % Seed for random number generator
@@ -74,15 +79,14 @@ if strcmp(questdlg('Analyse data ?', '','Yes','No','Yes'),'Yes')
     %     findOutliers;
 end
 
-% if wantToTestLeaveOneOut
-%     testLeaveOneOut;
-% end
-% 
+if strcmp(questdlg('Show leave-one-out results ?', '','Yes','No','No'),...
+        'Yes')
+    evalMeanAllFeatures;
+end
+
 % if wantToTrainRegressor
 %     trainRegressor;
 % end
-% 
-% % regressor.predict(sample); % Traversability cost prediction
 
 if strcmp(questdlg('Show results ?', '','Yes','No','Yes'),'Yes')
     showResults;
