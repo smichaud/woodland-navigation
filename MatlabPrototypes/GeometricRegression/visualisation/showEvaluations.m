@@ -9,24 +9,24 @@ figure('Name', 'Evaluation figure', 'units','normalized',...
 hold on;
 
 [vector orderedIndexes] = sort(regressionInfo.trainingLabels);
-markerList = {'or', '+g', '*b', 'xm', 'sk', 'pg', 'db'};
-evalLegend = {'Measured label'};
-
-plot(1:nbOfTrainingSamples, ...
-    regressionInfo.trainingLabels(orderedIndexes), markerList{1})
 
 for i = 1:nbOfEvaluations
+    subplot(3,2,i);
+    hold on;
     plot(1:nbOfTrainingSamples, ...
-        evaluations(i).labels(orderedIndexes), markerList{i+1})
-    evalLegend{i+1} = ['Predicted, using ' evaluations(i).name];
-    evalLegend{i+1} = [evalLegend{i+1} ' (MSE = ' ];
-    evalLegend{i+1} = [evalLegend{i+1} num2str(evaluations(i).meanSquaredError)];
-    evalLegend{i+1} = [evalLegend{i+1} ')'];
+        regressionInfo.trainingLabels(orderedIndexes), 'or')
+    plot(1:nbOfTrainingSamples, ...
+        evaluations(i).labels(orderedIndexes), 'b*')
+    evalTitle = ['Predicted, using ' evaluations(i).name];
+    evalTitle = [evalTitle ' (MSE = ' ];
+    evalTitle = [evalTitle num2str(evaluations(i).meanSquaredError)];
+    evalTitle = [evalTitle ')'];
+    
+    title(evalTitle);
+    xlabel('Index of the sample (ordered by measured traversability cost)');
+    ylabel('Traversability cost');
+    legend({'Measured', 'Predicted'},'Location','EastOutside');
 end
-title('Traversability cost results');
-xlabel('Index of the sample (ordered by measured traversability cost)');
-ylabel('Traversability cost');
-legend(evalLegend,'Location','EastOutside');
 
 hold off;
 
