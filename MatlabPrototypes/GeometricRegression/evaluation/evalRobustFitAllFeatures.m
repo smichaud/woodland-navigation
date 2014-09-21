@@ -15,7 +15,7 @@ for i = 1:nbOfTrainingSamples
         'bisquare', 3.2); % param looks better to me (default 4.685)
     
     leaveOneOutPredictions(i) = ...
-        b(2)*regressionInfo.trainingFeatures(i, :) + b(1);
+        regressionInfo.trainingFeatures(i, :)*b(2:end) + b(1);
 end
 
 evaluation.labels = leaveOneOutPredictions;
