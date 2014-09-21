@@ -1,9 +1,16 @@
 % This is the main script, run it and answer the questions !
+tic
 
-if ~exist('dataset','var') ... % If there is no dataset, need a reset
+% Set the 'justRunAll' to true to run all the script (unsupervised run)
+justRunAll = true;
+
+rng(1987,'twister'); % Seed for random number generator
+
+if justRunAll || ~exist('dataset','var') ...
         || strcmp(questdlg('Reset all ?', '','Yes','No','No'),'Yes')
     % ========== Init/Reset ===============================================
-    clear all;
+    clc;
+    clearvars -except 'justRunAll';
     close all;
     clc;
     addpath(genpath('.'));
@@ -36,64 +43,73 @@ if ~exist('dataset','var') ... % If there is no dataset, need a reset
         'features', containers.Map);
     regressionInfo = struct(...
         'featureNames', [],...
-        'features', [],...
-        'labels', [],...
+        'featuresImportance', [],...
+        'trainingFeatures', [],...
+        'trainingLabels', [],...
+        'testFeatures', [],...
+        'testLabels', [],...
         'nbOfTrees', 500,...
         'nbOfLeaves', 5);
-    resultStruct = struct(...
+    evaluationStruct = struct(...
         'name', [],...
         'labels', [],...
         'meanSquaredError', []);
-    results = []; % To store all leaveresults
+    evaluations = []; % To store all leaveresults
 end
 
-rng(1987,'twister'); % Seed for random number generator
-
-if isempty(dataset) ||...
-    strcmp(questdlg('Reload data ?', '','Yes','No','No'),'Yes')
-    if exist(strcat(dataDirectory, 'data.mat'), 'file') == 2 && ...
+if justRunAll || isempty(dataset) ||...
+        strcmp(questdlg('Reload data ?', '','Yes','No','No'),'Yes')
+    if ~justRunAll &&...
+            exist(strcat(dataDirectory, 'data.mat'), 'file') == 2 && ...
             strcmp(questdlg('Load from .mat ?', '','Yes','No','Yes'),'Yes')
-        disp(['Loading data from ',datasetName, ' ...']);
         loadSavedData;
     else
-        disp(['Loading raw data from ',dataDirectory,' ...']);
         loadRawData;
+        extractTraversabilityCost; % add the label to the structure
+        extractAreaOfInterest; % point cloud area of interest
+        extractAllFeatures;
     end
 end
 
-% Do it all the time, it's not so long anyway
-extractTraversabilityCost; % add the label to the structure
-extractAreaOfInterest; % extract the 3D area to be traversed by the robot
-extractAllFeatures;
-
-if strcmp(questdlg('Show all processed samples ?', '','Yes','No','No'),...
-        'Yes')
+if ~justRunAll && strcmp(questdlg('Show all processed samples ?',...
+        '','Yes','No','No'),'Yes')
     showAllData;
 end
 
-convertDataForRegressor;
-if strcmp(questdlg('Analyse data ?', '','Yes','No','Yes'),'Yes')
+prepareDataForRegression;
+if justRunAll || ...
+        strcmp(questdlg('Analyse data ?', '','Yes','No','Yes'),'Yes')
     findLeafSize;
     estimateFeatureImportance;
-    %     bestFeaturesResults;
-    %     findOutliers;
+    % bestFeaturesResults;
+    % findOutliers;
 end
 
-if strcmp(questdlg('Show leave-one-out results ?', '','Yes','No','No'),...
-        'Yes')
-    evalMeanAllFeatures;
+if strcmp(questdlg('Do the leave-one-out evaluation ?', '',...
+        'Yes','No','No'),'Yes')
+    evalMeanAsPrediction;
+    evalMedianAsPrediction;
+    
+    evalRobustFitDensity;
+    evalRobustFitAllFeatures;
+    
+    evalRandomForestDensity;
+    evalRandomForestAllFeatures;
 end
 
-% if wantToTrainRegressor
-%     trainRegressor;
-% end
-
-if strcmp(questdlg('Show results ?', '','Yes','No','Yes'),'Yes')
-    showResults;
+if ~justRunAll && ...
+        strcmp(questdlg('Show evaluations ?', '','Yes','No','Yes'),'Yes')
+    showFeaturesImportanceEstimation;
+    showEvaluations;
 end
 
-if strcmp(questdlg('Save data to file ?', '','Yes','No','No'),'Yes')
+runTimeInMinutes = toc/60 % put it here to be saved
+
+if justRunAll || ...
+        strcmp(questdlg('Save data to file ?', '','Yes','No','No'),'Yes')
     saveData;
 end
 
 % clearUselessVariables;
+
+

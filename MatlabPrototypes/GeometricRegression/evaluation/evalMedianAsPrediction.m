@@ -1,5 +1,5 @@
 evaluation = evaluationStruct;
-evaluation.name = 'mean as label';
+evaluation.name = 'median as label';
 
 nbOfTrainingSamples = length(regressionInfo.trainingLabels);
 leaveOneOutPrediction = zeros(nbOfTrainingSamples, 1);
@@ -9,7 +9,7 @@ for i = 1:nbOfTrainingSamples
     otherIndexes(:,i) = [];
     
     leaveOneOutPrediction(i) =...
-        mean(regressionInfo.trainingLabels(otherIndexes,:));
+        median(regressionInfo.trainingLabels(otherIndexes,:));
 end
 
 evaluation.labels = leaveOneOutPrediction;

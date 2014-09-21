@@ -1,26 +1,26 @@
-nbOfSamples = length(dataset);
-leaveOneOutPrediction = zeros(nbOfSamples, 1);
+evaluation = evaluationStruct;
+evaluation.name = 'random forest with all features';
 
-result = resultStruct;
-result.name = 'Mean'
+nbOfTrainingSamples = length(regressionInfo.trainingLabels);
+leaveOneOutPrediction = zeros(nbOfTrainingSamples, 1);
 
-for i = 1:nbOfSamples
-    otherIndexes = 1:nbOfSamples;
+for i = 1:nbOfTrainingSamples
+    otherIndexes = 1:nbOfTrainingSamples;
     otherIndexes(:,i) = [];
     
     regressor = TreeBagger(...
         regressionInfo.nbOfTrees,...
-        regressionInfo.features(otherIndexes,:),...
-        regressionInfo.labels(otherIndexes,:),...
+        regressionInfo.trainingFeatures(otherIndexes,:),...
+        regressionInfo.trainingLabels(otherIndexes,:),...
         'Method', 'R',...
         'MinLeaf', regressionInfo.nbOfLeaves);
     
     leaveOneOutPrediction(i) =...
-        regressor.predict(regressorFeatures(i,:));
+        regressor.predict(regressionInfo.trainingFeatures(i,:));
 end
 
-result.labels = leaveOneOutPrediction;
+evaluation.labels = leaveOneOutPrediction;
+evaluation.meanSquaredError = ...
+    mean((evaluation.labels - regressionInfo.trainingLabels).^2);
 
-hold on;
-plot(1:nbOfSamples, leaveOneOutPrediction(i), 'b')
-plot(1:nbOfSamples, regressionInfo.labels(i), 'r')
+evaluations = [evaluations ; evaluation];

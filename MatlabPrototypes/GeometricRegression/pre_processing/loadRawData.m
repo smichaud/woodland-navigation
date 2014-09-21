@@ -1,3 +1,5 @@
+disp(['Loading raw data from ',dataDirectory,' ...']);
+
 motorCurrentSuffix = '_motor_currents.csv';
 pointCloudSuffix = '_point_cloud.csv';
 imageSuffix = '_image.jpg';
@@ -31,3 +33,7 @@ for i=1:nbOfSamples
     dataset(i).image = imread(strcat(...
         dataDirectory, dataset(i).name, imageSuffix));
 end
+
+% Shuffle the data to prevent any pattern from filenames or acquisition
+% order
+dataset = dataset(randperm(length(dataset)));

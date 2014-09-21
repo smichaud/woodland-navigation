@@ -1,15 +1,24 @@
 evaluation = evaluationStruct;
-evaluation.name = 'mean as label';
+evaluation.name = 'random forest with density';
 
 nbOfTrainingSamples = length(regressionInfo.trainingLabels);
 leaveOneOutPrediction = zeros(nbOfTrainingSamples, 1);
+
+densityIndex = find(ismember(regressionInfo.featureNames,'density'));
 
 for i = 1:nbOfTrainingSamples
     otherIndexes = 1:nbOfTrainingSamples;
     otherIndexes(:,i) = [];
     
+    regressor = TreeBagger(...
+        regressionInfo.nbOfTrees,...
+        regressionInfo.trainingFeatures(otherIndexes,densityIndex),...
+        regressionInfo.trainingLabels(otherIndexes,:),...
+        'Method', 'R',...
+        'MinLeaf', regressionInfo.nbOfLeaves);
+    
     leaveOneOutPrediction(i) =...
-        mean(regressionInfo.trainingLabels(otherIndexes,:));
+        regressor.predict(regressionInfo.trainingFeatures(i,densityIndex));
 end
 
 evaluation.labels = leaveOneOutPrediction;

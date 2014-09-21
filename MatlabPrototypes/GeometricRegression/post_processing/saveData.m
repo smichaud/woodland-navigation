@@ -1,12 +1,17 @@
 disp(['Saving data to',dataDirectory,datasetName, '...']);
 
-% save it in the data folder
-save(strcat(dataDirectory,datasetName), ...
-    'robotSpeed',...
-    'areaOfInterest', ...
-    'dataset');
+% Quick way, just save all
+save(strcat(dataDirectory,datasetName));
 
-if exist('regressor', 'var')
-    save(strcat(dataDirectory,regressorName), ...
-        'regressor');
-end
+
+% Selective way... I'll do it properly when I have some time
+% save it in the data folder
+% save(strcat(dataDirectory,datasetName), ...
+%     'robotSpeed',...
+%     'areaOfInterest', ...
+%     'dataset');
+% 
+% if exist('regressor', 'var')
+%     save(strcat(dataDirectory,regressorName), ...
+%         'regressor');
+% end
