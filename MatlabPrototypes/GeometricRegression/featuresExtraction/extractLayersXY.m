@@ -1,11 +1,6 @@
 % Split the point cloud into layers parallel to the XY plane.
 % The number of point for each layer is a feature
-
-% Note for the entire areaOfInterest
-%   meanNbOfPoints = 272.10;
-%   medianNbOfPoints = 276
-
-nbOfLayers = 6;
+nbOfLayers = 3;
 layerHeight = areaOfInterest.height/nbOfLayers;
 
 nbOfSamples = length(dataset);

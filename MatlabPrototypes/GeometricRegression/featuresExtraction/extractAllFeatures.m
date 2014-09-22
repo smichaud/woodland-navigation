@@ -9,4 +9,4 @@ end
 extractDensity;
 extractHighestPoint;
 extractLayersXY;
-% extractHistogramXZ;
+extractHistogramXZ;

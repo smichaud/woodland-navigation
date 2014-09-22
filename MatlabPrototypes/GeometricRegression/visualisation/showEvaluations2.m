@@ -1,7 +1,4 @@
 % Start by showing 1 graph per result (real label vs prediction)
-nbOfEvaluations = length(evaluations);
-nbOfTrainingSamples = length(regressionInfo.trainingLabels);
-
 clf;
 close all;
 figure('Name', 'Evaluation figure', 'units','normalized',...
@@ -12,9 +9,11 @@ hold on;
 markerList = {'or', '+g', '*b', 'xm', 'sk', 'pg', 'db'};
 evalLegend = {'Measured label'};
 
+nbOfTrainingSamples = length(regressionInfo.trainingLabels);
 plot(1:nbOfTrainingSamples, ...
     regressionInfo.trainingLabels(orderedIndexes), markerList{1})
 
+nbOfEvaluations = length(evaluations);
 for i = 1:nbOfEvaluations
     plot(1:nbOfTrainingSamples, ...
         evaluations(i).labels(orderedIndexes), markerList{i+1})
