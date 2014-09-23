@@ -9,9 +9,11 @@ nbOfY = round(areaOfInterest.width/voxelSide);
 nbOfZ = round(areaOfInterest.height/voxelSide);
 nbOfVoxels = nbOfX*nbOfY*nbOfZ;
 
-nbOfBins = 6;
-maxPtsPerVoxel = 50; % Find a good value here
+nbOfBins = 5; % 5 with max = 40
+maxPtsPerVoxel = 40; % Choose approximately...
 ranges = 0:maxPtsPerVoxel/nbOfBins:maxPtsPerVoxel-maxPtsPerVoxel/nbOfBins;
+
+test = [];
 
 nbOfSamples = length(regressionInfo.trainingLabels);
 for sampleIndex=1:nbOfSamples
@@ -22,41 +24,27 @@ for sampleIndex=1:nbOfSamples
     % Create the voxel and save nb of pts
     globalIndex = 1;
     for i = 1:nbOfX
-        xPointCloud = pointCloud;
         minX = (i-1)*voxelSide + areaOfInterest.distFromRobot;
         maxX = i*voxelSide + areaOfInterest.distFromRobot;
-        xPointCloud = xPointCloud(find(xPointCloud(:,1) > ...
-            repmat(minX, size(xPointCloud,1),1)),:);
-        xPointCloud = xPointCloud(find(xPointCloud(:,1) <= ...
-            repmat(maxX, size(xPointCloud,1),1)),:);
-        
         for j = 1:nbOfY
-            yPointCloud = xPointCloud;
             minY = (j-1)*voxelSide - areaOfInterest.width/2;
-            maxY = j*voxelSide + areaOfInterest.width/2;
-            yPointCloud = yPointCloud(find(yPointCloud(:,2) > ...
-                repmat(minY, size(yPointCloud,1),1)),:);
-            yPointCloud = yPointCloud(find(yPointCloud(:,2) <= ...
-                repmat(maxY, size(yPointCloud,1),1)),:);
-            
+            maxY = j*voxelSide - areaOfInterest.width/2;
             for k = 1:nbOfZ
-                voxelPointCloud = yPointCloud;
                 minZ = groundHeight + (k-1)*voxelSide;
                 maxZ = groundHeight + k*voxelSide;
-                voxelPointCloud = voxelPointCloud(...
-                    find(voxelPointCloud(:,3) > ...
-                    repmat(minZ, size(voxelPointCloud,1),1)),:);
-                voxelPointCloud = voxelPointCloud(find(...
-                    voxelPointCloud(:,3) <= ...
-                    repmat(maxZ, size(voxelPointCloud,1),1)), : );
-
-                voxelNbOfPoints(i) = size(voxelPointCloud,1);
-                globalIndex = globalIndex + 1;                
+                
+                voxelNbOfPoints(globalIndex) = length(find(...
+                    pointCloud(:,1) >= minX & ...
+                    pointCloud(:,1) < maxX & ...
+                    pointCloud(:,2) >= minY & ...
+                    pointCloud(:,2) < maxY & ...
+                    pointCloud(:,3) >= minZ & ...
+                    pointCloud(:,3) < maxZ));
+                
+                globalIndex = globalIndex + 1;
             end
         end
     end
-    
-    disp(['Total nb pts:' num2str(length(pointCloud)) ' ?= ' num2str(sum(voxelNbOfPoints))]);
     
     % Create histogram
     sampleHist = zeros(1,nbOfBins);

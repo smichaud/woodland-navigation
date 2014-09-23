@@ -1,3 +1,5 @@
+disp('Evaluating robust fit with density only...');
+
 evaluation = evaluationStruct;
 evaluation.name = 'robust fit with density only';
 
@@ -10,14 +12,13 @@ for i = 1:nbOfTrainingSamples
     otherIndexes = 1:nbOfTrainingSamples;
     otherIndexes(:,i) = [];
     
-    % y = b(2)x + b(1)
     b = robustfit(...
         regressionInfo.trainingFeatures(otherIndexes,densityIndex),...
         regressionInfo.trainingLabels(otherIndexes),...
         'bisquare', 3.2); % param looks better to me (default 4.685)
-    
+
     leaveOneOutPredictions(i) = ...
-        b(2)*regressionInfo.trainingFeatures(i, densityIndex) + b(1);
+        regressionInfo.trainingFeatures(i, densityIndex)*b(2) + b(1);
 end
 
 evaluation.labels = leaveOneOutPredictions;

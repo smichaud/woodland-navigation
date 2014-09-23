@@ -1,3 +1,5 @@
+disp('Evaluating random forest with density only...');
+
 evaluation = evaluationStruct;
 evaluation.name = 'random forest with density';
 

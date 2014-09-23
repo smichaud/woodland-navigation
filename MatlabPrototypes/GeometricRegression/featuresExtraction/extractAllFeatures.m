@@ -10,3 +10,4 @@ extractDensity;
 extractHighestPoint;
 extractLayersXY;
 extractHistogramXZ;
+extractHistogramVoxels;

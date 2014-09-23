@@ -1,3 +1,5 @@
+disp('Evaluating robust fit with all features...');
+
 evaluation = evaluationStruct;
 evaluation.name = 'robust fit with all features';
 
@@ -13,7 +15,7 @@ for i = 1:nbOfTrainingSamples
         regressionInfo.trainingFeatures(otherIndexes,:),...
         regressionInfo.trainingLabels(otherIndexes),...
         'bisquare', 3.2); % param looks better to me (default 4.685)
-    
+
     leaveOneOutPredictions(i) = ...
         regressionInfo.trainingFeatures(i, :)*b(2:end) + b(1);
 end

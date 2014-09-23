@@ -1,3 +1,5 @@
+disp('Evaluating random forest with all features...');
+
 evaluation = evaluationStruct;
 evaluation.name = 'random forest with all features';
 

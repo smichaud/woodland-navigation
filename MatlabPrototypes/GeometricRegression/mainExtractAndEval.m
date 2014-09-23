@@ -1,27 +1,27 @@
 tic
-
 evaluations = [];
-
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     dataset(i).features = containers.Map;
 end
 
-extractDensity;
-extractLayersXY;
-extractHistogramXZ;
-% extractVoxelHist;
+% extractDensity;
+% extractMeanPoint;
+extractLayersXZ;
+% extractLayersXY;
+% extractHistogramXZ;
+% extractHistogramVoxels;
 
 prepareDataForRegression;
 findLeafSize
 estimateFeatureImportance
 
-evalMeanAsPrediction
+% evalMeanAsPrediction
 
-evalRobustFitDensity;
-evalRobustFitAllFeatures;
+% evalRobustFitDensity;
+% evalRobustFitAllFeatures;
 
-evalRandomForestDensity;
+% evalRandomForestDensity;
 evalRandomForestAllFeatures;
 
 runTimeInMinutes = toc/60

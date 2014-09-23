@@ -1,5 +1,5 @@
 % ========== Finding the Optimal Leaf Size
-disp('Producing the figure to find optimal leaf size...');
+disp('Finding the optimal leaf size...');
 
 nbOfTrees = 200; % less for fast test, but greater is better (> 100)
 leaf = [5 10 20 50 100];
