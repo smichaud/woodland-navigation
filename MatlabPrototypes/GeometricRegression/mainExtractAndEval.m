@@ -5,12 +5,18 @@ for i=1:nbOfSamples
     dataset(i).features = containers.Map;
 end
 
-% extractDensity;
-% extractMeanPoint;
+extractDensity;
+extractMeanPoint;
+extractEigen;
+
 extractLayersXZ;
-% extractLayersXY;
-% extractHistogramXZ;
-% extractHistogramVoxels;
+extractLayersXY;
+extractLayersYZ;
+% extractColumnZ;
+
+extractHistogramXZ;
+extractHistogramZ;
+extractHistogramVoxels;
 
 prepareDataForRegression;
 findLeafSize

@@ -13,8 +13,6 @@ nbOfBins = 5; % 5 with max = 40
 maxPtsPerVoxel = 40; % Choose approximately...
 ranges = 0:maxPtsPerVoxel/nbOfBins:maxPtsPerVoxel-maxPtsPerVoxel/nbOfBins;
 
-test = [];
-
 nbOfSamples = length(regressionInfo.trainingLabels);
 for sampleIndex=1:nbOfSamples
     voxelNbOfPoints = zeros(1,floor(nbOfVoxels));
