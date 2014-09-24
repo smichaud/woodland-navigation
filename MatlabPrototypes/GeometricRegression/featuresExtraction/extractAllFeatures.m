@@ -6,8 +6,17 @@ for i=1:nbOfSamples
     dataset(i).features = containers.Map;
 end
 
+
 extractDensity;
 extractHighestPoint;
+extractMeanPoint;
+extractEigen;
+
+extractLayersXZ;
 extractLayersXY;
+extractLayersYZ;
+extractColumnZ;
+
 extractHistogramXZ;
+extractHistogramZ;
 extractHistogramVoxels;

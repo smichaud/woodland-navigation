@@ -20,6 +20,7 @@ function showSingleData(data)
         data.traversabilityCost));
     plot(data.rawCurrents(:,1), data.rawCurrents(:,2), 'b');
     plot(data.rawCurrents(:,1), data.rawCurrents(:,3), 'r');
+    set(gca, 'ylim', [0 20]);
     
     start = data.rawCurrents(data.traversabilityStartIndex,1);
     stop = data.rawCurrents(data.traversabilityStopIndex,1);

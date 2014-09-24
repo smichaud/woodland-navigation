@@ -81,7 +81,6 @@ if justRunAll || ...
         strcmp(questdlg('Analyse data ?', '','Yes','No','Yes'),'Yes')
     findLeafSize;
     estimateFeatureImportance;
-    % bestFeaturesResults;
     % findOutliers;
 end
 
@@ -89,12 +88,14 @@ if justRunAll || ...
         strcmp(questdlg('Do the leave-one-out evaluation ?', '',...
         'Yes','No','No'),'Yes')
     evalMeanAsPrediction;
-    evalMedianAsPrediction;
+%     evalMedianAsPrediction;
+%     evalRandomAsPrediction;
     
     evalRobustFitDensity;
-    evalRobustFitAllFeatures;
+%     evalRobustFitAllFeatures;
     
-    evalRandomForestDensity;
+%     evalRandomForestDensity;
+    evalRandomForestBestFeatures;
     evalRandomForestAllFeatures;
 end
 

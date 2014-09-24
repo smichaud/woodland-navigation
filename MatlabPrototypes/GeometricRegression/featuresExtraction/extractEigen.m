@@ -7,7 +7,5 @@ for i=1:nbOfSamples
         [vectors values] = eig(cov(dataset(i).areaOfInterest));
     end
     dataset(i).features('eigen') = ...
-        [vectors(:,1)' vectors(:,2)' vectors(:,3)'];
-    %         diag(values)';    
-    %         [diag(values)' vectors(:,1)' vectors(:,2)' vectors(:,3)'];
+        [diag(values)' vectors(:,1)' vectors(:,2)' vectors(:,3)'];
 end

@@ -6,13 +6,14 @@ for i=1:nbOfSamples
 end
 
 extractDensity;
+extractHighestPoint;
 extractMeanPoint;
 extractEigen;
 
 extractLayersXZ;
 extractLayersXY;
 extractLayersYZ;
-% extractColumnZ;
+extractColumnZ;
 
 extractHistogramXZ;
 extractHistogramZ;
@@ -28,6 +29,7 @@ estimateFeatureImportance
 % evalRobustFitAllFeatures;
 
 % evalRandomForestDensity;
+evalRandomForestBestFeatures;
 evalRandomForestAllFeatures;
 
 runTimeInMinutes = toc/60
