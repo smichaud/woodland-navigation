@@ -16,7 +16,7 @@ if justRunAll || ~exist('dataset','var') ...
     addpath(genpath('.'));
     
     % ========== Define global variables and data structures ==============
-    dataDirectory = '../DataRegression/';
+    dataDirectory = '../Data/Regression/';
     datasetName = 'data.mat';
     regressorName = 'regressor.mat';
     
