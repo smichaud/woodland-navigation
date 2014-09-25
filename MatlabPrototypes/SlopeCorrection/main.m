@@ -3,8 +3,10 @@ clear all;
 close all;
 clc;
 addpath(genpath('.'));
+addpath('../Utils/export_fig');
 
 dataDirectory = '../Data/SlopeCorrection/Natural/';
+figuresDirectory = './figures/';
 rawData = [];
 rawDataStruct = struct(...
     'name', '',...
@@ -17,3 +19,4 @@ dataStruct = struct(...
 
 extractData;
 
+showRawData;

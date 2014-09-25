@@ -30,3 +30,6 @@ bin/
 # Matlab
 *~
 *.mat
+
+# Saved figure in png
+*.png
