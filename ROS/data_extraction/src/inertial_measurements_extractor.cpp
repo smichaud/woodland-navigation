@@ -2,6 +2,8 @@
 #include "ros/ros.h"
 #include <iostream>
 #include <fstream>
+#include <sensor_msgs/Imu.h>
+// check http://wiki.ros.org/um6
 
 using namespace std;
 
