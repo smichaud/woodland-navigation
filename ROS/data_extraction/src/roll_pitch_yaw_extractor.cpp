@@ -1,34 +1,34 @@
-#include "clearpath_base/SystemStatus.h"
 #include "ros/ros.h"
 #include <iostream>
 #include <fstream>
-#include <sensor_msgs/Imu.h>
-// check http://wiki.ros.org/um6
+#include <geometry_msgs/Vector3Stamped.h>
 
 using namespace std;
 
-class HuskyMotorCurrentsExtractor {
+class RollPitchYawExtractor {
 private:
     vector<ros::Time> timestamps;
-    vector<double> leftCurrents;
-    vector<double> rightCurrents;
+    vector<double> roll;
+    vector<double> pitch;
+    vector<double> yaw;
 
     ros::Subscriber subscriber;
     ros::NodeHandle subscriberNodeHandle;
     const string subscribeTopic;
 
 public:
-    HuskyMotorCurrentsExtractor(ros::NodeHandle& subscriberNodeHandle):
+    RollPitchYawExtractor(ros::NodeHandle& subscriberNodeHandle):
         subscriberNodeHandle(subscriberNodeHandle),
-        subscribeTopic("/husky/data/system_status"){
+        subscribeTopic("/imu/rpy"){
         subscriber = this->subscriberNodeHandle.subscribe(
                     subscribeTopic, 1000,
-                    &HuskyMotorCurrentsExtractor::gotCurrent, this);
+                    &RollPitchYawExtractor::gotMeasurement, this);
     }
-    void gotCurrent(const clearpath_base::SystemStatus huskyStatus){
-        leftCurrents.push_back(huskyStatus.currents.at(1));
-        rightCurrents.push_back(huskyStatus.currents.at(2));
-        timestamps.push_back(huskyStatus.header.stamp);
+    void gotMeasurement(const geometry_msgs::Vector3Stamped imuRollPitchYaw){
+        roll.push_back(imuRollPitchYaw.vector.x);
+        pitch.push_back(imuRollPitchYaw.vector.y);
+        yaw.push_back(imuRollPitchYaw.vector.z);
+        timestamps.push_back(imuRollPitchYaw.header.stamp);
     }
     void saveCSV(const string fileName){
         ofstream outputFile;
@@ -41,8 +41,9 @@ public:
                 ros::Duration timeFromBeginning = this->timestamps[i]
                         - this->timestamps[0];
                 outputFile << timeFromBeginning.toSec()
-                           << ", " << this->leftCurrents[i]
-                              << ", " << this->rightCurrents[i] << endl;
+                           << ", " << this->roll[i]
+                              << ", " << this->pitch[i]
+                                 << ", " << this->yaw[i] << endl;
             }
         }
     }
@@ -52,19 +53,19 @@ public:
 };
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "motor_currents_extractor");
+    ros::init(argc, argv, "roll_pitch_yaw_extractor");
 
     ros::NodeHandle nodeHandle("~");
     string fileName;
-    nodeHandle.param<string>("output", fileName, "~/.ros/motor_currents.csv");
+    nodeHandle.param<string>("output", fileName, "~/.ros/roll_pitch_yaw.csv");
     cout << fileName << endl;
 
-    HuskyMotorCurrentsExtractor huskyMotorCurrentsExtractor(nodeHandle);
+    RollPitchYawExtractor rollPitchYawExtractor(nodeHandle);
 
     ros::spin();
 
-    if(huskyMotorCurrentsExtractor.haveData()){
-        huskyMotorCurrentsExtractor.saveCSV(fileName);
+    if(rollPitchYawExtractor.haveData()){
+        rollPitchYawExtractor.saveCSV(fileName);
     } else {
         cout << endl << "No data to save ..." <<  endl;
     }

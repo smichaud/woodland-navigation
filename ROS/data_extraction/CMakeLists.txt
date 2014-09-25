@@ -29,9 +29,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(motor_currents_extractor
-                        src/motor_currents_extractor.cpp)
 rosbuild_add_executable(image_extractor
                         src/image_extractor.cpp)
-rosbuild_add_executable(image_extractor
-                        src/inertial_measurements_extractor.cpp)
+rosbuild_add_executable(motor_currents_extractor
+                        src/motor_currents_extractor.cpp)
+rosbuild_add_executable(roll_pitch_yaw_extractor
+                        src/roll_pitch_yaw_extractor.cpp)

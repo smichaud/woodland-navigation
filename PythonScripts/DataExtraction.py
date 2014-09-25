@@ -34,6 +34,11 @@ for bagFile in bagFiles:
     motorCurrentsExtractorCommand = "rosrun data_extraction motor_currents_extractor "
     motorCurrentsExtractorCommand = motorCurrentsExtractorCommand + "_output:='" + extractedDataDirectory + "/" + bagFileBaseName + "_motor_currents.csv" + "'"
     os.system(commandPrefix + motorCurrentsExtractorCommand + commandSuffix);
+    
+    print "Starting the roll pitch yaw extractor node..."    
+    rollPitchYawExtractorCommand = "rosrun data_extraction roll_pitch_yaw_extractor "
+    rollPitchYawExtractorCommand = rollPitchYawExtractorCommand + "_output:='" + extractedDataDirectory + "/" + bagFileBaseName + "_roll_pitch_yaw.csv" + "'"
+    os.system(commandPrefix + rollPitchYawExtractorCommand + commandSuffix);    
         
     print "Starting the point cloud extractor node..."
     pointCloudExtractorCommand = "rosrun ethzasl_point_cloud_vtk_tools pointCloudToVtk "
@@ -54,6 +59,8 @@ for bagFile in bagFiles:
     
     time.sleep(1)
     os.system("rosnode kill /motor_currents_extractor")
+    os.system("rosnode kill /roll_pitch_yaw_extractor")
+    time.sleep(1)
 
 os.system("pkill -SIGINT roscore")
 
