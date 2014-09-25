@@ -33,3 +33,5 @@ rosbuild_add_executable(motor_currents_extractor
                         src/motor_currents_extractor.cpp)
 rosbuild_add_executable(image_extractor
                         src/image_extractor.cpp)
+rosbuild_add_executable(image_extractor
+                        src/inertial_measurements_extractor.cpp)
