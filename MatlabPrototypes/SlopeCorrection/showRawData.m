@@ -13,8 +13,14 @@ for i=1:length(rawData)
         rawData(i).rawRollPitchYaw(:,3)*80,...
         'r-');
     
-    export_fig [figuresDirectory rawData(i).name '.png'] -native
-    uiwait;
+    title('Empirical linear relation between pitch angle and motor currents');
+    xlabel('Time')
+    ylabel('(Motor Currents) and (17 - angle*80)')
+    legend({'Motor currents', '17 - pitch*80'},'Location','EastOutside');
+    
+    figureFilename = [figuresDirectory rawData(i).name '.png'];
+    export_fig(figureFilename); 
+%     uiwait;
 end
 hold off;
 close all;
