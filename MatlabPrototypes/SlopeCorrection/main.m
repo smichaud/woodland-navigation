@@ -5,18 +5,23 @@ clc;
 addpath(genpath('.'));
 addpath('../Utils/export_fig');
 
-dataDirectory = '../Data/SlopeCorrection/Natural/';
+% dataDirectory = '../Data/SlopeCorrection/Natural/';
+dataDirectory = '../Data/SlopeCorrection/Road/';
 figuresDirectory = './figures/';
 rawData = [];
 rawDataStruct = struct(...
     'name', '',...
-    'rawMotorCurrents', [],...
-    'rawRollPitchYaw', []);
+    'motorCurrents', [],...
+    'rollPitchYaw', []);
+
+extractRawData;
+showRawData;
+
 data = [];
 dataStruct = struct(...
     'motorCurrents', [],...
     'rollPitchYaw', []);
 
-extractData;
+segmentData;
 
-showRawData;
+
