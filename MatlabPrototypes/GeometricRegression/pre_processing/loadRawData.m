@@ -1,5 +1,6 @@
 disp(['Loading raw data from ',dataDirectory,' ...']);
 
+rollPitchYawSuffix = '_roll_pitch_yaw.csv'
 motorCurrentSuffix = '_motor_currents.csv';
 pointCloudSuffix = '_point_cloud.csv';
 imageSuffix = '_image.jpg';

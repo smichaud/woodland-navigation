@@ -1,27 +1,39 @@
-clc;
-clear all;
+% clear all;
 close all;
 clc;
 addpath(genpath('.'));
 addpath('../Utils/export_fig');
 
-% dataDirectory = '../Data/SlopeCorrection/Natural/';
-dataDirectory = '../Data/SlopeCorrection/Road/';
 figuresDirectory = './figures/';
-rawData = [];
+mkdir('figures');
 rawDataStruct = struct(...
     'name', '',...
     'motorCurrents', [],...
     'rollPitchYaw', []);
 
+rawData = [];
+dataDirectory = '../Data/SlopeCorrection/Natural/';
 extractRawData;
-showRawData;
+% rawData1 = rawData;
+%
+% rawData = [];
+% dataDirectory = '../Data/SlopeCorrection/Road/';
+% extractRawData;
+% rawData = [rawData1 ; rawData];
 
-data = [];
-dataStruct = struct(...
-    'motorCurrents', [],...
-    'rollPitchYaw', []);
-
+% showRawData;
+pitchMotorCurrentsSamples = [];
 segmentData;
+findRelation;
+
+showMSE;
+showLinearRelation;
+showPredictions;
+
+slopeCorrection = pitchMotorCurrentsRelation;
+save('../Data/SlopeCorrection/slopeCorrection.mat', ...
+    'slopeCorrection');
+
+close all;
 
 

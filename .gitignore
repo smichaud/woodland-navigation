@@ -32,4 +32,4 @@ bin/
 *.mat
 
 # Saved figure in png
-*.png
+*.pdf

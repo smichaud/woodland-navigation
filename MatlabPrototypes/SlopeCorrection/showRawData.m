@@ -1,5 +1,3 @@
-mkdir('figures');
-
 for i=1:length(rawData)
     clf;
     close all;
@@ -7,22 +5,20 @@ for i=1:length(rawData)
         'outerposition',[0 0 1 1])
     hold on;
     
+    plot(rawData(i).rollPitchYaw(:,1),...
+        -rawData(i).rollPitchYaw(:,3),...
+        'r-');
     plot(rawData(i).motorCurrents(:,1),...
         rawData(i).motorCurrents(:,2)+rawData(i).motorCurrents(:,3),...
-        'b-');
-    plot(rawData(i).rollPitchYaw(:,1),...
-        repmat(17,length(rawData(i).rollPitchYaw),1) - ...
-        rawData(i).rollPitchYaw(:,3)*80,...
-        'r-');
+        'b-');    
     
-    title('Empirical linear relation between pitch angle and motor currents');
+    title('Negative pitch angle and motor currents');
     xlabel('Time')
-    ylabel('(Motor Currents) and (17 - angle*80)')
-    legend({'Motor currents', '17 - pitch*80'},'Location','EastOutside');
+    ylabel('(-pitch) and (Motor Currents)')
+    legend({'Pitch angle', 'Motor currents'},'Location','EastOutside');
     
-    figureFilename = [figuresDirectory 'raw_' rawData(i).name '.png'];
-    export_fig(figureFilename); 
-%     uiwait;
+    figureFilename = [figuresDirectory 'raw_' rawData(i).name '.pdf'];
+    export_fig(figureFilename);
 end
 hold off;
 close all;
