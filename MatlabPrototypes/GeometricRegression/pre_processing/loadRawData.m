@@ -1,6 +1,6 @@
 disp(['Loading raw data from ',dataDirectory,' ...']);
 
-rollPitchYawSuffix = '_roll_pitch_yaw.csv'
+rollPitchYawSuffix = '_roll_pitch_yaw.csv';
 motorCurrentSuffix = '_motor_currents.csv';
 pointCloudSuffix = '_point_cloud.csv';
 imageSuffix = '_image.jpg';
@@ -19,6 +19,10 @@ for i=1:nbOfSamples
     dataset(i).name  = filePrefix{1};
     
     disp(['Loading : ' dataset(i).name]);
+    
+    % Roll pitch yaw
+    dataset(i).rollPitchYaw = csvread(strcat(...
+        dataDirectory, dataset(i).name, rollPitchYawSuffix));
     
     % Currents
     dataset(i).rawCurrents = csvread(strcat(...

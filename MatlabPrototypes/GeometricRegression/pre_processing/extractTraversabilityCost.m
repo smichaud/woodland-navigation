@@ -14,8 +14,8 @@ for i=1:nbOfSamples
     startIndex = -1;
     for y=1:size(currents,1)
         if currents(y,2) > startPeakCurrent && currents(y,3) > startPeakCurrent
-           startIndex = y + round(noObstacleDuration/acquisitionTimeSteps);
-           break;
+            startIndex = y + round(noObstacleDuration/acquisitionTimeSteps);
+            break;
         end
     end
     
@@ -29,14 +29,30 @@ for i=1:nbOfSamples
     dataset(i).traversabilityStartIndex = startIndex;
     dataset(i).traversabilityStopIndex = stopIndex;
     
-    traversabilityCost = 0;
-    for j = startIndex:stopIndex-1
-      current1 = (dataset(i).rawCurrents(j,2) + dataset(i).rawCurrents(j+1,2))/2;
-      current2 = (dataset(i).rawCurrents(j,3) + dataset(i).rawCurrents(j+1,3))/2;
-      traversabilityCost = traversabilityCost + ...
-          acquisitionTimeSteps*(current1+current2);
-    end
+    % Compute the corrected traversability cost
+    stepSize = 0.001;
+    startTime = dataset(i).rawCurrents(startIndex, 1);
+    endTime = startTime + traversabilityCostDuration;
+    timeVector = (startTime:stepSize:endTime)';
     
-    dataset(i).traversabilityCost = traversabilityCost;    
+    motorCurrents1 = interp1(...
+        dataset(i).rawCurrents(:,1),...
+        dataset(i).rawCurrents(:,2),...
+        timeVector);
+    motorCurrents2 = interp1(...
+        dataset(i).rawCurrents(:,1),...
+        dataset(i).rawCurrents(:,3),...
+        timeVector);
+    motorCurrents = motorCurrents1 + motorCurrents2;
+    pitch = interp1(...
+        dataset(i).rollPitchYaw(:,1),...
+        dataset(i).rollPitchYaw(:,3),...
+        timeVector);
+    
+    predictedCurrents = pitch(:,1)*slopeCorrection(2) + ...
+        slopeCorrection(1);
+    
+    dataset(i).traversabilityCost = ...
+        sum(motorCurrents-predictedCurrents)*stepSize;
 end
 
