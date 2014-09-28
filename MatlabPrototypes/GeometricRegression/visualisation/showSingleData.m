@@ -1,4 +1,4 @@
-function showSingleData(data)
+function showSingleData(data, areaOfInterest)
     clf;
     close all;
     figure('Name', data.name, 'units','normalized',...
@@ -13,6 +13,15 @@ function showSingleData(data)
         data.areaOfInterest(:,2),...
         data.areaOfInterest(:,3), '.');
     title('Area of interest (point cloud)');
+    xMin = areaOfInterest.distFromRobot;
+    xMax = areaOfInterest.distFromRobot + areaOfInterest.depth;
+    set(gca, 'xlim', [xMin xMax]);
+    yMin = -areaOfInterest.width/2;
+    yMax = areaOfInterest.width/2;
+    set(gca, 'ylim', [yMin yMax]);
+    zMin = data.groundHeight + areaOfInterest.groundThreshold;
+    zMax = data.groundHeight + areaOfInterest.height;
+    set(gca, 'zlim', [zMin zMax]);
     
     subplot(1,3,3)
     hold on;

@@ -49,10 +49,12 @@ for i=1:nbOfSamples
         dataset(i).rollPitchYaw(:,3),...
         timeVector);
     
-    predictedCurrents = pitch(:,1)*slopeCorrection(2) + ...
-        slopeCorrection(1);
+    dataset(i).traversabilityCost = sum(motorCurrents)*stepSize;
     
-    dataset(i).traversabilityCost = ...
-        sum(motorCurrents-predictedCurrents)*stepSize;
+%     predictedCurrents = pitch(:,1)*slopeCorrection(2) + ...
+%         slopeCorrection(1);
+%     
+%     dataset(i).traversabilityCost = ...
+%         sum(motorCurrents-predictedCurrents)*stepSize;
 end
 
