@@ -6,18 +6,18 @@ for i=1:nbOfSamples
 end
 
 extractDensity;
-extractHighestPoint;
-extractMeanPoint;
-extractEigen;
+% extractHighestPoint;
+% extractMeanPoint;
+% extractEigen;
 
 extractLayersXZ;
-extractLayersXY;
-extractLayersYZ;
+% extractLayersXY;
+% extractLayersYZ;
 extractColumnZ;
 
-extractHistogramXZ;
-extractHistogramZ;
-extractHistogramVoxels;
+% extractHistogramXZ;
+% extractHistogramZ;
+% extractHistogramVoxels;
 
 prepareDataForRegression;
 findLeafSize
@@ -25,7 +25,7 @@ estimateFeatureImportance
 
 % evalMeanAsPrediction
 
-% evalRobustFitDensity;
+evalRobustFitDensity;
 % evalRobustFitAllFeatures;
 
 % evalRandomForestDensity;

@@ -12,7 +12,8 @@ if useValueThreshold
     bestFeaturesIndexes = find(...
         regressionInfo.featuresImportance >= goodEnoughThreshold);
 else
-    maxNbOfFeaturesThreshold = 20;
+    maxNbOfFeaturesThreshold = min(12, ...
+        length(regressionInfo.featuresImportance));
     [v bestFeaturesIndexes] = sort(regressionInfo.featuresImportance);
     bestFeaturesIndexes = bestFeaturesIndexes(1:maxNbOfFeaturesThreshold);
 end

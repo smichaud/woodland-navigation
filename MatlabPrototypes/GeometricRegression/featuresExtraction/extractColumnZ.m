@@ -15,8 +15,10 @@ for sampleIndex=1:nbOfSamples
     % Create the voxel and save nb of pts
     globalIndex = 1;
     for i = 1:nbOfX
-        minX = (i-1)*voxelSideX + areaOfInterest.distFromRobot;
-        maxX = i*voxelSideX + areaOfInterest.distFromRobot;
+        minX = (i-1)*voxelSideX + areaOfInterest.distFromRobot +...
+            areaOfInterest.xTfAdjustment;
+        maxX = i*voxelSideX + areaOfInterest.distFromRobot + ...
+            areaOfInterest.xTfAdjustment;
         for j = 1:nbOfY
             minY = (j-1)*voxelSideY - areaOfInterest.width/2;
             maxY = j*voxelSideY - areaOfInterest.width/2;                
