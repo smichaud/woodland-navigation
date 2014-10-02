@@ -1,5 +1,5 @@
 directory = '/home/smichaud/Desktop/slopeCorrection/ExtractedData/';
-fileBase = 'lookDown';
+fileBase = 'leftDown';
 imageFile = [directory fileBase '_image.jpg'];
 pointCloudFile = [directory fileBase '_point_cloud.csv'];
 rollPitchYawfile = [directory fileBase '_roll_pitch_yaw.csv'];
