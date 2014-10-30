@@ -1,7 +1,7 @@
 % Convert my dataset to the TreeBagger format (col=feature, line=sample)
 disp('Convert data in preparation for regression...');
 
-trainingSetSize = 0.6;
+trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
 nbOfSamples = length(dataset);

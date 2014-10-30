@@ -1,60 +1,39 @@
 disp('Extracting traversability cost...');
 
-standbyCurrent = 0.5900; % normally
-startPeakCurrent = 4.0; % both should be over that value
-
-noObstacleDuration = areaOfInterest.distFromRobot/robotSpeed;
-traversabilityCostDuration = areaOfInterest.depth/robotSpeed;
-
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
-    currents = dataset(i).rawCurrents;
-    acquisitionTimeSteps = currents(2,1)-currents(1,1);
-    
-    startIndex = -1;
-    for y=1:size(currents,1)
-        if currents(y,2) > startPeakCurrent && currents(y,3) > startPeakCurrent
-            startIndex = y + round(noObstacleDuration/acquisitionTimeSteps);
-            break;
-        end
+    switch(traversabilityCostInfo.traversabilityMetrics)
+        case traversabilityCostInfo.motorCurrentsIntegralMetric
+            [traversabilityCost, startTime, stopTime] = ...
+                currentsIntegralTraversability(dataset(i), areaOfInterest, ...
+                traversabilityCostInfo.wantToCorrectSlope, robotSpeed);
+            
+            dataset(i).traversabilityStartTime = startTime;
+            dataset(i).traversabilityStopTime = stopTime;
+            dataset(i).traversabilityCost = traversabilityCost;
+            
+        case traversabilityCostInfo.motorCurrentsVarianceMetric
+            [traversabilityCost, startTime, stopTime] = ...
+                currentsVarianceTraversability(dataset(i),...
+                areaOfInterest, robotSpeed);
+            
+            dataset(i).traversabilityStartTime = startTime;
+            dataset(i).traversabilityStopTime = stopTime;
+            dataset(i).traversabilityCost = traversabilityCost;
+            
+        case traversabilityCostInfo.inertiaVarianceMetric
+            [traversabilityCost, startTime, stopTime] = ...
+                inertiaVarianceTraversability(dataset(i), areaOfInterest,...
+                robotSpeed);
+            
+            dataset(i).traversabilityStartTime = startTime;
+            dataset(i).traversabilityStopTime = stopTime;
+            dataset(i).traversabilityCost = traversabilityCost;
+        case traversabilityCostInfo.randomValueMetric
+            dataset(i).traversabilityStartTime = 33;
+            dataset(i).traversabilityStopTime = 39;
+            dataset(i).traversabilityCost = randi([1 100], 1, 1);
     end
-    
-    if startIndex == -1
-        error('No robot move start found in motor currents')
-    end
-    
-    stopIndex = startIndex + ...
-        round(traversabilityCostDuration/acquisitionTimeSteps);
-    
-    dataset(i).traversabilityStartIndex = startIndex;
-    dataset(i).traversabilityStopIndex = stopIndex;
-    
-    % Compute the corrected traversability cost
-    stepSize = 0.001;
-    startTime = dataset(i).rawCurrents(startIndex, 1);
-    endTime = startTime + traversabilityCostDuration;
-    timeVector = (startTime:stepSize:endTime)';
-    
-    motorCurrents1 = interp1(...
-        dataset(i).rawCurrents(:,1),...
-        dataset(i).rawCurrents(:,2),...
-        timeVector);
-    motorCurrents2 = interp1(...
-        dataset(i).rawCurrents(:,1),...
-        dataset(i).rawCurrents(:,3),...
-        timeVector);
-    motorCurrents = motorCurrents1 + motorCurrents2;
-    pitch = interp1(...
-        dataset(i).rollPitchYaw(:,1),...
-        dataset(i).rollPitchYaw(:,3),...
-        timeVector);
-    
-    dataset(i).traversabilityCost = sum(motorCurrents)*stepSize;
-    
-%     predictedCurrents = pitch(:,1)*slopeCorrection(2) + ...
-%         slopeCorrection(1);
-%     
-%     dataset(i).traversabilityCost = ...
-%         sum(motorCurrents-predictedCurrents)*stepSize;
 end
+
 

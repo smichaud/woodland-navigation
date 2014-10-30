@@ -18,8 +18,8 @@ for i = 1:nbOfEvaluations
     plot(1:nbOfTrainingSamples, ...
         evaluations(i).labels(orderedIndexes), markerList{i+1})
     evalLegend{i+1} = ['Predicted, using ' evaluations(i).name];
-    evalLegend{i+1} = [evalLegend{i+1} ' (MSE = ' ];
-    evalLegend{i+1} = [evalLegend{i+1} num2str(evaluations(i).meanSquaredError)];
+    evalLegend{i+1} = [evalLegend{i+1} ' (rSquared = ' ];
+    evalLegend{i+1} = [evalLegend{i+1} num2str(evaluations(i).rSquared)];
     evalLegend{i+1} = [evalLegend{i+1} ')'];
 end
 title('Traversability cost results');

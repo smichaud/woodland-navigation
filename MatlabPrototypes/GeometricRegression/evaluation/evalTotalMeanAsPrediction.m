@@ -1,12 +1,11 @@
 evaluation = evaluationStruct;
-evaluation.name = 'random number in labels range';
+evaluation.name = 'total mean as label';
 
 nbOfTrainingSamples = length(regressionInfo.trainingLabels);
+leaveOneOutPrediction = repmat(nbOfTrainingSamples, 1);
 
-minLabel = min(regressionInfo.trainingLabels);
-maxLabel = max(regressionInfo.trainingLabels);
-
-evaluation.labels = unifrnd(minLabel, maxLabel, nbOfTrainingSamples, 1);
+evaluation.labels = repmat(mean(regressionInfo.trainingLabels), ...
+    nbOfTrainingSamples, 1);
 
 evaluation.meanSquaredError = ...
     mean((evaluation.labels - regressionInfo.trainingLabels).^2);

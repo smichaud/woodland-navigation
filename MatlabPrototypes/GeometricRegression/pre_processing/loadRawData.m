@@ -2,7 +2,8 @@ disp(['Loading raw data from ',dataDirectory,' ...']);
 
 rollPitchYawSuffix = '_roll_pitch_yaw.csv';
 motorCurrentSuffix = '_motor_currents.csv';
-pointCloudSuffix = '_point_cloud.csv';
+intertialMeasurementsSuffix = '_inertial_measurements.csv';
+pointCloudSuffix = '_point_cloud_0.csv';
 imageSuffix = '_image.jpg';
 
 dirResult = dir(strcat(dataDirectory, '*', motorCurrentSuffix));
@@ -16,9 +17,13 @@ for i=1:nbOfSamples
     fileName = dirResult(i).name;
     [fileExt, filePrefix] = regexp(...
         fileName, motorCurrentSuffix, 'match','split');
-    dataset(i).name  = filePrefix{1};
     
-    disp(['Loading : ' dataset(i).name]);
+    disp(['Loading : ' filePrefix{1}]);
+    
+    tempCurrents = csvread(strcat(...
+        dataDirectory, filePrefix{1}, motorCurrentSuffix));
+    
+    dataset(i).name  = filePrefix{1};
     
     % Roll pitch yaw
     dataset(i).rollPitchYaw = csvread(strcat(...
@@ -27,6 +32,9 @@ for i=1:nbOfSamples
     % Currents
     dataset(i).rawCurrents = csvread(strcat(...
         dataDirectory, dataset(i).name, motorCurrentSuffix));
+    
+    dataset(i).rawInertia = csvread(strcat(...
+        dataDirectory, dataset(i).name, intertialMeasurementsSuffix));
     
     % Point cloud
     startingRow = 1; % ignore header (zero based)

@@ -10,7 +10,7 @@ nbOfZ = round(areaOfInterest.height/voxelSide);
 nbOfVoxels = nbOfX*nbOfY*nbOfZ;
 
 nbOfBins = 5; % 5 with max = 40
-maxPtsPerVoxel = 40; % Choose approximately...
+maxPtsPerVoxel = 10; % Choosed approximately...
 ranges = 0:maxPtsPerVoxel/nbOfBins:maxPtsPerVoxel-maxPtsPerVoxel/nbOfBins;
 
 nbOfSamples = length(regressionInfo.trainingLabels);
@@ -55,6 +55,4 @@ for sampleIndex=1:nbOfSamples
     end
     sampleHist(nbOfBins) = ...
         length(find(voxelNbOfPoints >= ranges(nbOfBins)));
-    
-    dataset(sampleIndex).features('voxelsHist') = sampleHist;
 end

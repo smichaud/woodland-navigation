@@ -21,8 +21,11 @@ for i = 1:nbOfTrainingSamples
         regressionInfo.trainingFeatures(i, densityIndex)*b(2) + b(1);
 end
 
-evaluation.labels = leaveOneOutPredictions;
+evaluation.labels = leaveOneOutPrediction;
 evaluation.meanSquaredError = ...
     mean((evaluation.labels - regressionInfo.trainingLabels).^2);
+
+evaluation.rSquared = rSquared(regressionInfo.trainingLabels, ...
+    evaluation.labels);
 
 evaluations = [evaluations ; evaluation];

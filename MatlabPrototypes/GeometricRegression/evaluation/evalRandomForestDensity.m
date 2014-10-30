@@ -27,4 +27,7 @@ evaluation.labels = leaveOneOutPrediction;
 evaluation.meanSquaredError = ...
     mean((evaluation.labels - regressionInfo.trainingLabels).^2);
 
+evaluation.rSquared = rSquared(regressionInfo.trainingLabels, ...
+    evaluation.labels);
+
 evaluations = [evaluations ; evaluation];

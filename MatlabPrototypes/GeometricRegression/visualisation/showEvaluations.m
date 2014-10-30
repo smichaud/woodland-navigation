@@ -18,8 +18,8 @@ for i = 1:nbOfEvaluations
     plot(1:nbOfTrainingSamples, ...
         evaluations(i).labels(orderedIndexes), 'b*')
     evalTitle = ['Predicted, using ' evaluations(i).name];
-    evalTitle = [evalTitle ' (MSE = ' ];
-    evalTitle = [evalTitle num2str(evaluations(i).meanSquaredError)];
+    evalTitle = [evalTitle ' (rSquared = ' ];
+    evalTitle = [evalTitle num2str(evaluations(i).rSquared)];
     evalTitle = [evalTitle ')'];
     
     title(evalTitle);
