@@ -14,6 +14,7 @@ if justRunAll || ~exist('dataset','var') ...
     close all;
     clc;
     addpath(genpath('.'));
+    addpath(genpath('../Utils/'));
     
     % ========== Define global variables and data structures ==============
     dataDirectory = '../../../WoodlandNavigationData/RegressionV2/';
