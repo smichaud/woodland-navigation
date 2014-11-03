@@ -1,4 +1,4 @@
-function showSingleData(data, areaOfInterest, traversabilityCostInfo)
+function showRegressionSample(data, areaOfInterest, traversabilityCostInfo)
 clf;
 close all;
 figure('Name', data.name, 'units','normalized',...
@@ -38,7 +38,7 @@ elseif traversabilityCostInfo.traversabilityMetrics == ...
     hold on;
     title(sprintf('X Inertia (traversability cost : %f)',...
         data.traversabilityCost));
-    plot(data.rawInertia(:,1), data.rawInertia(:,2), 'r');
+    plot(data.rawIMU(:,1), data.rawIMU(:,2), 'r');
     set(gca, 'ylim', [-0.8 0.8]);
     
     start = data.traversabilityStartTime;

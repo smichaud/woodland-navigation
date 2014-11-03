@@ -7,7 +7,7 @@ startPeakXInertia = 0.075;
 noObstacleDuration = areaOfInterest.distFromRobot/robotSpeed;
 traversabilityCostDuration = areaOfInterest.depth/robotSpeed;
 
-inertialMeasurements = sample.rawInertia;
+inertialMeasurements = sample.rawIMU;
 
 startTime = -1;
 for i=1:size(inertialMeasurements,1) - 1
