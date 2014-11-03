@@ -9,7 +9,7 @@ orderedDataset = dataset(orderedIndexes);
 
 % examplesToRemove = {};
 for i = 1:length(orderedDataset)
-    showSingleData(orderedDataset(i), areaOfInterest);
+    showSample(orderedDataset(i), areaOfInterest);
     uiwait;
 %     if strcmp(questdlg('Keep last example', '','Yes','No','Yes'),'No')
 %         examplesToRemove{length(examplesToRemove)+1} =...

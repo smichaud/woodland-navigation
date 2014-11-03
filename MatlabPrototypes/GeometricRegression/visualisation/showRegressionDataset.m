@@ -7,7 +7,8 @@ end
 [vector orderedIndexes] = sort(traversabilityCostVector);
 
 for i=1:nbOfSamples
-    showSingleData(dataset(orderedIndexes(i)), areaOfInterest, ...
+    showRegressionSample(dataset(orderedIndexes(i)), ...
+        areaOfInterest, ...
         traversabilityCostInfo);
     uiwait;
 end
