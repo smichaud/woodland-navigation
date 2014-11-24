@@ -7,7 +7,7 @@ nbOfX = round(areaOfInterest.depth/voxelSideX);
 nbOfY = round(areaOfInterest.width/voxelSideY);
 nbOfVoxels = nbOfX*nbOfY;
 
-nbOfSamples = length(regressionInfo.trainingLabels);
+nbOfSamples = length(dataset);
 for sampleIndex=1:nbOfSamples
     columnNbOfPoints = zeros(1,nbOfVoxels);
     pointCloud = dataset(sampleIndex).areaOfInterest;

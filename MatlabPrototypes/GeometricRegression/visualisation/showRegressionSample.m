@@ -32,6 +32,7 @@ if traversabilityCostInfo.traversabilityMetrics == ...
     plot(data.rawCurrents(:,1), data.rawCurrents(:,2), 'b');
     plot(data.rawCurrents(:,1), data.rawCurrents(:,3), 'r');
     set(gca, 'ylim', [0 20]);
+
 elseif traversabilityCostInfo.traversabilityMetrics == ...
         traversabilityCostInfo.inertiaVarianceMetric    
     subplot(1,3,3)
@@ -45,6 +46,16 @@ elseif traversabilityCostInfo.traversabilityMetrics == ...
     stop = data.traversabilityStopTime;
     line([start, start],ylim, 'Color', [0 0 0], 'LineWidth', 4);
     line([stop stop],ylim, 'Color', [0 0 0], 'LineWidth', 4);
+
+elseif traversabilityCostInfo.traversabilityMetrics == ...
+        traversabilityCostInfo.odometryErrorMetric    
+    subplot(1,3,3)
+    hold on;
+    title(sprintf('Odometry Error (traversability cost : %f)',...
+        data.traversabilityCost));
+    plot([0 1], [data.traversabilityCost data.traversabilityCost], 'r-')
+    
+
 else
     disp('Nothing to show !')
 end

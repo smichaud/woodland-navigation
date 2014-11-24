@@ -10,7 +10,7 @@ nbOfBins = 4;
 maxPtsPerVoxel = 60; % Choose approximately...
 ranges = 0:maxPtsPerVoxel/nbOfBins:maxPtsPerVoxel-maxPtsPerVoxel/nbOfBins;
 
-nbOfSamples = length(regressionInfo.trainingLabels);
+nbOfSamples = length(dataset);
 for sampleIndex=1:nbOfSamples
     columnNbOfPoints = zeros(1,nbOfVoxels);
     pointCloud = dataset(sampleIndex).areaOfInterest;

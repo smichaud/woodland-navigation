@@ -14,10 +14,13 @@ maxPtsPerVoxel = 10; % Choosed approximately...
 ranges = 0:maxPtsPerVoxel/nbOfBins:maxPtsPerVoxel-maxPtsPerVoxel/nbOfBins;
 
 nbOfSamples = length(dataset);
+tempCubeInfo = cell(nbOfSamples);
 for sampleIndex=1:nbOfSamples
     voxelNbOfPoints = zeros(1,floor(nbOfVoxels));
     pointCloud = dataset(sampleIndex).areaOfInterest;
     groundHeight = dataset(sampleIndex).groundHeight;
+    
+    tempCubeInfo{sampleIndex} = zeros(nbOfVoxels, 3); % yes I am lazy
     
     % Create the voxel and save nb of pts
     globalIndex = 1;
@@ -41,20 +44,12 @@ for sampleIndex=1:nbOfSamples
                     pointCloud(:,3) >= minZ & ...
                     pointCloud(:,3) < maxZ));
                 
+                tempCubeInfo{sampleIndex}(globalIndex,:) = ...
+                    [minX+voxelSide/2, minY+voxelSide/2, minZ+voxelSide];
                 globalIndex = globalIndex + 1;
             end
         end
     end
     
-    % Create histogram
-    sampleHist = zeros(1,nbOfBins);
-    for i = 1:nbOfBins-1
-        sampleHist(i) = length(...
-            find(voxelNbOfPoints >= ranges(i) &...
-            voxelNbOfPoints < ranges(i+1)));
-    end
-    sampleHist(nbOfBins) = ...
-        length(find(voxelNbOfPoints >= ranges(nbOfBins)));
-    
-    dataset(sampleIndex).features('voxelHist') = sampleHist;
+    dataset(sampleIndex).features('voxelMap') = voxelNbOfPoints;
 end

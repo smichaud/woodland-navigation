@@ -7,7 +7,7 @@ maxForLayers = nbPointsMax/nbOfLayers;
 ranges = 0:maxForLayers/nbOfBin:maxForLayers-maxForLayers/nbOfBin;
 layerHeight = areaOfInterest.height/nbOfLayers;
 
-nbOfSamples = length(regressionInfo.trainingLabels);
+nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     layersXY = zeros(1,nbOfLayers);
     pointCloud = dataset(i).areaOfInterest;

@@ -1,6 +1,11 @@
 function userTraversabilityCost = showRawSample(data, areaOfInterest,...
     askUserTraversabilityCost)
 
+% To interpolate variance/integral 
+start = 30;
+step = 0.01;
+stop = 38;
+
 subplot(3,4,[1:2 5:6]);
 imshow(data.image);
 title(sprintf('Image of %s',data.name));
@@ -26,37 +31,62 @@ cla;
 hold on;
 plot(data.rawCurrents(:,1), data.rawCurrents(:,2), 'b');
 plot(data.rawCurrents(:,1), data.rawCurrents(:,3), 'r');
-title('Motor currents');
+
+interpolatedVariance1 =  interpolateVariance(data.rawCurrents(:,1),...
+    data.rawCurrents(:,2), start, step, stop);
+interpolatedVariance2 =  interpolateVariance(data.rawCurrents(:,1),...
+    data.rawCurrents(:,3), start, step, stop);
+
+interpolatedIntegral1 = interpolateIntegral(data.rawCurrents(:,1),...
+    data.rawCurrents(:,2), start, step, stop);
+interpolatedIntegral2 = interpolateIntegral(data.rawCurrents(:,1),...
+    data.rawCurrents(:,3), start, step, stop);
+
+title(sprintf('Motor current (Variance : %f, Integral : %f)',...
+    interpolatedVariance1 + interpolatedVariance2, ...
+    interpolatedIntegral1 + interpolatedIntegral2));
 set(gca, 'ylim', [0 20]);
 
 subplot(3,4,3);
 plot(data.rawIMU(:,1), data.rawIMU(:,2), 'r');
-title('X inertia');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,2), start, step, stop);
+title(sprintf('X inertia (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [-0.8 0.8]);
 
 subplot(3,4,7);
 plot(data.rawIMU(:,1), data.rawIMU(:,3), 'g');
-title('Y inertia');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,3), start, step, stop);
+title(sprintf('Y inertia (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [-0.8 0.8]);
 
 subplot(3,4,11);
 plot(data.rawIMU(:,1), data.rawIMU(:,4), 'b');
-title('Z inertia');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,4), start, step, stop);
+title(sprintf('Z inertia (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [0.8 1.5]);
 
 subplot(3,4,4);
 plot(data.rawIMU(:,1), data.rawIMU(:,5), 'r');
-title('X angular speed');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,5), start, step, stop);
+title(sprintf('X angular speed (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [-0.6 0.6]);
 
 subplot(3,4,8);
 plot(data.rawIMU(:,1), data.rawIMU(:,6), 'g');
-title('Y angular speed');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,6), start, step, stop);
+title(sprintf('Y angular speed (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [-0.8 0.8]);
 
 subplot(3,4,12);
 plot(data.rawIMU(:,1), data.rawIMU(:,7), 'b');
-title('Z angular speed');
+interpolatedVariance =  interpolateVariance(data.rawIMU(:,1),...
+    data.rawIMU(:,7), start, step, stop);
+title(sprintf('Z angular speed (Variance : %f)', interpolatedVariance));
 set(gca, 'ylim', [-0.2 0.2]);
 
 if askUserTraversabilityCost == true

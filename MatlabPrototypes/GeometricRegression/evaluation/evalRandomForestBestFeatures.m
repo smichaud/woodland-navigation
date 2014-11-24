@@ -8,13 +8,14 @@ leaveOneOutPrediction = zeros(nbOfTrainingSamples, 1);
 
 useValueThreshold = false; % else choose a number of features
 if useValueThreshold
-    goodEnoughThreshold = 0.4;
+    goodEnoughThreshold = 0.18;
     bestFeaturesIndexes = find(...
-        regressionInfo.featuresImportance >= goodEnoughThreshold);
+        regressionInfo.featuresImportance >= goodEnoughThreshold)
 else
-    maxNbOfFeaturesThreshold = min(12, ...
+    maxNbOfFeaturesThreshold = min(6, ...
         length(regressionInfo.featuresImportance));
-    [v bestFeaturesIndexes] = sort(regressionInfo.featuresImportance);
+    [v bestFeaturesIndexes] = sort(regressionInfo.featuresImportance,...
+        'descend');
     bestFeaturesIndexes = bestFeaturesIndexes(1:maxNbOfFeaturesThreshold);
 end
 

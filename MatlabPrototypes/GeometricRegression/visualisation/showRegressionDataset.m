@@ -10,5 +10,6 @@ for i=1:nbOfSamples
     showRegressionSample(dataset(orderedIndexes(i)), ...
         areaOfInterest, ...
         traversabilityCostInfo);
-    uiwait;
+%     uiwait;
+    waitforbuttonpress;
 end

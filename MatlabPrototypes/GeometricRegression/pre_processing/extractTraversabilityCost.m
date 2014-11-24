@@ -29,6 +29,12 @@ for i=1:nbOfSamples
             dataset(i).traversabilityStartTime = startTime;
             dataset(i).traversabilityStopTime = stopTime;
             dataset(i).traversabilityCost = traversabilityCost;
+            
+        case traversabilityCostInfo.odometryErrorMetric 
+            % Just the translation error for now
+            dataset(i).traversabilityCost = ...
+                norm(dataset(i).icpOdometry(1:2,4) - [4 ; 0]);
+            
         case traversabilityCostInfo.randomValueMetric
             dataset(i).traversabilityStartTime = 33;
             dataset(i).traversabilityStopTime = 39;

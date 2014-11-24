@@ -4,6 +4,7 @@ rollPitchYawSuffix = '_roll_pitch_yaw.csv';
 motorCurrentSuffix = '_motor_currents.csv';
 intertialMeasurementsSuffix = '_inertial_measurements.csv';
 pointCloudSuffix = '_point_cloud_0.csv';
+icpOdometrySuffix = '_complete_transfo.txt';
 imageSuffix = '_image.jpg';
 
 dirResult = dir(strcat(dataDirectory, '*', motorCurrentSuffix));
@@ -25,16 +26,21 @@ for i=1:nbOfSamples
     
     dataset(i).name  = filePrefix{1};
     
-    % Roll pitch yaw
-    dataset(i).rollPitchYaw = csvread(strcat(...
-        dataDirectory, dataset(i).name, rollPitchYawSuffix));
-    
     % Currents
     dataset(i).rawCurrents = csvread(strcat(...
         dataDirectory, dataset(i).name, motorCurrentSuffix));
     
+    % IMU
     dataset(i).rawIMU = csvread(strcat(...
         dataDirectory, dataset(i).name, intertialMeasurementsSuffix));
+    
+    % Roll pitch yaw
+    dataset(i).rollPitchYaw = csvread(strcat(...
+        dataDirectory, dataset(i).name, rollPitchYawSuffix));
+    
+    % ICP odometry matrices
+    dataset(i).icpOdometry = dlmread(strcat(...
+        dataDirectory, dataset(i).name, icpOdometrySuffix));
     
     % Point cloud
     startingRow = 1; % ignore header (zero based)
