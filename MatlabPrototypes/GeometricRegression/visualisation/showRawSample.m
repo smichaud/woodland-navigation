@@ -1,7 +1,7 @@
 function userTraversabilityCost = showRawSample(data, areaOfInterest,...
     askUserTraversabilityCost)
 
-% To interpolate variance/integral 
+% To interpolate variance/integral
 start = 30;
 step = 0.01;
 stop = 38;
@@ -95,4 +95,17 @@ if askUserTraversabilityCost == true
 end
 
 end
+
+% Split on two screen and add the fft :
+% subplot(1,2,1);
+% plot(timeVector,dataVector);
+% title('IMU Signal');
+% xlabel('time (seconds)');
+% 
+% subplot(1,2,2);
+% plot(f,2*abs(Y(1:NFFT/2+1)));
+% title('Single-Sided Amplitude Spectrum of y(t)');
+% xlabel('Frequency (Hz)');
+% ylabel('|Y(f)|');
+% waitforbuttonpress;
 

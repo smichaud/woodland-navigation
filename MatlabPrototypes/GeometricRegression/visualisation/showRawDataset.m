@@ -1,10 +1,11 @@
 nbOfSamples = length(dataset);
 
-userTraversabilityCost = zeros(nbOfSamples, 1);
+traversabilityCost = zeros(nbOfSamples, 1);
 for i=1:nbOfSamples
-    userTraversabilityCost(i) = dataset(i).userTraversabilityCost;
+%     traversabilityCost(i) = dataset(i).userTraversabilityCost;
+    traversabilityCost(i) = dataset(i).traversabilityCost;
 end 
-[vector orderedIndexes] = sort(userTraversabilityCost);
+[vector orderedIndexes] = sort(traversabilityCost);
 
 clf;
 close all;

@@ -1,7 +1,14 @@
 disp('Extracting traversability cost...');
 
+% Approx the time of the traversability zone (constant acquisition script)
+defaultStartTime = 30; % sec
+defaultStopTime = defaultStartTime + areaOfInterest.depth/robotSpeed;
+
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
+    dataset(i).traversabilityStartTime = defaultStartTime;
+    dataset(i).traversabilityStopTime = defaultStopTime;
+    
     switch(traversabilityCostInfo.traversabilityMetrics)
         case traversabilityCostInfo.motorCurrentsIntegralMetric
             [traversabilityCost, startTime, stopTime] = ...
@@ -31,13 +38,11 @@ for i=1:nbOfSamples
             dataset(i).traversabilityCost = traversabilityCost;
             
         case traversabilityCostInfo.odometryErrorMetric 
-            % Just the translation error for now
+            % Just the 2D translation error for now
             dataset(i).traversabilityCost = ...
                 norm(dataset(i).icpOdometry(1:2,4) - [4 ; 0]);
             
         case traversabilityCostInfo.randomValueMetric
-            dataset(i).traversabilityStartTime = 33;
-            dataset(i).traversabilityStopTime = 39;
             dataset(i).traversabilityCost = randi([1 100], 1, 1);
     end
 end
