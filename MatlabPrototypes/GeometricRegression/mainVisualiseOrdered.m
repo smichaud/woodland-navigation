@@ -8,6 +8,6 @@ end
 orderedDataset = dataset(orderedIndexes);
 
 for i = 1:length(orderedDataset)
-    showRawSample(orderedDataset(i), areaOfInterest, false);
+    showSample(orderedDataset(i), areaOfInterest, false);
     waitforbuttonpress;
 end

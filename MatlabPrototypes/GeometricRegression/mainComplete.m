@@ -86,6 +86,7 @@ if justRunAll || isempty(dataset) ||...
         loadSavedData;
     else
         loadRawData;
+        computeImuDft;
         extractTraversabilityCost; % add the label to the structure
         extractAreaOfInterest; % point cloud area of interest
         extractAllFeatures;
@@ -94,7 +95,7 @@ end
 
 if ~justRunAll && strcmp(questdlg('Show all processed samples ?',...
         '','Yes','No','No'),'Yes')
-    showRegressionDataset;
+    showDataset;
 end
 
 prepareDataForRegression;

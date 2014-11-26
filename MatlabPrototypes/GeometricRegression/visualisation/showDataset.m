@@ -12,7 +12,8 @@ close all;
 figure('Name', 'Raw data representation', 'units','normalized',...
     'outerposition',[0 0 1 1])
 for i=1:nbOfSamples
-    showRawSample(dataset(orderedIndexes(i)),...
+    showSample(dataset(orderedIndexes(i)),...
         areaOfInterest, false);
     waitforbuttonpress;
+%     uiwait
 end
