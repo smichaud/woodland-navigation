@@ -34,7 +34,13 @@ zMax = data.groundHeight + areaOfInterest.height;
 set(gca, 'zlim', [zMin zMax]);
 axis equal;
 
-subplot(3,4,9:12);
+subplot(3,4,9)
+odometryError = norm(data.icpOdometry(1:2,4) - [4 ; 0]);
+plot([0 1], [odometryError odometryError], '-k');
+title(sprintf('ICP Odometry Error : %f)', odometryError));
+set(gca, 'ylim', [0 2]);
+
+subplot(3,4,10:12);
 cla;
 hold on;
 plot(data.rawCurrents(:,1), data.rawCurrents(:,2), 'b');
@@ -157,10 +163,10 @@ line([start, start],ylim, 'Color', [0 0 0], 'LineWidth', vLineWidth);
 line([stop stop],ylim, 'Color', [0 0 0], 'LineWidth', vLineWidth);
 
 subplot(3,4,12);
-plot(data.dftIMU(:,1), data.dftIMU(:,6), 'b');
+plot(data.dftIMU(:,1), data.dftIMU(:,7), 'b');
 title('Single-Sided Amplitude Spectrum of Z Angular Speed');
 xlabel('Frequency (Hz)');
 ylabel('|Y(f)|');
-set(gca, 'ylim', [0 0.1]);
+set(gca, 'ylim', [0 0.04]);
 
 end
