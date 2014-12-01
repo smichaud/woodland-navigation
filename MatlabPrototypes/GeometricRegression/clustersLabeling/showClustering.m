@@ -1,20 +1,10 @@
-nbOfSamples = length(dataset);
-
 kmeansAlgo = 1;
 kmedoidsAlgo = 2; % Not in my version
 gaussianMixtureAlgo = 3; % n needs to be > p
 clusterAlgo = kmeansAlgo;
 
-usedIMU = 6; % 2:7 -> inertia x/y/z angularSpeed x/y/z
-nbOfClusters = 8;
-imageConfiguration = [3 4]; %
+imageConfiguration = [3 4];
 nbOfImagePerFigure = prod(imageConfiguration);
-
-dftVectors = zeros(nbOfSamples, length(dataset(1).dftIMU(:,1)));
-for i = 1:nbOfSamples
-    dftVectors(i,:) = dataset(i).dftIMU(:,usedIMU)';
-    distanceMatrix = squareform(pdist(dftVectors, 'euclidean'));
-end
 
 if clusterAlgo == kmeansAlgo
     clustersIndices = kmeans(dftVectors, nbOfClusters);

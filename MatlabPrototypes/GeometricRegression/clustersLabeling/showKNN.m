@@ -1,17 +1,4 @@
-nbOfSamples = length(dataset)
-
-usedIMU = 6; % 2:7 -> inertia x/y/z angularSpeed x/y/z
-nbOfFeatures = length(dataset(1).dftIMU(:,1));
-% Ignoring 1 Should remove average angle of the ground
-ignoredFeatures = [1 round(nbOfFeatures/2):nbOfFeatures]; 
-
-dftVectors = zeros(nbOfSamples, nbOfFeatures); 
-for i = 1:nbOfSamples
-	dftVectors(i,:) = dataset(i).dftIMU(:,usedIMU)';	 
-end
-
-dftVectors(:,ignoredFeatures) = [];
-
+initClustering;
 distanceMatrix = squareform(pdist(dftVectors, 'euclidean'));
 
 for i = 1:nbOfSamples
