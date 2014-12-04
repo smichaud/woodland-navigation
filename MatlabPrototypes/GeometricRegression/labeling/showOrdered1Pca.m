@@ -1,13 +1,10 @@
+initLabeling;
+
 imageConfiguration = [2 3];
 nbOfImagePerFigure = prod(imageConfiguration);
 
-featureNorms = zeros(nbOfSamples,1);
-for i = 1:nbOfSamples
-    featureNorms(i) = norm(dftVectors(i,:));
-%     featureNorms(i) = sum(dftVectors(i,:));
-end
-
-[sortedValues,sortedIndexes] = sort(featureNorms);
+nbOfComponents = 1;
+[sortedValues,sortIndex] = sort(getPCA(dftVectors, nbOfComponents));
 
 for i = 1:nbOfImagePerFigure:nbOfSamples
     figure('Name', 'Data sorted by distance from the origin',...
