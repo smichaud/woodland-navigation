@@ -6,7 +6,7 @@ nbOfFeatures = length(dataset(1).dftIMU(:,1));
 endFractionRemoved = 1/2;
 ignoredFeatures = [1 round(endFractionRemoved*nbOfFeatures):nbOfFeatures];
 
-nbOfColumnsMerged = 3; % 1 won't merge any columns
+nbOfColumnsMerged = 1; % 1 won't merge any columns
 
 areVectorsNormalized = false;
 areFeaturesNormalized = false;

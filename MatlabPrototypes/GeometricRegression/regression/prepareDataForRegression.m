@@ -1,6 +1,9 @@
 % Convert my dataset to the TreeBagger format (col=feature, line=sample)
 disp('Convert data in preparation for regression...');
 
+% Shuffle the dataset to prevent pattern created from data acquisition
+dataset = dataset(randperm(length(dataset)));
+
 trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
@@ -10,7 +13,6 @@ regressionInfo.testFeatures = [];
 regressionInfo.trainingLabels = zeros(...
     round(nbOfSamples*trainingSetSize),1);
 regressionInfo.testLabels = zeros(round(nbOfSamples*testSetSize),1);
-
 for i = 1:round(nbOfSamples*trainingSetSize) % Training set
     regressionInfo.trainingFeatures = [regressionInfo.trainingFeatures;
         cell2mat(dataset(i).features.values)];

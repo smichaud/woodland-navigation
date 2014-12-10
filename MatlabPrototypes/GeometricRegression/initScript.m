@@ -2,13 +2,17 @@ clc;
 clearvars -except 'justRunAll';
 close all;
 clc;
-addpath(genpath('../'));
-addpath(genpath('../../Utils/'));
-dataDirectory = '../../../../WoodlandNavigationData/RegressionV2/';
-datasetName = 'data.mat';
+addpath(genpath('.'));
+addpath(genpath('../Utils/'));
 
-dataset = []; 
-regressor = [];
+% ========== Define global variables and data structures ==============
+dataDirectory = '../../../WoodlandNavigationData/RegressionV2/';
+datasetName = 'data.mat';
+%     slopeCorrectionFile = '../Data/SlopeCorrection/slopeCorrection.mat';
+%     load(slopeCorrectionFile);
+
+dataset = []; % Variable to contain the dataset
+regressor = []; % Variable to contain the regressor
 
 robotSpeed = 0.3; % m/s
 areaOfInterest = struct(...
@@ -59,6 +63,6 @@ evaluationStruct = struct(...
     'labels', [],...
     'meanSquaredError', [],...
     'rSquared', []);
-evaluations = []; % To store all leaveresults
+evaluations = []; % To store all leave one out results
 
 testRegressor = [];

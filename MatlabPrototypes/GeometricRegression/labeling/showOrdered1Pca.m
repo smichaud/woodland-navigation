@@ -4,10 +4,10 @@ imageConfiguration = [2 3];
 nbOfImagePerFigure = prod(imageConfiguration);
 
 nbOfComponents = 1;
-[sortedValues,sortIndex] = sort(getPCA(dftVectors, nbOfComponents));
+[sortedValues,sortedIndexes] = sort(getPCA(dftVectors, nbOfComponents));
 
 for i = 1:nbOfImagePerFigure:nbOfSamples
-    figure('Name', 'Data sorted by distance from the origin',...
+    figure('Name', 'Data sorted by 1st PCA',...
         'units','normalized', 'outerposition',[0 0 1 1]);
     
     subI = 0;

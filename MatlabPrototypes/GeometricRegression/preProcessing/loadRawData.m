@@ -52,7 +52,3 @@ for i=1:nbOfSamples
     dataset(i).image = imread(strcat(...
         dataDirectory, dataset(i).name, imageSuffix));
 end
-
-% Shuffle the data to prevent any pattern from filenames or acquisition
-% order
-dataset = dataset(randperm(length(dataset)));
