@@ -65,7 +65,7 @@ trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
 nbOfTest = 3;
-nbOfKnnToTry = [1 2 3 4 5];
+nbOfKnnToTry = [1 2 3 4 5 6];
 nbOfFeaturesToKeep =  nbOfFeatures; % nbOfFeatures to keep all
 
 testResults = repmat(testResultStruct, nbOfTest,1);
