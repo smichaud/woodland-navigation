@@ -65,7 +65,7 @@ trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
 nbOfTest = 3;
-nbOfKnnToTry = [1 2 3 4 5 6];
+nbOfKnnToTry = [1 2 3 4 5 6 7 8 9 10];
 nbOfFeaturesToKeep =  nbOfFeatures; % nbOfFeatures to keep all
 
 testResults = repmat(testResultStruct, nbOfTest,1);
@@ -91,12 +91,12 @@ for testIndex = 1:nbOfTest
     bestValidationRSquared = -inf;
     bestValidationIndex = [];
     bestValidationFeaturesIndexes = [];
-    resultIndex = 1;
+    validationIndex = 1;
     for nbOfKnnUsed = nbOfKnnToTry
-        validationResults(resultIndex).nbOfKnnUsed = nbOfKnnUsed;
-        validationResults(resultIndex).keptFeatureNames = ...
+        validationResults(validationIndex).nbOfKnnUsed = nbOfKnnUsed;
+        validationResults(validationIndex).keptFeatureNames = ...
             cell(nbOfFeaturesToKeep);
-        validationResults(resultIndex).rSquared = ...
+        validationResults(validationIndex).rSquared = ...
             zeros(nbOfFeaturesToKeep, 1);
         
         % ===== Greedy features selection
@@ -107,13 +107,13 @@ for testIndex = 1:nbOfTest
             
             tic
             disp(sprintf('KNN(%d of %d):feature(%d of %d)',...
-                resultIndex, nbOfTries,...
+                validationIndex, nbOfTries,...
                 keptFeatureIndex, nbOfFeaturesToKeep));
             
             featuresToTry = 1:nbOfFeatures;
             featuresToTry(keptFeatures) = [];
             
-            bestRSquared = -inf;
+            bestFeatureRSquared = -inf;
             newBestFeature = [];
             for currentFeature = featuresToTry
                 currentFeaturesVector = [keptFeatures currentFeature];
@@ -123,26 +123,27 @@ for testIndex = 1:nbOfTest
                     trainFeatures(:,currentFeaturesVector),...
                     trainImuDftVectors);
                 
-                if rSquaredResult > bestRSquared
+                if rSquaredResult > bestFeatureRSquared
                     newBestFeature = currentFeature;
-                    bestRSquared = rSquaredResult;
+                    bestFeatureRSquared = rSquaredResult;
                 end
             end
             keptFeatures(keptFeatureIndex) = newBestFeature;
-            validationResults(resultIndex).keptFeatureNames{keptFeatureIndex} = ...
+            validationResults(validationIndex).keptFeatureNames{keptFeatureIndex} = ...
                 featureNames(newBestFeature);
-            validationResults(resultIndex).rSquared(keptFeatureIndex) =...
-                bestRSquared;
+            validationResults(validationIndex).rSquared(keptFeatureIndex) =...
+                bestFeatureRSquared;
             
             recordedTime(end+1) = toc;
             
-            if bestRSquared > bestValidationRSquared
-                bestValidationRSquared = bestRSquared;
-                bestValidationIndex = resultIndex;
+            if bestFeatureRSquared > bestValidationRSquared
+                bestValidationRSquared = bestFeatureRSquared;
+                bestValidationIndex = validationIndex;
                 bestValidationFeaturesIndexes = keptFeatures;
             end
+        % ===== Greedy features selection (END)
         end
-        resultIndex = resultIndex+1;
+        validationIndex = validationIndex+1;
     end
     
     testResults(testIndex).validationResults = validationResults;

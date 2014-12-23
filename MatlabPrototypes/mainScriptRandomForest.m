@@ -30,9 +30,11 @@ extractHistogramVoxels;
 % extractVoxelMap;
 
 % =============== Result structure
+featuresSelectStopStreak = 2; % If not improvement after X, stop the select
 testResultStruct = struct(...
     'datasetReordering', [],...
     'validationResults', [],...
+    'featuresSelectStopStreak', featuresSelectStopStreak,... 
     'recordedTime', [],...
     'rSquared', []);
 
@@ -53,9 +55,15 @@ nbOfFeatures = length(cell2mat(dataset(1).features.values));
 trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
-nbOfTest = 2; % 3;
-nbOfTreesToTry = [10 50 100 150 200 250];
-nbOfLeavesToTry = [1 5 10 20];
+nbOfTest = 3;
+% create random tuple of nbOfTrees/nbOfLeaves
+nbOfValidations = 25;
+nbOfTreesRange = [10 250];
+nbOfLeavesRange = [1 20];
+validationsHyperparameters = ...
+    [unidrnd(diff(nbOfTreesRange),nbOfValidations,1) + nbOfTreesRange(1) ,...
+    unidrnd(diff(nbOfLeavesRange),nbOfValidations,1) + nbOfLeavesRange(1)];
+
 nbOfFeaturesToKeep =  nbOfFeatures; % nbOfFeatures to keep all
 
 testResults = repmat(testResultStruct, nbOfTest,1);
@@ -68,70 +76,75 @@ for testIndex = 1:nbOfTest
     trainLabels = labels(1:round(nbOfSamples*trainingSetSize), :);
     testFeatures = features((round(nbOfSamples*trainingSetSize)+1):end, :);
     testLabels = labels((round(nbOfSamples*trainingSetSize)+1):end, :);
-    
-    nbOfTries = length(nbOfTreesToTry)*length(nbOfLeavesToTry);
-    validationResults = repmat(validationResultStruct, nbOfTries,1);
+
+    validationResults = repmat(validationResultStruct, nbOfValidations,1);
     
     % ===== Hyperparameters search
     recordedTime = [];
     bestValidationRSquared = -inf;
     bestValidationIndex = [];
     bestValidationFeaturesIndexes = [];
-    resultIndex = 1;
-    for nbOfTrees = nbOfTreesToTry
-        for nbOfLeaves = nbOfLeavesToTry
-            validationResults(resultIndex).nbOfTrees = nbOfTrees;
-            validationResults(resultIndex).nbOfLeaves = nbOfLeaves;
-            validationResults(resultIndex).keptFeatureNames = ...
-                cell(nbOfFeaturesToKeep);
-            validationResults(resultIndex).rSquared = ...
-                zeros(nbOfFeaturesToKeep, 1);
+    validationIndex = 1;
+    for hyperParams = 1:size(validationsHyperparameters,1)
+        nbOfTrees = validationsHyperparameters(hyperParams,1);
+        nbOfLeaves = validationsHyperparameters(hyperParams,2);
+        
+        validationResults(validationIndex).nbOfTrees = nbOfTrees;
+        validationResults(validationIndex).nbOfLeaves = nbOfLeaves;
+        validationResults(validationIndex).keptFeatureNames = ...
+            cell(nbOfFeaturesToKeep);
+        validationResults(validationIndex).rSquared = ...
+            zeros(nbOfFeaturesToKeep, 1);
+        
+        % ===== Greedy features selection
+        keptFeatureIndex = 0;
+        keptFeatures = [];
+        currentFeaturesStreak = 0;
+        while keptFeatureIndex < nbOfFeaturesToKeep && ...
+            currentFeaturesStreak < featuresSelectStopStreak
+            keptFeatureIndex = keptFeatureIndex + 1;
             
-            % ===== Greedy features selection
-            keptFeatureIndex = 0;
-            keptFeatures = [];
-            while keptFeatureIndex < nbOfFeaturesToKeep
-                keptFeatureIndex = keptFeatureIndex + 1;
+            tic
+            disp(sprintf('Hyperparams(%d of %d):feature(%d of %d)',...
+                validationIndex, nbOfValidations,...
+                keptFeatureIndex, nbOfFeaturesToKeep));
+            
+            featuresToTry = 1:nbOfFeatures;
+            featuresToTry(keptFeatures) = [];
+            
+            bestRSquared = -inf;
+            newBestFeature = [];
+            for currentFeature = featuresToTry
+                currentFeaturesVector = [keptFeatures currentFeature];
                 
-                tic
-                disp(sprintf('Hyperparams(%d of %d):feature(%d of %d)',...
-                    resultIndex, nbOfTries,...
-                    keptFeatureIndex, nbOfFeaturesToKeep));
+                rSquaredResult = randomForestLeaveOneOut(...
+                    nbOfTrees, nbOfLeaves,...
+                    trainFeatures(:,currentFeaturesVector),...
+                    trainLabels);
                 
-                featuresToTry = 1:nbOfFeatures;
-                featuresToTry(keptFeatures) = [];
-                
-                bestRSquared = -inf;
-                newBestFeature = [];
-                for currentFeature = featuresToTry
-                    currentFeaturesVector = [keptFeatures currentFeature];
-                    
-                    rSquaredResult = randomForestLeaveOneOut(...
-                        nbOfTrees, nbOfLeaves,...
-                        trainFeatures(:,currentFeaturesVector),...
-                        trainLabels);
-                    
-                    if rSquaredResult > bestRSquared
-                        newBestFeature = currentFeature;
-                        bestRSquared = rSquaredResult;
-                    end
-                end
-                keptFeatures(keptFeatureIndex) = newBestFeature;
-                validationResults(resultIndex).keptFeatureNames{keptFeatureIndex} = ...
-                    featureNames(newBestFeature);
-                validationResults(resultIndex).rSquared(keptFeatureIndex) =...
-                    bestRSquared;
-                
-                recordedTime(end+1) = toc;
-                
-                if bestRSquared > bestValidationRSquared
-                    bestValidationRSquared = bestRSquared;
-                    bestValidationIndex = resultIndex;
-                    bestValidationFeaturesIndexes = keptFeatures;
+                if rSquaredResult > bestRSquared
+                    newBestFeature = currentFeature;
+                    bestRSquared = rSquaredResult;
                 end
             end
-            resultIndex = resultIndex+1;
+            keptFeatures(keptFeatureIndex) = newBestFeature;
+            validationResults(validationIndex).keptFeatureNames{keptFeatureIndex} = ...
+                featureNames(newBestFeature);
+            validationResults(validationIndex).rSquared(keptFeatureIndex) =...
+                bestRSquared;
+            
+            recordedTime(end+1) = toc;
+            
+            currentFeaturesStreak = currentFeaturesStreak + 1;
+            
+            if bestRSquared > bestValidationRSquared
+                bestValidationRSquared = bestRSquared;
+                bestValidationIndex = validationIndex;
+                bestValidationFeaturesIndexes = keptFeatures;
+                currentFeaturesStreak = 0;
+            end
         end
+        validationIndex = validationIndex+1;
     end
     
     testResults(testIndex).validationResults = validationResults;
@@ -152,7 +165,7 @@ for testIndex = 1:nbOfTest
     end
     testResults(testIndex).rSquared =...
         rSquared(testLabelPredictions, testLabels)
-
+    
     % =============== Saving (for each test just in case)
     saveName = [datestr(now,'yyyy_mm_dd_HH_MM_SS')...
         '_randomForestResults_test_'...

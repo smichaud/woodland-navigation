@@ -1,7 +1,7 @@
 function rSquaredResult = knnLeaveOneOut(...
     K, minkowskiDist, features, labels)
 
-nbOfTrainingSamples = length(features);
+nbOfTrainingSamples = size(features,1);
 nbOfLabelFeatures = size(labels,2);
 leaveOneOutPredictions = zeros(nbOfTrainingSamples, nbOfLabelFeatures);
 

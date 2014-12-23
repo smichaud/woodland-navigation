@@ -3,11 +3,9 @@ clearvars -except 'justRunAll';
 close all;
 clc;
 addpath(genpath('.'));
-addpath(genpath('../Utils/'));
 
 % ========== Define global variables and data structures ==============
-dataDirectory = '../../../WoodlandNavigationData/RegressionV2/';
-datasetName = 'data.mat';
+dataDirectory = '../../WoodlandNavigationData/RegressionV2/';
 %     slopeCorrectionFile = '../Data/SlopeCorrection/slopeCorrection.mat';
 %     load(slopeCorrectionFile);
 
@@ -64,5 +62,3 @@ evaluationStruct = struct(...
     'meanSquaredError', [],...
     'rSquared', []);
 evaluations = []; % To store all leave one out results
-
-testRegressor = [];

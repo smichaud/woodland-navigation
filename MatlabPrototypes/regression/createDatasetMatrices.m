@@ -6,7 +6,7 @@ nbOfFeatures = length(cell2mat(dataset(1).features.values));
 features = zeros(nbOfSamples, nbOfFeatures);
 labels = zeros(nbOfSamples,1);
 
-for i = 1:round(nbOfSamples)
+for i = 1:nbOfSamples
     features(i,:) = [cell2mat(dataset(i).features.values)];
     labels(i) = dataset(i).traversabilityCost;
 end

@@ -12,20 +12,21 @@ if justRunAll || ~exist('dataset','var') ...
 end
 
 if justRunAll || isempty(dataset) ||...
-        strcmp(questdlg('Reload data ?', '','Yes','No','No'),'Yes')
+        strcmp(questdlg('Reload dataset ?', '','Yes','No','No'),'Yes')
     if ~justRunAll &&...
             exist(strcat(dataDirectory, 'data.mat'), 'file') == 2 && ...
             strcmp(questdlg('Load from .mat ?', '','Yes','No','Yes'),'Yes')
         loadSavedData;
     else
-        loadRawData;  
-        extractAreaOfInterest; % point cloud area of interest
-        extractTraversabilityCost; % add the label to the structure        
-        computeImuDft;
-        computeCurrentsDft;
-        extractAllFeatures;
+        loadRawData;
     end
 end
+
+extractAreaOfInterest; % point cloud area of interest
+extractTraversabilityCost; % add the label to the structure
+computeImuDft;
+computeCurrentsDft;
+extractAllFeatures;
 
 if ~justRunAll && strcmp(questdlg('Show all processed samples ?',...
         '','Yes','No','No'),'Yes')

@@ -7,6 +7,11 @@ function predictedLabels = knnRegression(trainFeatures, trainLabels,...
 nbOfDistNull = length(find(distances == 0));
 if nbOfDistNull == 0
     distanceInverses = 1./distances;
+    if size(distanceInverses,1) > 1
+        save('./results/bugVariables.mat', ...
+            'distances', 'trainFeatures', 'trainLabels',...
+            'featuresToPredict', 'K', 'minkowskiDist');
+    end
     normalisationFactor = 1/sum(distanceInverses);
     knnWeights = (normalisationFactor*distanceInverses)';
 else
