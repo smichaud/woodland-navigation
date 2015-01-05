@@ -30,11 +30,12 @@ extractHistogramVoxels;
 % extractVoxelMap;
 
 % =============== Result structure
-featuresSelectStopStreak = 2; % If not improvement after X, stop the select
+% If not improvement after X, stop the feature selection
+featuresSelectionStopCriterion = 5; 
 testResultStruct = struct(...
     'datasetReordering', [],...
     'validationResults', [],...
-    'featuresSelectStopStreak', featuresSelectStopStreak,... 
+    'featuresSelectionStopCriterion', featuresSelectionStopCriterion,...
     'recordedTime', [],...
     'rSquared', []);
 
@@ -56,7 +57,7 @@ trainingSetSize = 0.75;
 testSetSize = 1-trainingSetSize;
 
 nbOfTest = 3;
-% create random tuple of nbOfTrees/nbOfLeaves
+% Create random tuple of nbOfTrees/nbOfLeaves
 nbOfValidations = 25;
 nbOfTreesRange = [10 250];
 nbOfLeavesRange = [1 20];
@@ -76,7 +77,7 @@ for testIndex = 1:nbOfTest
     trainLabels = labels(1:round(nbOfSamples*trainingSetSize), :);
     testFeatures = features((round(nbOfSamples*trainingSetSize)+1):end, :);
     testLabels = labels((round(nbOfSamples*trainingSetSize)+1):end, :);
-
+    
     validationResults = repmat(validationResultStruct, nbOfValidations,1);
     
     % ===== Hyperparameters search
@@ -91,17 +92,13 @@ for testIndex = 1:nbOfTest
         
         validationResults(validationIndex).nbOfTrees = nbOfTrees;
         validationResults(validationIndex).nbOfLeaves = nbOfLeaves;
-        validationResults(validationIndex).keptFeatureNames = ...
-            cell(nbOfFeaturesToKeep);
-        validationResults(validationIndex).rSquared = ...
-            zeros(nbOfFeaturesToKeep, 1);
         
         % ===== Greedy features selection
         keptFeatureIndex = 0;
         keptFeatures = [];
         currentFeaturesStreak = 0;
         while keptFeatureIndex < nbOfFeaturesToKeep && ...
-            currentFeaturesStreak < featuresSelectStopStreak
+                currentFeaturesStreak < featuresSelectionStopCriterion
             keptFeatureIndex = keptFeatureIndex + 1;
             
             tic
@@ -128,9 +125,9 @@ for testIndex = 1:nbOfTest
                 end
             end
             keptFeatures(keptFeatureIndex) = newBestFeature;
-            validationResults(validationIndex).keptFeatureNames{keptFeatureIndex} = ...
+            validationResults(validationIndex).keptFeatureNames{end+1} = ...
                 featureNames(newBestFeature);
-            validationResults(validationIndex).rSquared(keptFeatureIndex) =...
+            validationResults(validationIndex).rSquared(end+1) =...
                 bestRSquared;
             
             recordedTime(end+1) = toc;
@@ -144,8 +141,16 @@ for testIndex = 1:nbOfTest
                 currentFeaturesStreak = 0;
             end
         end
+        
+        if currentFeaturesStreak >= featuresSelectionStopCriterion
+            disp(['Feature selection stopped because there was ',...
+                'no improvement in the last ' ,...
+                num2str(featuresSelectionStopCriterion), ' iterations'])
+        end
         validationIndex = validationIndex+1;
+        
     end
+    
     
     testResults(testIndex).validationResults = validationResults;
     testResults(testIndex).recordedTime = recordedTime;

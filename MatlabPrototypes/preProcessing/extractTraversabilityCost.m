@@ -37,6 +37,14 @@ for i=1:nbOfSamples
             dataset(i).traversabilityStopTime = stopTime;
             dataset(i).traversabilityCost = traversabilityCost;
             
+        case traversabilityCostInfo.imuDftMinkowski1FromOrigin
+            dataset(i).traversabilityCost = ...
+                sum(dftVectors(i,:));
+            
+        case traversabilityCostInfo.imuDftMinkowski2FromOrigin
+            dataset(i).traversabilityCost = ...
+                norm(dftVectors(i,:));
+            
         case traversabilityCostInfo.odometryErrorMetric 
             % Just the 2D translation error for now
             dataset(i).traversabilityCost = ...
