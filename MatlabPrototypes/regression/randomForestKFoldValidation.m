@@ -1,22 +1,20 @@
 function [rSquaredMean] = randomForestKFoldValidation(...
     nbOfTrees, nbOfLeaves, features, labels, nbOfFold)
 
-nbOfTrainingSamples = length(features);
-foldSize = round(nbOfTrainingSamples/nbOfFold);
+nbOfTrainingSamples = size(features,1);
+sizesVector = ones(1,nbOfFold)*floor(nbOfTrainingSamples/nbOfFold);
+sizesVector(1:mod(nbOfTrainingSamples,nbOfFold)) = ...
+    sizesVector(1:mod(nbOfTrainingSamples,nbOfFold)) + 1;
 
 leaveOneOutPrediction = zeros(nbOfTrainingSamples, 1);
-for i = 0:nbOfFold-1
-    startIndex = i*foldSize + 1;
-    stopIndex = startIndex - 1 + foldSize;
-    if stopIndex > nbOfTrainingSamples
-        stopIndex = nbOfTrainingSamples;
-    end
+stopIndex = 0;
+for inc = sizesVector
+    startIndex = stopIndex + 1;
+    stopIndex = startIndex + inc - 1;
+    
     testIndexes = startIndex:stopIndex;
     trainIndexes = 1:nbOfTrainingSamples;
     trainIndexes(testIndexes) = [];
-    
-    features(trainIndexes,:)
-    labels(trainIndexes,:)
     
     regressor = TreeBagger(nbOfTrees,...
         features(trainIndexes,:), labels(trainIndexes,:),...
@@ -26,6 +24,7 @@ for i = 0:nbOfFold-1
         regressor.predict(features(testIndexes,:));
 end
 
-rSquaredResult = rSquared(labels, leaveOneOutPrediction);
+rSquaredMean = rSquared(labels, leaveOneOutPrediction);
 
 end
+

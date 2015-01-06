@@ -6,10 +6,10 @@ disp('Loading data...');
 load([dataDirectory 'dataset.mat']);
 % loadRawData;
 
-extractTraversabilityCost; % add the label to the structure
-extractAreaOfInterest; % point cloud area of interest
 computeImuDft;
 computeCurrentsDft;
+extractTraversabilityCost; % add the label to the structure
+extractAreaOfInterest; % point cloud area of interest
 
 % =============== Point cloud features extraction
 resetFeatures;
@@ -31,11 +31,13 @@ extractHistogramVoxels;
 
 % =============== Result structure
 % If not improvement after X, stop the feature selection
-featuresSelectionStopCriterion = 5; 
+featuresSelectionStopCriterion = 5;
+nbOfFold = 10;
 testResultStruct = struct(...
     'datasetReordering', [],...
     'validationResults', [],...
     'featuresSelectionStopCriterion', featuresSelectionStopCriterion,...
+    'nbOfFold', nbOfFold,...
     'recordedTime', [],...
     'rSquared', []);
 
@@ -114,10 +116,10 @@ for testIndex = 1:nbOfTest
             for currentFeature = featuresToTry
                 currentFeaturesVector = [keptFeatures currentFeature];
                 
-                rSquaredResult = randomForestLeaveOneOut(...
+                rSquaredResult = randomForestKFoldValidation(...
                     nbOfTrees, nbOfLeaves,...
                     trainFeatures(:,currentFeaturesVector),...
-                    trainLabels);
+                    trainLabels, nbOfFold);
                 
                 if rSquaredResult > bestRSquared
                     newBestFeature = currentFeature;

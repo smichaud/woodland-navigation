@@ -6,10 +6,10 @@ disp('Loading data...');
 load([dataDirectory 'dataset.mat']);
 % loadRawData;
 
-extractTraversabilityCost; % add the label to the structure
-extractAreaOfInterest; % point cloud area of interest
 computeImuDft;
 computeCurrentsDft;
+extractTraversabilityCost; % add the label to the structure
+extractAreaOfInterest; % point cloud area of interest
 
 % =============== Point cloud features extraction
 resetFeatures;

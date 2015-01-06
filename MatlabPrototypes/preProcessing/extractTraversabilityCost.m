@@ -4,6 +4,8 @@ disp('Extracting traversability cost...');
 defaultStartTime = 30; % sec
 defaultStopTime = defaultStartTime + areaOfInterest.depth/robotSpeed;
 
+dftVectors = getImuDftVectors(dataset, imuDftParams);
+
 nbOfSamples = length(dataset);
 for i=1:nbOfSamples
     dataset(i).traversabilityStartTime = defaultStartTime;
@@ -37,7 +39,7 @@ for i=1:nbOfSamples
             dataset(i).traversabilityStopTime = stopTime;
             dataset(i).traversabilityCost = traversabilityCost;
             
-        case traversabilityCostInfo.imuDftMinkowski1FromOrigin
+        case traversabilityCostInfo.imuDftMinkowski1FromOrigin            
             dataset(i).traversabilityCost = ...
                 sum(dftVectors(i,:));
             
