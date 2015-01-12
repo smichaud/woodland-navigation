@@ -1,30 +1,35 @@
-if mod(areaOfInterest.depth,voxelSide) ||...
-        mod(areaOfInterest.depth,voxelSide) ||...
-        mod(areaOfInterest.depth,voxelSide)
-    warning('Voxel side size does not fit into the area of interest');
-end
+paddedMinX = areaOfInterest.distFromRobot + areaOfInterest.xTfAdjustment...
+    - nbOfPaddingVoxel*voxelSide;
+paddedMaxX = paddedMinX + areaOfInterest.depth + ...
+    2*nbOfPaddingVoxel*voxelSide;
+paddedMinY = -areaOfInterest.width/2 - nbOfPaddingVoxel*voxelSide;
+paddedMaxY = areaOfInterest.width/2 + nbOfPaddingVoxel*voxelSide;
 
-nbOfX = round(areaOfInterest.depth/voxelSide);
-nbOfY = round(areaOfInterest.width/voxelSide);
-nbOfZ = round(areaOfInterest.height/voxelSide);
-
-nbOfSamples = length(dataset);
 for sampleIndex = 1:nbOfSamples;
-    pointCloud = dataset(sampleIndex).areaOfInterest;
     groundHeight = dataset(sampleIndex).groundHeight;
+    paddedMinZ = groundHeight - nbOfPaddingVoxel*voxelSide;
+    paddedMaxZ = paddedMinZ + areaOfInterest.height + ...
+        2*nbOfPaddingVoxel*voxelSide;
+    
+    pointCloud = dataset(sampleIndex).rawPointCloud;
+    pointCloud = pointCloud(find(...
+        pointCloud(:,1) >= paddedMinX & ...
+        pointCloud(:,1) < paddedMaxX & ...
+        pointCloud(:,2) >= paddedMinY & ...
+        pointCloud(:,2) < paddedMaxY & ...
+        pointCloud(:,3) >= paddedMinZ & ...
+        pointCloud(:,3) < paddedMaxZ),:);
     
     voxelMap = zeros(nbOfX, nbOfY, nbOfZ);
     for i = 1:nbOfX
-        minX = (i-1)*voxelSide + areaOfInterest.distFromRobot + ...
-            areaOfInterest.xTfAdjustment;
-        maxX = i*voxelSide + areaOfInterest.distFromRobot + ...
-            areaOfInterest.xTfAdjustment;
+        minX = paddedMinX + (i-1)*voxelSide;
+        maxX = paddedMinX + i*voxelSide;
         for j = 1:nbOfY
-            minY = (j-1)*voxelSide - areaOfInterest.width/2;
-            maxY = j*voxelSide - areaOfInterest.width/2;
+            minY = paddedMinY + (j-1)*voxelSide;
+            maxY = paddedMinY + j*voxelSide;
             for k = 1:nbOfZ
-                minZ = groundHeight + (k-1)*voxelSide;
-                maxZ = groundHeight + k*voxelSide;
+                minZ = paddedMinZ + (k-1)*voxelSide;
+                maxZ = paddedMinZ + k*voxelSide;
                 
                 voxelMap(i,j,k) = length(find(...
                     pointCloud(:,1) >= minX & ...
