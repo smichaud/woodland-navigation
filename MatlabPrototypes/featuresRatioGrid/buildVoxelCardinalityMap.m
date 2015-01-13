@@ -22,7 +22,7 @@ for sampleIndex = 1:nbOfSamples;
         pointCloud(:,3) >= paddedMinZ & ...
         pointCloud(:,3) < paddedMaxZ),:);
     
-    voxelMap = zeros(nbOfX, nbOfY, nbOfZ);
+    voxelCardinalityMap = zeros(nbOfX, nbOfY, nbOfZ);
     for i = 1:nbOfX
         minX = paddedMinX + (i-1)*voxelSide;
         maxX = paddedMinX + i*voxelSide;
@@ -33,7 +33,7 @@ for sampleIndex = 1:nbOfSamples;
                 minZ = paddedMinZ + (k-1)*voxelSide;
                 maxZ = paddedMinZ + k*voxelSide;
                 
-                voxelMap(i,j,k) = length(find(...
+                voxelCardinalityMap(i,j,k) = length(find(...
                     pointCloud(:,1) >= minX & ...
                     pointCloud(:,1) < maxX & ...
                     pointCloud(:,2) >= minY & ...
@@ -43,7 +43,7 @@ for sampleIndex = 1:nbOfSamples;
             end
         end
     end
-    dataset(sampleIndex).voxelMap = voxelMap;
+    dataset(sampleIndex).voxelCardinalityMap = voxelCardinalityMap;
 end
 
-buildVoxelMapTime = toc
+buildVoxelCardinalityMapTime = toc

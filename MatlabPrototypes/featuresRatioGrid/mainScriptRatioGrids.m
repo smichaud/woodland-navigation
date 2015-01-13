@@ -35,15 +35,15 @@ buildRatioGridList;
 % Clustering ==============================================================
 nbOfClusters = 3;
 distanceUsed = 'sqEuclidean'; % or 'cityblock'
-manuallyCreateEmptyRatioGrid = true;
+manuallyCreateEmptyRatioGridCenter = true;
 
-if manuallyCreateEmptyRatioGrid
+if manuallyCreateEmptyRatioGridCenter
     filters(find(sum(filters,2)==0),:) = [];
     nbOfClusters = nbOfClusters - 1;
 end
 [clustersIndices clusterCenters] = kmeans(...
     filters, nbOfClusters, 'distance', distanceUsed);
-if manuallyCreateEmptyRatioGrid
+if manuallyCreateEmptyRatioGridCenter
     clusterCenters = [zeros(1,filterSide^3) ; clusterCenters];
 end
 %==========================================================================
