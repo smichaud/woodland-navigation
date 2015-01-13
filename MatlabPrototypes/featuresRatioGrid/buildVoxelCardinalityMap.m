@@ -5,6 +5,8 @@ paddedMaxX = paddedMinX + areaOfInterest.depth + ...
 paddedMinY = -areaOfInterest.width/2 - nbOfPaddingVoxel*voxelSide;
 paddedMaxY = areaOfInterest.width/2 + nbOfPaddingVoxel*voxelSide;
 
+tic
+
 for sampleIndex = 1:nbOfSamples;
     groundHeight = dataset(sampleIndex).groundHeight;
     paddedMinZ = groundHeight - nbOfPaddingVoxel*voxelSide;
@@ -43,3 +45,5 @@ for sampleIndex = 1:nbOfSamples;
     end
     dataset(sampleIndex).voxelMap = voxelMap;
 end
+
+buildVoxelMapTime = toc
