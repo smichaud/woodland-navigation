@@ -24,7 +24,7 @@ nbOfZ = round(areaOfInterest.height/voxelSide) + 2*nbOfPaddingVoxel;
 
 buildVoxelCardinalityMap;
 
-% RatioGrid creation ========================================================
+% RatioGrid creation ======================================================
 nbOfRatioGridsPerSample = (nbOfX-2*nbOfPaddingVoxel)*...
     (nbOfY-2*nbOfPaddingVoxel)*(nbOfZ-2*nbOfPaddingVoxel);
 totalNbOfRatioGrids = nbOfRatioGridsPerSample*nbOfSamples;
