@@ -41,7 +41,8 @@ testResultStruct = struct(...
 validationResultStruct = struct(...
     'nbOfKnnUsed', [],...
     'keptFeatureNames', [],... % Ordered by the greedy selection
-    'rSquared', []); % For 1 feature, for 2 features...
+    'rSquared', [],... % Vector: for 1 feature, for 2 features...
+    'rSquaredPerLabel', []); % Matrix, each line == 1 feature, 2 feat 
 
 % =============== Machine learning part !
 % ===== Init
@@ -87,8 +88,8 @@ for testIndex = 1:nbOfTest
         validationResults(validationIndex).nbOfKnnUsed = nbOfKnnUsed;
         validationResults(validationIndex).keptFeatureNames = ...
             cell(nbOfFeaturesToKeep);
-        validationResults(validationIndex).rSquared = ...
-            zeros(nbOfFeaturesToKeep, 1);
+        validationResults(validationIndex).rSquared = [];
+        validationResults(validationIndex).rSquaredPerLabel = [];        
         
         % ===== Greedy features selection
         keptFeatureIndex = 0;
@@ -105,11 +106,13 @@ for testIndex = 1:nbOfTest
             featuresToTry(keptFeatures) = [];
             
             bestFeatureRSquared = -inf;
+            bestRSquaredPerLabel = [];
             newBestFeature = [];
             for currentFeature = featuresToTry
                 currentFeaturesVector = [keptFeatures currentFeature];
-                
-                rSquaredResult = knnLeaveOneOut(nbOfKnnUsed,...
+
+                [rSquaredResult, rSquaredResultPerLabel] = ...
+                    knnLeaveOneOut(nbOfKnnUsed,...
                     testResults(testIndex).minkowskiDistance,...
                     trainFeatures(:,currentFeaturesVector),...
                     trainImuDftVectors);
@@ -117,13 +120,16 @@ for testIndex = 1:nbOfTest
                 if rSquaredResult > bestFeatureRSquared
                     newBestFeature = currentFeature;
                     bestFeatureRSquared = rSquaredResult;
+                    bestRSquaredPerLabel = rSquaredResultPerLabel;
                 end
             end
             keptFeatures(keptFeatureIndex) = newBestFeature;
             validationResults(validationIndex).keptFeatureNames{keptFeatureIndex} = ...
                 featureNames(newBestFeature);
-            validationResults(validationIndex).rSquared(keptFeatureIndex) =...
+            validationResults(validationIndex).rSquared(end+1) = ...
                 bestFeatureRSquared;
+            validationResults(validationIndex).rSquaredPerLabel(end+1,:) = ...
+                bestRSquaredPerLabel;
             
             recordedTime(end+1) = toc;
             

@@ -1,4 +1,4 @@
-function rSquaredResult = knnLeaveOneOut(...
+function [rSquaredResult rSquaredResultPerLabel] = knnLeaveOneOut(...
     K, minkowskiDist, features, labels)
 
 nbOfTrainingSamples = size(features,1);
@@ -14,7 +14,8 @@ for i = 1:nbOfTrainingSamples
         features(i,:), K, minkowskiDist);
 end
 
-rSquaredResult = rSquared(labels, leaveOneOutPredictions);
+[rSquaredResult rSquaredResultPerLabel] = ...
+    rSquaredMultiLabels(labels, leaveOneOutPredictions);
 
 end
 
