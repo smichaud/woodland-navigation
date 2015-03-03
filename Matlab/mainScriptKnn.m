@@ -14,20 +14,20 @@ extractAreaOfInterest; % point cloud area of interest
 % =============== Point cloud features extraction
 resetFeatures;
 
-extractDensity;
-extractHighestPoint;
-extractMeanPoint;
-extractEigen;
+%extractDensity;
+%extractHighestPoint;
+%extractMeanPoint;
+%extractEigen;
 
-extractLayersXZ;
-extractLayersXY;
-extractLayersYZ;
-extractColumnZ;
+%extractLayersXZ;
+%extractLayersXY;
+%extractLayersYZ;
+%extractColumnZ;
 
-extractHistogramXZ;
-extractHistogramZ;
-extractHistogramVoxels;
-% extractVoxelMap;
+%extractHistogramXZ;
+%extractHistogramZ;
+%extractHistogramVoxels;
+extractVoxelMap;
 
 % =============== Result structure
 testResultStruct = struct(...
