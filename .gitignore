@@ -33,3 +33,6 @@ bin/
 
 # Saved figure in png
 *.pdf
+
+# PyCharm files
+*.idea
