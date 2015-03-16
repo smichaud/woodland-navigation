@@ -36,3 +36,7 @@ bin/
 
 # PyCharm files
 *.idea
+
+# PointCloud Generation
+Utils/PointCloudGeneration/BlenFiles/*
+Utils/PointCloudGeneration/PointClouds/*
