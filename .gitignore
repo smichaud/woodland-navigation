@@ -34,6 +34,10 @@ bin/
 # Saved figure in png
 *.pdf
 
+# Python
+*__pycache__
+*.pyc
+
 # PyCharm files
 *.idea
 
