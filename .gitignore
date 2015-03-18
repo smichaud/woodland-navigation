@@ -42,5 +42,5 @@ bin/
 *.idea
 
 # PointCloud Generation
-Utils/PointCloudGeneration/BlenFiles/*
-Utils/PointCloudGeneration/PointClouds/*
+Utils/PointCloudGeneration/BlenFiles/
+Utils/PointCloudGeneration/PointClouds/
