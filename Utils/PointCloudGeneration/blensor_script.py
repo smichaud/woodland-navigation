@@ -15,26 +15,38 @@ def add_primitives(primitives):
         add_primitive(primitive)
 
 def add_primitive(primitive):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=64,
-                                        radius=0.1,
-                                        depth=2.0,
-                                        location=(0.0, 0.0, 0.0),
-                                        rotation=(0.0, 0.0, 0.0))
-    bpy.ops.mesh.primitive_cone_add(vertices=64,
-                                    radius1=1.0,
-                                    radius2=0.0,
-                                    depth=2.0,
-                                    location=(0.0, 0.0, 0.0),
-                                    rotation=(0.0, 0.0, 0.0))
-    bpy.ops.mesh.primitive_cube_add(location=(0.0, 0.0, 0.0),
-                                    rotation=(0.0, 0.0, 0.0))
-    bpy.ops.mesh.primitive_torus_add(location=(0.0, 0.0, 0.0),
-                                     rotation=(0.0, 0.0, 0.0),
-                                     major_radius=1.0,
-                                     minor_radius=0.25,
-                                     major_segments=48,
-                                     minor_segments=12,
-                                     use_abso=False, abso_major_rad=1.0, abso_minor_rad=0.5)
+    location = tuple(primitive['location']) if ('location' in primitive) else (0,0,0)
+    rotation = tuple(primitive['rotation']) if ('rotation' in primitive) else (0,0,0)
+    radius = primitive['radius'] if ('radius' in primitive) else 0
+    depth = primitive['depth'] if ('depth' in primitive) else 0
+
+    if 'type' in primitive:
+        if primitive['type'] == 'cylinder':
+            bpy.ops.mesh.primitive_cylinder_add(vertices=64,
+                                                radius=radius,
+                                                depth=depth,
+                                                location=location,
+                                                rotation=rotation)
+        elif primitive['type'] == 'sphere':
+            print('sphere')
+        elif primitive['type'] == 'cube':
+            bpy.ops.mesh.primitive_cube_add(location=location,
+                                            rotation=rotation)
+        elif primitive['type'] == 'cone':
+            bpy.ops.mesh.primitive_cone_add(vertices=64,
+                                            radius1=1.0,
+                                            radius2=0.0,
+                                            depth=depth,
+                                            location=location,
+                                            rotation=rotation)
+        elif primitive['type'] == 'torus':
+            bpy.ops.mesh.primitive_torus_add(location=location,
+                                             rotation=rotation,
+                                             major_radius=1.0,
+                                             minor_radius=0.25,
+                                             major_segments=48,
+                                             minor_segments=12,
+                                             use_abso=False, abso_major_rad=1.0, abso_minor_rad=0.5)
 
 def clear_scene():
     for obj in bpy.context.scene.objects:
@@ -71,9 +83,11 @@ def main():
     config.from_json()
 
     clear_scene()
+
     add_camera()
     add_point_lamp()
     add_primitives(config.primitives)
+
     generate_pointcloud(config.output_pcd_file)
 
     save_blend_file(config.output_blend_file)
