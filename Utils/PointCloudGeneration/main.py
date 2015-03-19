@@ -7,6 +7,12 @@ from scene_generation_config import SceneGenerationConfig
 
 def main():
     config = SceneGenerationConfig()
+
+    config.output_blend_file = "BlendFiles/Generated.blend"
+    config.output_pcd_file = "PointClouds/test.pcd"
+    config.add_primitive({'type':'cylinder', 'radius':0.05, 'location':(1,1,1)})
+    config.to_json()
+
     config.from_json()
 
     for primitive in config.primitives:
@@ -17,15 +23,20 @@ def main():
 
         if 'type' in primitive:
             if primitive['type'] == 'cylinder':
-                print 'cylinder'
+                print('cylinder')
             elif primitive['type'] == 'sphere':
-                print 'sphere'
+                print('sphere')
             elif primitive['type'] == 'cube':
-                print 'cube'
+                print('cube')
             elif primitive['type'] == 'cone':
-                print 'cone'
+                print('cone')
             elif primitive['type'] == 'torus':
-                print 'torus'
+                print('torus')
+
+        print("location: ", location)
+        print("rotation: ", rotation)
+        print("radius: ", radius)
+        print("depth: ", depth)
 
 
 
