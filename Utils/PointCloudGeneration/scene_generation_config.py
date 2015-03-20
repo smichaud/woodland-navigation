@@ -10,13 +10,16 @@ class SceneGenerationConfig:
     def add_primitive(self, primitive):
         self.primitives.append(copy.deepcopy(primitive))
 
-    def to_json(self, filename="ConfigFiles/default.json"):
+    def clear_primitives(self):
+        self.primitives = []
+
+    def write_json(self, filename="ConfigFiles/default.json"):
         with open(filename, 'w') as scene_file:
             output_dict = self.__dict__.copy()
             output_dict.update({'primitives':self.primitives}.copy())
             scene_file.write(json.dumps(output_dict, indent=4, sort_keys=True))
 
-    def from_json(self, filename="ConfigFiles/default.json"):
+    def read_json(self, filename="ConfigFiles/default.json"):
         with open(filename,'r') as scene_file:
             input_dict = json.loads(scene_file.read())
 

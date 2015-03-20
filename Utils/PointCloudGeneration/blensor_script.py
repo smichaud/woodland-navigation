@@ -1,10 +1,11 @@
 import bpy
 import blensor
+import math
 
 from scene_generation_config import SceneGenerationConfig
 
-
-def add_camera(location=(-12, 0, -2), rotation=(-90, 0, 90)):
+# Default values for a ([-1, 1], [-1, 1], [-1, 1]) area of interest
+def add_camera(location=(-5.2, 0, 1), rotation=(math.radians(90), 0, math.radians(-90))):
     bpy.ops.object.camera_add(location=location, rotation=rotation)
 
 def add_point_lamp(location=(0.0, 0.0, 0.0)):
@@ -18,6 +19,8 @@ def add_primitive(primitive):
     location = tuple(primitive['location']) if ('location' in primitive) else (0,0,0)
     rotation = tuple(primitive['rotation']) if ('rotation' in primitive) else (0,0,0)
     radius = primitive['radius'] if ('radius' in primitive) else 0
+    radius1 = primitive['radius1'] if ('radius1' in primitive) else 0
+    radius2 = primitive['radius2'] if ('radius2' in primitive) else 0
     depth = primitive['depth'] if ('depth' in primitive) else 0
 
     if 'type' in primitive:
@@ -28,25 +31,27 @@ def add_primitive(primitive):
                                                 location=location,
                                                 rotation=rotation)
         elif primitive['type'] == 'sphere':
-            print('sphere')
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4,
+                                                  location=location,
+                                                  rotation=rotation,
+                                                  size=radius)
         elif primitive['type'] == 'cube':
             bpy.ops.mesh.primitive_cube_add(location=location,
                                             rotation=rotation)
         elif primitive['type'] == 'cone':
             bpy.ops.mesh.primitive_cone_add(vertices=64,
-                                            radius1=1.0,
-                                            radius2=0.0,
+                                            radius1=radius1,
+                                            radius2=radius2,
                                             depth=depth,
                                             location=location,
                                             rotation=rotation)
         elif primitive['type'] == 'torus':
             bpy.ops.mesh.primitive_torus_add(location=location,
                                              rotation=rotation,
-                                             major_radius=1.0,
-                                             minor_radius=0.25,
+                                             minor_radius=radius1,
+                                             major_radius=radius2,
                                              major_segments=48,
-                                             minor_segments=12,
-                                             use_abso=False, abso_major_rad=1.0, abso_minor_rad=0.5)
+                                             minor_segments=12)
 
 def clear_scene():
     for obj in bpy.context.scene.objects:
@@ -56,9 +61,21 @@ def print_objects():
     for obj in bpy.context.scene.objects:
         print(obj)
 
+def get_camera_id():
+    camera_id = ""
+    for obj in bpy.context.scene.objects:
+        if obj.type == 'CAMERA' and camera_id == "":
+            camera_id = obj.name
+        elif obj.type == 'CAMERA' and camera_id != None:
+            print("** WARNING ** Multiple camera found !")
+
+    return camera_id
+
 def generate_pointcloud(output_pcd_file):
-    bpy.data.objects['Camera.001'].local_coordinates = False
-    blensor.blendodyne.scan_advanced(bpy.data.objects['Camera.001'],
+    camera_id = get_camera_id()
+
+    bpy.data.objects[camera_id].local_coordinates = False
+    blensor.blendodyne.scan_advanced(bpy.data.objects[camera_id],
                                      rotation_speed = 10.0,
                                      simulation_fps=24,
                                      angle_resolution = 0.1728,
@@ -80,7 +97,7 @@ def save_blend_file(output_blend_file):
 
 def main():
     config = SceneGenerationConfig()
-    config.from_json()
+    config.read_json()
 
     clear_scene()
 
