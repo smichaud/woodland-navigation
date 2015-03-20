@@ -1,0 +1,69 @@
+{
+    "output_pcd_file":"PointClouds/test.pcd",
+    "output_blend_file":"BlendFiles/test.blend",
+    "primitives": [
+        {
+            "rotation": [
+                0.2,
+                0.2,
+                0.2
+            ],
+            "location": [
+                0, 
+                0, 
+                0
+            ], 
+            "radius": 0.05,
+            "depth": 2, 
+            "type": "cylinder"
+        },
+        {
+            "location": [
+                2, 
+                1, 
+                -1
+            ],  
+            "type": "cube"
+        },
+        {
+            "location": [
+                -1, 
+                1, 
+                0
+            ], 
+            "radius": 0.5, 
+            "type": "sphere"
+        },
+        {
+            "rotation": [
+                0.2,
+                0.2,
+                0.2
+            ],
+            "location": [
+                -1, 
+                -1, 
+                -1
+            ], 
+            "radius1": 0.1,
+            "radius2": 0.5, 
+            "type": "torus"
+        },
+        {
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "location": [
+                1, 
+                1, 
+                1
+            ], 
+            "radius1": 0.5,
+            "radius2": 0,
+            "depth": 1, 
+            "type": "cone"
+        }
+    ]
+}
