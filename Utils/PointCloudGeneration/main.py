@@ -45,10 +45,12 @@ def main():
     config_name = "sample"
     samples_per_class = 3
     classes_parameters = [
-        {'cylinders_count': 5, 'cylinders_radius': 0.025},
-        {'cylinders_count': 5, 'cylinders_radius': 0.05},
-        {'cylinders_count': 5, 'cylinders_radius': 0.1},
-        {'cylinders_count': 5, 'cylinders_radius': 0.2}
+        {'cylinders_count': 10, 'cylinders_radius': 0.025}#,
+        # {'cylinders_count': 20, 'cylinders_radius': 0.025},
+        # {'cylinders_count': 10, 'cylinders_radius': 0.05},
+        # {'cylinders_count': 20, 'cylinders_radius': 0.05},
+        # {'cylinders_count': 10, 'cylinders_radius': 0.1},
+        # {'cylinders_count': 20, 'cylinders_radius': 0.1}
     ]
 
     for param in classes_parameters:
@@ -60,6 +62,10 @@ def main():
 
     remove_blender_file_suffixes()
     convert_pcd_files_to_csv()
+
+    dataset_destination = "../../../WoodlandNavigationData/SimulatedPointClouds/"
+    os.system("rm " + dataset_destination + "*")
+    os.system("cp ./PointClouds/*.csv " + dataset_destination)
 
     print("\nJob done !")
 
