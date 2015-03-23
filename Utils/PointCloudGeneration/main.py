@@ -7,10 +7,9 @@ from random import normalvariate
 from pointcloud_convertion import pcd_to_csv
 from scene_generation_config import SceneGenerationConfig
 
-def generate_cylinders_config(name, cylinders_count, cylinders_radius):
+def generate_cylinders_config(name, cylinders_count, cylinders_radius, radius_sigma=0):
     config = SceneGenerationConfig()
-    print(config)
-    print(len(config.primitives))
+
     prefix = "count_" + str(cylinders_count) + "_radius_mm_" + str(int(cylinders_radius*1000)) + "_"
     config.output_blend_file = "BlendFiles/" + prefix + name + ".blend"
     config.output_pcd_file = "PointClouds/" + prefix + name + ".pcd"
@@ -20,7 +19,7 @@ def generate_cylinders_config(name, cylinders_count, cylinders_radius):
     for i in range(0, cylinders_count):
         config.add_primitive({
             'type': 'cylinder',
-            'radius': cylinders_radius, #normalvariate(cylinders_radius, sigma=cylinders_radius/5)
+            'radius': normalvariate(cylinders_radius, sigma=radius_sigma),
             'depth': cylinder_height,
             'rotation': (uniform(0, angle_max), 0, uniform(0, 2*math.pi)),
             'location': (uniform(-1, 1), uniform(-1, 1), 0)
@@ -29,7 +28,6 @@ def generate_cylinders_config(name, cylinders_count, cylinders_radius):
     config.write_json("ConfigFiles/" + prefix + name + ".json")
     config.write_json("ConfigFiles/default.json")
     config.clear_primitives()
-    print(len(config.primitives))
 
 def remove_blender_file_suffixes():
     for filename in glob.glob("PointClouds/*.pcd"):

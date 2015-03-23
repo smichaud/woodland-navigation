@@ -3,9 +3,10 @@ import copy
 
 
 class SceneGenerationConfig:
-    output_pcd_file = ""
-    output_blend_file = ""
-    primitives = []
+    def __init__(self):
+        self.output_pcd_file = ""
+        self.output_blend_file = ""
+        self.primitives = []
 
     def add_primitive(self, primitive):
         self.primitives.append(copy.deepcopy(primitive))
@@ -15,9 +16,9 @@ class SceneGenerationConfig:
 
     def write_json(self, filename="ConfigFiles/default.json"):
         with open(filename, 'w') as scene_file:
-            output_dict = self.__dict__.copy()
-            output_dict.update({'primitives':self.primitives}.copy())
-            scene_file.write(json.dumps(output_dict, indent=4, sort_keys=True))
+            self.output_dict = self.__dict__.copy()
+            self.output_dict.update({'primitives':self.primitives}.copy())
+            self.scene_file.write(json.dumps(output_dict, indent=4, sort_keys=True))
 
     def read_json(self, filename="ConfigFiles/default.json"):
         with open(filename,'r') as scene_file:
