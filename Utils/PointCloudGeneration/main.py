@@ -54,12 +54,12 @@ def main():
     for param in classes_parameters:
         for i in range(0, samples_per_class):
             generate_cylinders_config(config_name + "_" + str(i), param['cylinders_count'], param['cylinders_radius'])
-            # blensor_command = '/home/smichaud/blensor-1.0.16rc1/build/bin/blender'
-            # python_script = 'blensor_script.py'
-            # os.system(blensor_command + ' -b -P ' + python_script)
+            blensor_command = '/home/smichaud/blensor-1.0.16rc1/build/bin/blender'
+            python_script = 'blensor_script.py'
+            os.system(blensor_command + ' -b -P ' + python_script)
 
-    # remove_blender_file_suffixes()
-    # convert_pcd_files_to_csv()
+    remove_blender_file_suffixes()
+    convert_pcd_files_to_csv()
 
     print("\nJob done !")
 

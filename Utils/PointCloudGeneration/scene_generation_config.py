@@ -18,7 +18,7 @@ class SceneGenerationConfig:
         with open(filename, 'w') as scene_file:
             self.output_dict = self.__dict__.copy()
             self.output_dict.update({'primitives':self.primitives}.copy())
-            self.scene_file.write(json.dumps(output_dict, indent=4, sort_keys=True))
+            scene_file.write(json.dumps(self.output_dict, indent=4, sort_keys=True))
 
     def read_json(self, filename="ConfigFiles/default.json"):
         with open(filename,'r') as scene_file:
