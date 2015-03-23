@@ -40,10 +40,14 @@ def convert_pcd_files_to_csv():
 
 
 def main():
-    print("Generating scenes...\n")
+    print("Removing older files...")
+    os.system("rm ./ConfigFiles/*")
+    os.system("rm ./BlendFiles/*")
+    os.system("rm ./PointClouds/*")
 
+    print("Creating config files...")
     config_name = "sample"
-    samples_per_class = 3
+    samples_per_class = 1
     classes_parameters = [
         {'cylinders_count': 10, 'cylinders_radius': 0.025}#,
         # {'cylinders_count': 20, 'cylinders_radius': 0.025},
@@ -53,6 +57,7 @@ def main():
         # {'cylinders_count': 20, 'cylinders_radius': 0.1}
     ]
 
+    print("Generating scenes...")
     for param in classes_parameters:
         for i in range(0, samples_per_class):
             generate_cylinders_config(config_name + "_" + str(i), param['cylinders_count'], param['cylinders_radius'])
@@ -63,6 +68,7 @@ def main():
     remove_blender_file_suffixes()
     convert_pcd_files_to_csv()
 
+    print("Copying dataset files...")
     dataset_destination = "../../../WoodlandNavigationData/SimulatedPointClouds/"
     os.system("rm " + dataset_destination + "*")
     os.system("cp ./PointClouds/*.csv " + dataset_destination)
