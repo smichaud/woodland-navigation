@@ -47,14 +47,14 @@ def main():
 
     print("Creating config files...")
     config_name = "sample"
-    samples_per_class = 1
+    samples_per_class = 30
     classes_parameters = [
-        {'cylinders_count': 10, 'cylinders_radius': 0.025}#,
-        # {'cylinders_count': 20, 'cylinders_radius': 0.025},
-        # {'cylinders_count': 10, 'cylinders_radius': 0.05},
-        # {'cylinders_count': 20, 'cylinders_radius': 0.05},
-        # {'cylinders_count': 10, 'cylinders_radius': 0.1},
-        # {'cylinders_count': 20, 'cylinders_radius': 0.1}
+        {'cylinders_count': 10, 'cylinders_radius': 0.025},
+        {'cylinders_count': 20, 'cylinders_radius': 0.025},
+        {'cylinders_count': 10, 'cylinders_radius': 0.05},
+        {'cylinders_count': 20, 'cylinders_radius': 0.05},
+        {'cylinders_count': 10, 'cylinders_radius': 0.1},
+        {'cylinders_count': 20, 'cylinders_radius': 0.1}
     ]
 
     print("Generating scenes...")
