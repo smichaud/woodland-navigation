@@ -1,12 +1,15 @@
 import bpy
 import blensor
 import math
+from mathutils import Matrix
 
 from scene_generation_config import SceneGenerationConfig
 
 # Default values for a ([-1, 1], [-1, 1], [-1, 1]) area of interest
-def add_camera(location=(-5.2, 0, 1), rotation=(math.radians(90), 0, math.radians(-90))):
-    bpy.ops.object.camera_add(location=location, rotation=rotation)
+def move_camera(location=(-5.2, 0, 1), rotation=(math.radians(90), 0, math.radians(-90))):
+    camera_id = get_camera_id()
+    bpy.data.objects[camera_id].location = (-5.2, 0, 1)
+    bpy.data.objects[camera_id].rotation_euler=(math.radians(90), 0, math.radians(-90))
 
 def add_point_lamp(location=(0.0, 0.0, 0.0)):
     bpy.ops.object.lamp_add(type='POINT', location=(0.0, 0.0, 0.0))
@@ -53,9 +56,10 @@ def add_primitive(primitive):
                                              major_segments=48,
                                              minor_segments=12)
 
-def clear_scene():
+def clear_scene_meshes():
     for obj in bpy.context.scene.objects:
-        bpy.context.scene.objects.unlink(obj)
+        if obj.type == 'MESH':
+            bpy.context.scene.objects.unlink(obj)
 
 def print_objects():
     for obj in bpy.context.scene.objects:
@@ -73,8 +77,6 @@ def get_camera_id():
 
 def generate_pointcloud(output_pcd_file):
     camera_id = get_camera_id()
-
-    bpy.data.objects[camera_id].local_coordinates = False
     blensor.blendodyne.scan_advanced(bpy.data.objects[camera_id],
                                      rotation_speed = 10.0,
                                      simulation_fps=24,
@@ -86,7 +88,8 @@ def generate_pointcloud(output_pcd_file):
                                      end_angle = 360.0,
                                      evd_last_scan=True,
                                      add_blender_mesh = False,
-                                     add_noisy_blender_mesh = False)
+                                     add_noisy_blender_mesh = False,
+                                     world_transformation = bpy.data.objects[camera_id].matrix_world)
     # or
     # blensor.dispatch_scan(bpy.data.objects['Camera'], "/home/smichaud/Desktop/a.pcd")
 
@@ -99,10 +102,8 @@ def main():
     config = SceneGenerationConfig()
     config.read_json()
 
-    clear_scene()
-
-    add_camera()
-    add_point_lamp()
+    clear_scene_meshes()
+    move_camera()
     add_primitives(config.primitives)
 
     generate_pointcloud(config.output_pcd_file)
