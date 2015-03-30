@@ -19,7 +19,7 @@ nbOfZ = round(nbOfZ);
 
 samplesCount = length(dataset);
 for sampleIndex = 1:samplesCount
-    voxelsCardinalityMap = zeros(nbOfX, nbOfY, nbOfZ);
+    pointsCountVoxelGrid = zeros(nbOfX, nbOfY, nbOfZ);
     for i = 1:nbOfX
         minX = areaMinX + (i-1)*voxelSize;
         maxX = areaMinX + i*voxelSize;
@@ -30,7 +30,7 @@ for sampleIndex = 1:samplesCount
                 minZ = areaMinZ + (k-1)*voxelSize;
                 maxZ = areaMinZ + k*voxelSize;
 
-                voxelsCardinalityMap(i,j,k) = length(find(...
+                pointsCountVoxelGrid(i,j,k) = length(find(...
                     dataset(sampleIndex).pointcloud(:,1) >= minX & ...
                     dataset(sampleIndex).pointcloud(:,1) < maxX & ...
                     dataset(sampleIndex).pointcloud(:,2) >= minY & ...
@@ -38,8 +38,8 @@ for sampleIndex = 1:samplesCount
                     dataset(sampleIndex).pointcloud(:,3) >= minZ & ...
                     dataset(sampleIndex).pointcloud(:,3) < maxZ));
 
-                dataset(sampleIndex).voxelsCardinalityMap = ...
-                    voxelsCardinalityMap;
+                dataset(sampleIndex).pointsCountVoxelGrid = ...
+                    pointsCountVoxelGrid;
             end
         end
     end
