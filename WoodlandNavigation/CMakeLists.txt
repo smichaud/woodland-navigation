@@ -50,6 +50,7 @@ aux_source_directory(. SRC_LIST)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/datatype)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/util)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/placerecognition)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/thirdpartylibraries/alglib)
 
 add_executable(${PROJECT_NAME}

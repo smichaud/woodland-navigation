@@ -1,40 +1,32 @@
 #include <iostream>
-#include "pointmatcher/PointMatcher.h"
-#include "boost/timer.hpp"
-
-#include "definitions.h"
-#include "display.h"
-#include "huskya200.h"
-
-#include "pointcloudprocessing.h"
-
-
+#include <pointmatcher/PointMatcher.h>
+#include <boost/timer.hpp>
 #include "stdafx.h"
 #include "dataanalysis.h"
 
+#include "definitions.h"
+#include "display.h"
+
+#include "placerecognitionprototype.h"
+
+
 using namespace std;
 
-void usage() {
-    cerr << "Please enter the arguments : inputFile outputFile " << endl;
+bool validateArguments(int &argc) {
+    if (argc < 3) {
+        cerr << "Please enter the arguments : inputFile outputFile " << endl;
+        return false;
+    }
+    return true;
 }
 
-int main(int argc, char *argv[])
-{
-    if (argc < 3) {
-        usage();
-        return 1;
-    }
-
+int main(int argc, char *argv[]) {
     boost::posix_time::ptime startTime =
             boost::posix_time::second_clock::local_time();
 
-    ////////////////////////////////////////////////////////////////////////////
-    HuskyA200 husky;
-    PointCloud testPointCloud(PM::DataPoints::load(argv[argc-2]));
-
-    husky.gotPointCloud(testPointCloud);
-    husky.savePointCloudRepresentation(argv[argc-1]);
-    ////////////////////////////////////////////////////////////////////////////
+    //Prototype here
+    PlaceRecognitionPrototype prototype;
+    prototype.run();
 
     boost::posix_time::ptime endTime =
             boost::posix_time::second_clock::local_time();
