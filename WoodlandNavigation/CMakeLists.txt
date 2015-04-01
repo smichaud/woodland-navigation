@@ -19,6 +19,11 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Wconversion")
 endif()
 
+# PCL
+find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 # Libpointmatcher
 find_package(pointmatcher 1.1.0 REQUIRED)
@@ -54,7 +59,9 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
                       ${POINTMATCHER_LIBRARIES}
-                      ${CERES_LIBRARIES})
+                      ${CERES_LIBRARIES}
+                      ${PCL_COMMON_LIBRARIES}
+                      ${PCL_IO_LIBRARIES})
 
 
 # Include Google Mock/Test
