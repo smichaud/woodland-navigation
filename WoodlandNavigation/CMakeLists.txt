@@ -20,7 +20,7 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # PCL
-find_package(PCL 1.3 REQUIRED COMPONENTS common io)
+find_package(PCL 1.7 REQUIRED COMPONENTS common visualization)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -34,6 +34,12 @@ message(STATUS "Using libpointmatcher version ${pointmatcher_VERSION}")
 FIND_PACKAGE(Ceres REQUIRED)
 INCLUDE_DIRECTORIES(${CERES_INCLUDE_DIRS})
 
+# Either put complete path to headers or call #include "partial/header.h"
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/datatype)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/util)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/placerecognition)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/thirdpartylibraries/alglib)
 
 # CMAKE_CURRENT_SOURCE_DIR: directory of the currently processed CMakeLists.txt
 # GLOB_RECURSE: will search in all folder and subfolder
@@ -46,13 +52,6 @@ file(GLOB_RECURSE
      ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 aux_source_directory(. SRC_LIST)
 
-# Either put complete path to headers or call #include "partial/header.h"
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/datatype)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/util)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/placerecognition)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/thirdpartylibraries/alglib)
-
 add_executable(${PROJECT_NAME}
                ${SRC_LIST}
                ${SOURCE_FILES}
@@ -61,8 +60,8 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
                       ${POINTMATCHER_LIBRARIES}
                       ${CERES_LIBRARIES}
-                      ${PCL_COMMON_LIBRARIES}
-                      ${PCL_IO_LIBRARIES})
+                      ${PCL_COMMONLIBRARIES}
+                      ${PCL_VISUALIZATION_LIBRARIES})
 
 
 # Include Google Mock/Test
@@ -79,8 +78,10 @@ add_executable(test
                ${TEST_SOURCE_FILES}
                ${SOURCE_FILES}
                ${CMAKE_CURRENT_SOURCE_DIR}/test/)
-target_link_libraries(test pthread)
-target_link_libraries(test gmock)
-target_link_libraries(test gtest)
-target_link_libraries(test ${POINTMATCHER_LIBRARIES})
+target_link_libraries(test
+                      pthread
+                      gmock
+                      gtest
+                      ${POINTMATCHER_LIBRARIES}
+                      ${PCL_VISUALIZATION_LIBRARIES})
 
