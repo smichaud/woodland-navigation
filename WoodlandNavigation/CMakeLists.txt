@@ -1,6 +1,10 @@
 project(WoodlandNavigation)
 cmake_minimum_required(VERSION 2.8)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
 # Set compiler to C++11
 add_definitions(-std=c++0x)
 
@@ -31,15 +35,18 @@ include_directories("${POINTMATCHER_INCLUDE_DIRS}")
 message(STATUS "Using libpointmatcher version ${pointmatcher_VERSION}")
 
 # Ceres Solver
-FIND_PACKAGE(Ceres REQUIRED)
-INCLUDE_DIRECTORIES(${CERES_INCLUDE_DIRS})
+find_package(Ceres REQUIRED)
+link_directories(${CERES_INCLUDE_DIRS})
+
+# Alglib
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibraries/alglib/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibraries/alglib/lib)
 
 # Either put complete path to headers or call #include "partial/header.h"
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/datatype)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/util)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/placerecognition)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/thirdpartylibraries/alglib)
 
 # CMAKE_CURRENT_SOURCE_DIR: directory of the currently processed CMakeLists.txt
 # GLOB_RECURSE: will search in all folder and subfolder
@@ -50,10 +57,9 @@ file(GLOB_RECURSE
 file(GLOB_RECURSE
      HEADER_FILES
      ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
-aux_source_directory(. SRC_LIST)
 
 add_executable(${PROJECT_NAME}
-               ${SRC_LIST}
+               ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                ${SOURCE_FILES}
                ${HEADER_FILES})
 
@@ -61,7 +67,8 @@ target_link_libraries(${PROJECT_NAME}
                       ${POINTMATCHER_LIBRARIES}
                       ${CERES_LIBRARIES}
                       ${PCL_COMMONLIBRARIES}
-                      ${PCL_VISUALIZATION_LIBRARIES})
+                      ${PCL_VISUALIZATION_LIBRARIES}
+                      alglib)
 
 
 # Include Google Mock/Test
@@ -75,13 +82,15 @@ file(GLOB_RECURSE
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 add_executable(test
+               ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
                ${TEST_SOURCE_FILES}
-               ${SOURCE_FILES}
-               ${CMAKE_CURRENT_SOURCE_DIR}/test/)
+               ${SOURCE_FILES})
 target_link_libraries(test
                       pthread
                       gmock
                       gtest
                       ${POINTMATCHER_LIBRARIES}
-                      ${PCL_VISUALIZATION_LIBRARIES})
+                      ${PCL_COMMONLIBRARIES}
+                      ${PCL_VISUALIZATION_LIBRARIES}
+                      alglib)
 
