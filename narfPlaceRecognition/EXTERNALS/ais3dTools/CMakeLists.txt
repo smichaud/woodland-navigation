@@ -1,0 +1,180 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+include(ExternalProject)
+include(CMakeDependentOption)
+
+project(ais3dTools)
+
+# The library prefix
+SET(LIB_PREFIX ${PROJECT_NAME}_)
+
+SET(${PROJECT_NAME}_C_FLAGS)
+SET(${PROJECT_NAME}_CXX_FLAGS)
+
+
+# default built type
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+# postfix, based on type
+SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "postfix applied to debug build of libraries")
+SET(CMAKE_RELEASE_POSTFIX "" CACHE STRING "postfix applied to release build of libraries")
+SET(CMAKE_RELWITHDEBINFO_POSTFIX "_rd" CACHE STRING "postfix applied to release-with-debug-information libraries")
+SET(CMAKE_MINSIZEREL_POSTFIX "_s" CACHE STRING "postfix applied to minimium-size-build libraries")
+
+# On the Mac platform, configure the RPATH as per the install, to
+# avoid the problem of loading both the built and installed versions
+# of the shared targets
+IF(APPLE)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  SET(CMAKE_INSTALL_RPATH "")
+ENDIF(APPLE)
+
+SET(${PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE PATH "Output path for libraries")
+SET(${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH "Output path for executables")
+
+# Set the output directory for the build executables and libraries
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${${PROJECT_NAME}_LIBRARY_OUTPUT_PATH})
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH})
+IF(WIN32)
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH})
+ELSE()
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${${PROJECT_NAME}_LIBRARY_OUTPUT_PATH})
+ENDIF()
+
+# Set search directory for looking for our custom CMake scripts to
+# look for SuiteSparse and QGLViewer
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
+
+# Detect OS and define macros appropriately
+IF(WIN32)
+  IF(CYGWIN)
+    MESSAGE(STATUS "Compiling on Cygwin")
+    ADD_DEFINITIONS(-DCYGWIN)
+  ELSE(CYGWIN)
+    ADD_DEFINITIONS(-DWINDOWS)
+    MESSAGE(STATUS "Compiling on Windows")
+  ENDIF(CYGWIN)
+  IF(MSVC)
+    MESSAGE(STATUS "Compiling on Windows (MSVC)")
+    ADD_DEFINITIONS(-DNOMINMAX)
+    ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
+  ENDIF(MSVC)
+ELSEIF(UNIX)
+  ADD_DEFINITIONS(-DUNIX)
+  MESSAGE(STATUS "Compiling on Unix")
+ELSEIF(APPLE)
+  ADD_DEFINITIONS(-DUNIX)
+  MESSAGE(STATUS "Compiling on OSX")
+ENDIF(WIN32)
+
+#Build type
+if (UNIX)
+	SET(BUILD_SHARED_LIBS ON)
+ELSEIF (WIN32)
+	SET(BUILD_SHARED_LIBS OFF)
+ENDIF()
+
+SET(${PROJECT_NAME}_BUILD_VISUALIZATION ON CACHE BOOL "Build Visualization")
+IF(${PROJECT_NAME}_BUILD_VISUALIZATION)
+  # OpenGL is used in the draw actions for the different types, as well
+  # as for creating the GUI itself
+  find_package(OpenGL)
+  if (OPENGL_FOUND)
+    MESSAGE("OpenGL Found")
+    include_directories(${OPENGL_INCLUDE_DIR})
+  else (OPENGL_FOUND)
+    MESSAGE("OpenGL environment missing")
+  endif (OPENGL_FOUND)
+
+  # For building the GUI
+  FIND_PACKAGE(QGLViewer)
+ELSE(${PROJECT_NAME}_BUILD_VISUALIZATION)
+  MESSAGE(STATUS "Building without Visualization support.")
+ENDIF(${PROJECT_NAME}_BUILD_VISUALIZATION)
+
+SET( ${PROJECT_NAME}_USE_OPENMP OFF CACHE BOOL "Build with OpenMP support (EXPERIMENTAL)")
+IF (${PROJECT_NAME}_USE_OPENMP)
+  FIND_PACKAGE(OpenMP)
+  IF(OPENMP_FOUND)
+    SET(${PROJECT_NAME}_C_FLAGS "${${PROJECT_NAME}_C_FLAGS} -fopenmp ${OpenMP_C_FLAGS}")
+    SET(${PROJECT_NAME}_CXX_FLAGS "${${PROJECT_NAME}_CXX_FLAGS} -fopenmp ${OpenMP_CXX_FLAGS}")
+    MESSAGE(STATUS "Compiling with OpenMP support")
+    ADD_DEFINITIONS(-DOPENMP_SUPPORT)
+  ENDIF(OPENMP_FOUND)
+ENDIF(${PROJECT_NAME}_USE_OPENMP)
+
+# shall we build the core apps using the library
+SET(${PROJECT_NAME}_BUILD_APPS ON CACHE BOOL "Build Apps")
+IF(${PROJECT_NAME}_BUILD_APPS)
+  MESSAGE(STATUS "Compiling Apps")
+ENDIF(${PROJECT_NAME}_BUILD_APPS)
+
+# PCL
+find_package(PCL 1.5 REQUIRED)
+include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+# Compiler specific options for gcc
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  # Generic settings for optimisation
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse2")
+  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -msse2")
+
+  # OS X
+  #IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  #ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # Linux
+  IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+  ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  # activate warnings !!!
+  SET(${PROJECT_NAME}_C_FLAGS "${${PROJECT_NAME}_C_FLAGS} -Wall -W")
+  SET(${PROJECT_NAME}_CXX_FLAGS "${${PROJECT_NAME}_CXX_FLAGS} -Wall -W")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+SET(${PROJECT_NAME}_USE_AVX OFF CACHE BOOL "Use AVX (Advanced Vector Extensions)")
+IF(${PROJECT_NAME}_USE_AVX)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx")
+  MESSAGE("Enabling AVX extension")
+ENDIF(${PROJECT_NAME}_USE_AVX)
+
+
+# specifying compiler flags
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${PROJECT_NAME}_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${${PROJECT_NAME}_C_FLAGS}")
+#MESSAGE("CMAKE_C_FLAGS = ${CMAKE_C_FLAGS}")
+#MESSAGE("CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
+
+# Set up the top-level include directories
+INCLUDE_DIRECTORIES(${${PROJECT_NAME}_SOURCE_DIR})
+include_directories(${PROJECT_BINARY_DIR})
+
+CMAKE_DEPENDENT_OPTION(${PROJECT_NAME}_BUILD_G2O "Build G2O" ON "${PROJECT_NAME}_BUILD_VISUALIZATION" OFF)
+CMAKE_DEPENDENT_OPTION(${PROJECT_NAME}_BUILD_SSA "Build SSA" ON "${PROJECT_NAME}_BUILD_G2O" OFF)
+CMAKE_DEPENDENT_OPTION(${PROJECT_NAME}_BUILD_MODELCREATOR "Build ModelCreator" ON "${PROJECT_NAME}_BUILD_SSA;${PROJECT_NAME}_BUILD_OPENNI" OFF)
+CMAKE_DEPENDENT_OPTION(${PROJECT_NAME}_BUILD_SUITESPARSE  "Build SuiteSparse" ON "${PROJECT_NAME}_BUILD_SSA" OFF)
+CMAKE_DEPENDENT_OPTION(${PROJECT_NAME}_BUILD_SURFACEPRIMITIVES "Build surface primitives" ON "${PROJECT_NAME}_BUILD_VISUALIZATION" OFF)
+
+# shall we build the g2o and related apps
+IF(${PROJECT_NAME}_BUILD_G2O)
+  MESSAGE(STATUS "Compiling G2O")
+  include_directories(${PROJECT_BINARY_DIR}/include)
+  LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/lib)
+ENDIF(${PROJECT_NAME}_BUILD_G2O)
+
+ADD_SUBDIRECTORY(EXTERNALS)
+ADD_SUBDIRECTORY(basics)
+
+IF(${PROJECT_NAME}_BUILD_VISUALIZATION)
+  ADD_SUBDIRECTORY(visualization)
+ENDIF(${PROJECT_NAME}_BUILD_VISUALIZATION)
+
+

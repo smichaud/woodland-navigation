@@ -1,0 +1,1 @@
+cmd='/usr/local/bin/cmake;-DCMAKE_INSTALL_PREFIX=/home/smichaud/Workspace/WoodlandNavigation/narfPlaceRecognition/build;-DG2O_USE_OPENMP=OFF;-GUnix Makefiles;/home/smichaud/Workspace/WoodlandNavigation/narfPlaceRecognition/EXTERNALS/ais3dTools/EXTERNALS/g2o/src/g2o'

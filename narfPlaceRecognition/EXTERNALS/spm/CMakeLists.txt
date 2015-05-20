@@ -1,0 +1,3 @@
+ADD_SUBDIRECTORY(kmeans++)
+ADD_SUBDIRECTORY(spmBase)
+ADD_SUBDIRECTORY(spmDictionarySelector)

@@ -1,0 +1,1531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BaseMainWidget</class>
+ <widget class="QWidget" name="BaseMainWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1258</width>
+    <height>843</height>
+   </rect>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>640</width>
+    <height>480</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Place Recognition GUI</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QMenuBar" name="Menu">
+     <widget class="QMenu" name="PointCloud">
+      <property name="title">
+       <string>PointCloud</string>
+      </property>
+      <addaction name="menu_PointCloud_Reset"/>
+      <addaction name="menu_PointCloud_Load"/>
+      <addaction name="menu_PointCloud_Recalculate"/>
+     </widget>
+     <widget class="QMenu" name="View">
+      <property name="title">
+       <string>View</string>
+      </property>
+      <addaction name="menu_View_PointCloud"/>
+      <addaction name="menu_View_PointCloudFromRangeImage"/>
+      <addaction name="menu_View_Features"/>
+      <addaction name="menu_View_ValidationPoints"/>
+      <addaction name="separator"/>
+      <addaction name="menu_View_ShowOdometryMap"/>
+      <addaction name="menu_View_ShowIncrementalScanMatchingMap"/>
+      <addaction name="menu_View_ShowSlamMap"/>
+      <addaction name="separator"/>
+      <addaction name="menu_View_MapIn2D"/>
+      <addaction name="menu_View_SelectedScanInMap"/>
+      <addaction name="menu_View_CloudInMap"/>
+      <addaction name="menu_View_FlattenMap"/>
+      <addaction name="menu_View_ScanNumbersOnTrajectory"/>
+      <addaction name="menu_View_CurrentCorrespondences"/>
+      <addaction name="menu_View_SaveMapScreenshots"/>
+     </widget>
+     <widget class="QMenu" name="Process">
+      <property name="title">
+       <string>Process</string>
+      </property>
+      <addaction name="menu_Process_Match"/>
+     </widget>
+     <widget class="QMenu" name="PointCloud2">
+      <property name="title">
+       <string>PointCloud2</string>
+      </property>
+      <addaction name="menu_PointCloud2_Reset"/>
+      <addaction name="menu_PointCloud2_Load"/>
+      <addaction name="menu_PointCloud2_Recalculate"/>
+     </widget>
+     <widget class="QMenu" name="Database">
+      <property name="title">
+       <string>Database</string>
+      </property>
+      <addaction name="menu_Database_Reset"/>
+      <addaction name="menu_Database_Load"/>
+      <addaction name="menu_Database_LoadConfusionMatrix"/>
+      <addaction name="menu_Database_SaveForPublishing"/>
+      <addaction name="separator"/>
+      <addaction name="menu_Database_CopySelectedScanToLeft"/>
+      <addaction name="menu_Database_CopySelectedScanToRight"/>
+      <addaction name="separator"/>
+      <addaction name="menu_Database_RecalculateAndSaveAll"/>
+      <addaction name="menu_Database_RecalculateAndSaveRangeImages"/>
+      <addaction name="menu_Database_SaveRangeImages"/>
+      <addaction name="menu_Database_SaveFeaturesAndValidationPoints"/>
+      <addaction name="menu_Database_UpdateAndSaveSelfSimilarities"/>
+      <addaction name="menu_Database_ShowGroundTruthConfusionMatrix"/>
+      <addaction name="menu_Database_CalculateConfusionMatrix"/>
+      <addaction name="menu_Database_CalculateConfusionMatrixSlamHack"/>
+      <addaction name="menu_Database_ClearConfusionMatrix"/>
+      <addaction name="menu_Database_CreateConfusionMatrixStatistics"/>
+      <addaction name="separator"/>
+      <addaction name="menu_Database_CreateDatasetStatistics"/>
+      <addaction name="menu_Database_DoIncrementalScanMatching"/>
+      <addaction name="menu_Database_CreateAndOptimizeGraph"/>
+      <addaction name="menu_Database_CreateAndOptimizeGraphRobust"/>
+      <addaction name="menu_Database_SaveKnownPoses"/>
+      <addaction name="menu_Database_SaveVisualizationGraph"/>
+      <addaction name="separator"/>
+      <addaction name="menu_Database_RecalculateDictionaryFeatures"/>
+      <addaction name="menu_Database_RecalculateDictionary"/>
+      <addaction name="menu_Database_UpdateScanHistograms"/>
+      <addaction name="menu_Database_GetConfusionMatrixFromSPModel"/>
+      <addaction name="menu_Database_GetConfusionMatrixFromGlobalFeatures"/>
+      <addaction name="separator"/>
+      <addaction name="menu_Database_MatchLeft"/>
+      <addaction name="menu_Database_MatchRight"/>
+      <addaction name="menu_Database_MatchSelectedScan"/>
+     </widget>
+     <widget class="QMenu" name="menuConfig">
+      <property name="title">
+       <string>Config</string>
+      </property>
+      <addaction name="menu_Config_useGlobalFeaturesToSortScans"/>
+      <addaction name="menu_Config_useBowToSortScans"/>
+     </widget>
+     <addaction name="PointCloud"/>
+     <addaction name="PointCloud2"/>
+     <addaction name="View"/>
+     <addaction name="Process"/>
+     <addaction name="Database"/>
+     <addaction name="menuConfig"/>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QFrame" name="frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>50</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QFrame" name="imagesFrame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>32767</width>
+             <height>500</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="Ais3dTools::ImageWidget" name="imageWidget1" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Ais3dTools::ImageWidget" name="imageWidget2" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QFrame" name="viewerFrame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>50</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>200</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <layout class="QHBoxLayout">
+              <item>
+               <layout class="QVBoxLayout">
+                <item>
+                 <widget class="Ais3dTools::ALUGLViewer" name="viewer" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout">
+                  <item>
+                   <spacer name="spacer2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="leftPlusButton">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>30</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>20</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>+</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="spacer2_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout">
+                <item>
+                 <widget class="QPushButton" name="leftArrowButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>30</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>20</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>←</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="rightArrowButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>30</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>20</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>→</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout">
+                <item>
+                 <widget class="Ais3dTools::ALUGLViewer" name="viewer2" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout">
+                  <item>
+                   <spacer name="spacer2_3">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="rightPlusButton">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>30</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>20</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>+</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="spacer2_2_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="scanDatabaseList">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="transformationsList">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="statusFrame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QProgressBar" name="progressBar">
+          <property name="value">
+           <number>24</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="stopButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>STOP</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="currentScanLabel">
+       <property name="text">
+        <string>Scan xx: ???</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QFrame" name="confusionMatrixManipulationFrame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>270</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>270</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>0</number>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="confusionMatrixAddButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Add to matrix</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="confusionMatrixRemoveButton">
+          <property name="text">
+           <string>Remove from matrix</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <action name="menu_View_PointCloud">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PointCloud</string>
+   </property>
+   <property name="iconText">
+    <string>PointCloud</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuViewPointCloud</cstring>
+   </property>
+  </action>
+  <action name="menuPointCloudListenToIPC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Listen to IPC</string>
+   </property>
+   <property name="iconText">
+    <string>Listen to IPC</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloudListenToIPC</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud_Load">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+   <property name="iconText">
+    <string>Load</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menu_PointCloud_Load</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud_Save">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="iconText">
+    <string>Save</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menu_PointCloud_Save</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud_Reset">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="iconText">
+    <string>Reset</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloudReset</cstring>
+   </property>
+  </action>
+  <action name="menuViewRobot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Robot</string>
+   </property>
+   <property name="iconText">
+    <string>Robot</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuViewRobot</cstring>
+   </property>
+  </action>
+  <action name="menu_View_Features">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Features</string>
+   </property>
+   <property name="iconText">
+    <string>Features</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuViewFeatures</cstring>
+   </property>
+  </action>
+  <action name="menu_View_PointCloudFromRangeImage">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>PointCloud from range image</string>
+   </property>
+   <property name="iconText">
+    <string>PointCloud from range image</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuViewPointCloudFromRangeImage</cstring>
+   </property>
+  </action>
+  <action name="Action">
+   <property name="iconText">
+    <string>Unnamed</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>Action</cstring>
+   </property>
+  </action>
+  <action name="menu_Process_Match">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Match</string>
+   </property>
+   <property name="iconText">
+    <string>Match</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuProcessMatch</cstring>
+   </property>
+  </action>
+  <action name="menu_View_ValidationPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Validation points</string>
+   </property>
+   <property name="iconText">
+    <string>Validation points</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuViewValidationPoints</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud2_Reset">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="iconText">
+    <string>Reset</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloud2Reset</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud2_Load">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+   <property name="iconText">
+    <string>Load</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloud2Load</cstring>
+   </property>
+  </action>
+  <action name="menuPointCloud2Save">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="iconText">
+    <string>Save</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloud2Save</cstring>
+   </property>
+  </action>
+  <action name="databaseadd_toDatabaseAction">
+   <property name="text">
+    <string>add toDatabase</string>
+   </property>
+   <property name="iconText">
+    <string>add toDatabase</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>databaseadd_toDatabaseAction</cstring>
+   </property>
+  </action>
+  <action name="menuDatabaseSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="iconText">
+    <string>Save</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseSave</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_Reset">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="iconText">
+    <string>Reset</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseReset</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_Load">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load</string>
+   </property>
+   <property name="iconText">
+    <string>Load</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseLoad</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_MatchLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Match left</string>
+   </property>
+   <property name="iconText">
+    <string>Match left range image</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseMatchLeftRangeImage</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_CalculateConfusionMatrix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Calculate and save confusion matrix</string>
+   </property>
+   <property name="iconText">
+    <string>Calculate confusion matrix</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseCalculateConfusionMatrix</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_MatchSelectedScan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Match selected scan</string>
+   </property>
+   <property name="iconText">
+    <string>Match selected scan</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseMatchSelectedScan</cstring>
+   </property>
+  </action>
+  <action name="menuDatabaseLoadOptimizedGraph">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load optimized graph</string>
+   </property>
+   <property name="iconText">
+    <string>Load optimized graph</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseLoadOptimizedGraph</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_CopySelectedScanToLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Copy selected scan to left</string>
+   </property>
+   <property name="iconText">
+    <string>Copy selected scan to left</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseCopySelectedScanToLeft</cstring>
+   </property>
+  </action>
+  <action name="databasenew_itemAction">
+   <property name="text">
+    <string>new item</string>
+   </property>
+   <property name="iconText">
+    <string>new item</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>databasenew_itemAction</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_CopySelectedScanToRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Copy selected scan to Right</string>
+   </property>
+   <property name="iconText">
+    <string>Copy selected scan to Right</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseCopySelectedScanToRight</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_RecalculateAndSaveAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate and save all</string>
+   </property>
+   <property name="iconText">
+    <string>Recalculate all</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseRecalculateAll</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud_Recalculate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate</string>
+   </property>
+   <property name="iconText">
+    <string>Recalculate</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloudRecalculate</cstring>
+   </property>
+  </action>
+  <action name="menu_PointCloud2_Recalculate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate</string>
+   </property>
+   <property name="iconText">
+    <string>Recalculate</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuPointCloud2Recalculate</cstring>
+   </property>
+  </action>
+  <action name="menuDatabaseReplaceOdometryWithScanMatchedPoses">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Replace odometry with scan matched poses</string>
+   </property>
+   <property name="iconText">
+    <string>Replace odometry with scan matched poses</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseReplaceOdometryWithScanMatchedPoses</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_LoadConfusionMatrix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load confusion matrix</string>
+   </property>
+   <property name="iconText">
+    <string>Load confusion matrix</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseLoadConfusionMatrix</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_CreateDatasetStatistics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create dataset statistics</string>
+   </property>
+   <property name="iconText">
+    <string>Analyse confusion matrix</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseAnalyseConfusionMatrix</cstring>
+   </property>
+  </action>
+  <action name="menuDatabaseSaveAsAscii">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save as Ascii</string>
+   </property>
+   <property name="iconText">
+    <string>Save as Ascii</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseSaveAsAscii</cstring>
+   </property>
+  </action>
+  <action name="pointcloudnew_itemAction">
+   <property name="text">
+    <string>new item</string>
+   </property>
+   <property name="iconText">
+    <string>new item</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>pointcloudnew_itemAction</cstring>
+   </property>
+  </action>
+  <action name="menuDatabaseSaveBinaryPointClouds">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Binary point clouds</string>
+   </property>
+   <property name="iconText">
+    <string>Save Binary point clouds</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>menuDatabaseSaveBinaryPointClouds</cstring>
+   </property>
+  </action>
+  <action name="menu_Database_SaveFeaturesAndValidationPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Features and Validation Points</string>
+   </property>
+  </action>
+  <action name="menu_Database_GetConfusionMatrixFromSPModel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Get confusion matrix from SPModel</string>
+   </property>
+  </action>
+  <action name="menu_View_ShowSlamMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show SLAM map</string>
+   </property>
+  </action>
+  <action name="menu_Database_DoIncrementalScanMatching">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Do incremental scan matching</string>
+   </property>
+  </action>
+  <action name="menu_Database_SaveKnownPoses">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save Known Poses</string>
+   </property>
+  </action>
+  <action name="menu_View_ShowOdometryMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Odometry Map</string>
+   </property>
+  </action>
+  <action name="menu_View_ShowIncrementalScanMatchingMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Incremental Scan Matching Map</string>
+   </property>
+  </action>
+  <action name="menu_Database_CreateAndOptimizeGraph">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create and optimize graph</string>
+   </property>
+  </action>
+  <action name="menu_Database_SaveRangeImages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Range Images</string>
+   </property>
+  </action>
+  <action name="menu_View_MapIn2D">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Map in 2D</string>
+   </property>
+  </action>
+  <action name="menu_View_SelectedScanInMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Selected scan in map</string>
+   </property>
+  </action>
+  <action name="menu_View_CloudInMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cloud in Map</string>
+   </property>
+  </action>
+  <action name="menu_View_FlattenMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flatten Map</string>
+   </property>
+  </action>
+  <action name="menu_Database_CreateConfusionMatrixStatistics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create confusion matrix statistics</string>
+   </property>
+  </action>
+  <action name="menu_Database_UpdateAndSaveSelfSimilarities">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Update and save SelfSimilarities</string>
+   </property>
+  </action>
+  <action name="menu_Database_RecalculateDictionaryFeatures">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate Dictionary features</string>
+   </property>
+  </action>
+  <action name="menu_Database_RecalculateDictionary">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate Dictionary</string>
+   </property>
+  </action>
+  <action name="menu_Database_UpdateScanHistograms">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Update scan histograms</string>
+   </property>
+  </action>
+  <action name="menu_Database_ShowGroundTruthConfusionMatrix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show ground truth confusion matrix</string>
+   </property>
+  </action>
+  <action name="menu_Database_SaveVisualizationGraph">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save Visualization Graph</string>
+   </property>
+  </action>
+  <action name="menu_Database_SaveForPublishing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save for Publishing</string>
+   </property>
+  </action>
+  <action name="menu_Database_MatchRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Match right</string>
+   </property>
+  </action>
+  <action name="menu_View_ScanNumbersOnTrajectory">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Scan numbers on trajectory</string>
+   </property>
+  </action>
+  <action name="menu_View_CurrentCorrespondences">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Current correspondences</string>
+   </property>
+  </action>
+  <action name="menu_View_SaveMapScreenshots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save map screenshots</string>
+   </property>
+  </action>
+  <action name="menu_Database_GetConfusionMatrixFromGlobalFeatures">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Get confusion matrix from global features</string>
+   </property>
+  </action>
+  <action name="menu_Database_RecalculateAndSaveRangeImages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Recalculate and save range images</string>
+   </property>
+  </action>
+  <action name="menu_Database_CreateAndOptimizeGraphRobust">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create and optimize graph (robust)</string>
+   </property>
+  </action>
+  <action name="menu_Database_ClearConfusionMatrix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Clear confusion matrix</string>
+   </property>
+  </action>
+  <action name="menu_Database_CalculateConfusionMatrixSlamHack">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Calculate confusion matrix (SLAM hack)</string>
+   </property>
+  </action>
+  <action name="menu_Config_useGlobalFeaturesToSortScans">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use global features to sort scans</string>
+   </property>
+  </action>
+  <action name="menu_Config_useBowToSortScans">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use BoW to sort scans</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="5" margin="5"/>
+ <customwidgets>
+  <customwidget>
+   <class>Ais3dTools::ALUGLViewer</class>
+   <extends>QWidget</extends>
+   <header>EXTERNALS/ais3dTools/visualization/aluGLViewer/alu_glviewer.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Ais3dTools::ImageWidget</class>
+   <extends>QWidget</extends>
+   <header>EXTERNALS/ais3dTools/visualization/imageWidget/imageWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <includes>
+  <include location="local">EXTERNALS/ais3dTools/visualization/imageWidget/imageWidget.h</include>
+  <include location="local">EXTERNALS/ais3dTools/visualization/aluGLViewer/alu_glviewer.h</include>
+ </includes>
+ <resources/>
+ <connections/>
+</ui>
