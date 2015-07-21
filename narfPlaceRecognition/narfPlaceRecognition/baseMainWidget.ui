@@ -112,12 +112,20 @@
       <addaction name="menu_Config_useGlobalFeaturesToSortScans"/>
       <addaction name="menu_Config_useBowToSortScans"/>
      </widget>
+     <widget class="QMenu" name="menuSeb">
+      <property name="title">
+       <string>Seb</string>
+      </property>
+      <addaction name="menu_Seb_runAll"/>
+      <addaction name="menu_Seb_runOptional"/>
+     </widget>
      <addaction name="PointCloud"/>
      <addaction name="PointCloud2"/>
      <addaction name="View"/>
      <addaction name="Process"/>
      <addaction name="Database"/>
      <addaction name="menuConfig"/>
+     <addaction name="menuSeb"/>
     </widget>
    </item>
    <item>
@@ -648,7 +656,16 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -1506,6 +1523,25 @@
    </property>
    <property name="text">
     <string>Use BoW to sort scans</string>
+   </property>
+  </action>
+  <action name="menu_Seb_runAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Run All</string>
+   </property>
+  </action>
+  <action name="menu_Seb_runOptional">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Run Optional</string>
    </property>
   </action>
  </widget>
