@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 project(narfPlaceRecognition)
 
 add_definitions(-std=c++11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 
 # The library prefix
 SET(LIB_PREFIX ${PROJECT_NAME}_)
