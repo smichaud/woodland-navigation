@@ -41,9 +41,14 @@ bin/
 # PyCharm files
 *.idea
 
+# Vim swap files
+*.swp
+
 # PointCloud Generation
 Utils/PointCloudGeneration/ConfigFiles
 Utils/PointCloudGeneration/BlendFiles
 Utils/PointCloudGeneration/PointClouds/
 
-*.swp
+# g2o build folder
+narfPlaceRecognition/EXTERNALS/ais3dTools/EXTERNALS/g2o/src/g2o-build/
+
