@@ -45,3 +45,5 @@ bin/
 Utils/PointCloudGeneration/ConfigFiles
 Utils/PointCloudGeneration/BlendFiles
 Utils/PointCloudGeneration/PointClouds/
+
+*.swp
