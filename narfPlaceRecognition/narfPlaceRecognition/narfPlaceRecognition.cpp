@@ -2297,17 +2297,15 @@ int main(int argc, char** argv) {
         /////////////SEB////////////////////////////////////////////////////////
         if(window.menu_Seb_runAll->isChecked()) {
             window.menu_Seb_runAll->setChecked(false);
-            std::cout << "Running the following action:" << std::endl;
+            std::cout << "Running the following actions:" << std::endl;
             std::cout << "Database --> Recalculate and save range images" << std::endl;
-            std::cout << "Database --> Create dataset statistics" << std::endl;
-            std::cout << "Database --> Recalculate and save all" << std::endl;
-            std::cout << "Database --> Calculate and save confusion matrix" << std::endl;
-
             recalculateAndSaveRangeImages(application, window, maxNoOfThreads, maximumRange);
+            std::cout << "Database --> Create dataset statistics" << std::endl;
             createDatasetStatistics(window, keyPointDetector);
+            std::cout << "Database --> Recalculate and save all" << std::endl;
             recalculateAndSaveAll(application, window, keyPointDetector, maxNoOfThreads, maximumRange);
+            std::cout << "Database --> Calculate and save confusion matrix" << std::endl;
             calculateConfusionMatrix(application, window, confusionMatrixWidget, confusionMatrixTransformations, confusionMatrixScores, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
-
             std::cout << "Done !" << std::endl;
         }
 
@@ -2846,6 +2844,8 @@ void calculateConfusionMatrix(QApplication &application, MainWidget &window, Ima
         confusionMatrixFile.close();
 
         confusionMatrixWidget.setRealImage(&confusionMatrixScores[0], noOfScans, noOfScans, true, 0.0f, 1.0f);
+        std::string confusionMatrixImageFile = scanDatabase.databaseDirectory+"/"+statisticsDirectory+"/ConfusionMatrix"+settings+"_"+scanDatabase.name+".tiff";
+        confusionMatrixWidget.save(confusionMatrixImageFile.c_str());
     }
     else {
         confusionMatrixWidget.setVisible(false);
