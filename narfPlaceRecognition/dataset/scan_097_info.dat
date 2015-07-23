@@ -1,6 +1,0 @@
-# Known values for this scan
-selfSimilarity 0.0489759
-# Known 6DOF positions for this scan (format: x y z roll pitch yaw)
-IncrementalScanMatching: -35.3932 0.40315 0.965577 0.0302387 1.03753 -0.056464
-Odometry: -2.211 32.255 -0.744 -1.5794 0.0110996 -2.36539
-SLAM: -35.3058 1.22869 2.41525 0.213591 1.05814 0.03036
