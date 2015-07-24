@@ -118,6 +118,7 @@
       </property>
       <addaction name="menu_Seb_runAll"/>
       <addaction name="menu_Seb_runOptional"/>
+      <addaction name="menu_Seb_devTest"/>
      </widget>
      <addaction name="PointCloud"/>
      <addaction name="PointCloud2"/>
@@ -1542,6 +1543,14 @@
    </property>
    <property name="text">
     <string>Run Optional</string>
+   </property>
+  </action>
+  <action name="menu_Seb_devTest">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Development Test :)</string>
    </property>
   </action>
  </widget>

@@ -100,6 +100,8 @@ void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPoint
 void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange);
 void calculateConfusionMatrix(QApplication &application, MainWidget &window, ImageWidget &confusionMatrixWidget, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations, std::vector<float> &confusionMatrixScores, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack);
 template <typename ValueType> void saveResult(const std::string& valueName, ValueType value, bool datasetSpecific=true);
+
+void createCurves(MainWidget &window, std::vector<float> &confusionMatrixScores, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations);
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2318,6 +2320,14 @@ int main(int argc, char** argv) {
             std::cout << "Database --> SaveKnownPoses" << std::endl;
             std::cout << "Database --> CreateConfusionMatrixStatistics" << std::endl;
         }
+
+        if(window.menu_Seb_devTest->isChecked()) {
+            std::cout << "Running a developpement test..." << std::endl;
+            window.menu_Seb_devTest->setChecked(false);
+
+            createCurves(window, confusionMatrixScores, confusionMatrixTransformations);
+            std::cout << "Test done !" << std::endl;
+        }
         /////////////SEB////////////////////////////////////////////////////////
 
         // Save know poses
@@ -2893,6 +2903,61 @@ void saveResult(const std::string& valueName, ValueType value, bool datasetSpeci
     fileOut << ss.str();
     fileOut.close();
 }
+
+void createCurves(MainWidget &window, std::vector<float> &confusionMatrixScores, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations)  {
+    std::cout << "===== Curves creation function" << std::endl;
+
+    int noOfScans = scanDatabase.size();
+    for (int scanIdx1=0; scanIdx1<noOfScans; ++scanIdx1) {
+        for (int scanIdx2=0; scanIdx2<noOfScans; ++scanIdx2) {
+            int confusionMatrixIdx = scanIdx2*noOfScans+scanIdx1;
+            float score = confusionMatrixScores[confusionMatrixIdx];
+
+            const Eigen::Isometry3f& transformation = confusionMatrixTransformations[confusionMatrixIdx];
+            float x, y, z, roll, pitch, yaw;
+            pcl::getTranslationAndEulerAngles(transformation, x, y, z, roll, pitch, yaw);
+            if (!std::isfinite(x)||!std::isfinite(y)||!std::isfinite(z)||!std::isfinite(roll)||!std::isfinite(pitch)||!std::isfinite(yaw)) {
+                score=x=y=z=roll=pitch=yaw = 0.0f;
+            }
+
+            // [TODO]: Get the odom and create the ROC curve - 2015-07-23 04:46pm
+            // The true/false positive/negative is calculated in CreateConfusionMatrixStatistics
+            // Compute the true/false positive/negative --> Recall rate(TP / TP+FN)
+            // Article use recall vs dist. and vs scores to match
+            //if(score > scoreTreshold) { 
+               //if(distance < maxDistanceToConsiderScansOverlapping) { 
+                   //std::cout << "True Positive" << std::endl;
+               //} else {
+                   //std::cout << "False Positive" << std::endl;
+               //}
+            //} else {
+               //if(distance < maxDistanceToConsiderScansOverlapping) { 
+                   //std::cout << "False Negative" << std::endl;
+               //} else {
+                   //std::cout << "True Negative" << std::endl;
+               //}
+            //}
+        }
+    }
+
+    std::string fileName = scanDatabase.databaseDirectory+"/"+statisticsDirectory+"/testPlot.pdf";
+    QVector<double> a(101), b(101);
+    for (int i=0; i<101; ++i) {
+        a[i] = i/50.0 - 1;
+        b[i] = a[i]*a[i];
+    }
+
+    window.customPlot.addGraph();
+    window.customPlot.graph(0)->setData(a, b);
+    window.customPlot.xAxis->setLabel("x");
+    window.customPlot.yAxis->setLabel("y");
+    window.customPlot.xAxis->setRange(-1, 1);
+    window.customPlot.yAxis->setRange(0, 1);
+    //window.customPlot.show();
+    //window.customPlot.replot();
+    window.customPlot.savePdf(QString::fromStdString(fileName));
+}
+
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"  // Do not show warnings from ROS - for some weird reason
 // some stuff appears after the end of the code...

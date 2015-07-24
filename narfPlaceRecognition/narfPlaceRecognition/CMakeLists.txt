@@ -6,6 +6,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 # GUI PART #
 ############
 IF (BUILD_GUI_ELEMENTS)
+    FIND_PACKAGE(Qt4 REQUIRED)
     INCLUDE(${QT_USE_FILE})
 
     QT4_WRAP_UI(UI_HEADERS baseMainWidget.ui)
@@ -24,7 +25,14 @@ IF (BUILD_GUI_ELEMENTS)
         ${QGLVIEWER_LIBRARY}
         ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
         )
-    ADD_EXECUTABLE(narfPlaceRecognition narfPlaceRecognition.cpp)
+
+    SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+    SET(CMAKE_AUTOMOC ON)
+
+    ADD_EXECUTABLE(narfPlaceRecognition 
+        narfPlaceRecognition.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../EXTERNALS/qcustomplot/qcustomplot.cpp
+        )
     TARGET_LINK_LIBRARIES(narfPlaceRecognition
         ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
         g2o_core g2o_types_slam3d g2o_solver_csparse #g2o_stuff g2o_types_icp g2o_core g2o_solver_cholmod
@@ -35,16 +43,12 @@ IF (BUILD_GUI_ELEMENTS)
         )
     ADD_DEPENDENCIES(narfPlaceRecognition g2o)
 
-    ADD_EXECUTABLE(sebmain sebmain.cpp)
-    TARGET_LINK_LIBRARIES(sebmain
-        ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
-        g2o_core g2o_types_slam3d g2o_solver_csparse #g2o_stuff g2o_types_icp g2o_core g2o_solver_cholmod
-        basics
-        spm_base spm_dictionary_selection kmeans++
-        narfPlaceRecognitionLib
-        narfPlaceRecognitionGui
+    add_executable(sebmain
+        ${CMAKE_CURRENT_SOURCE_DIR}/sebmain.cpp
         )
-    ADD_DEPENDENCIES(narfPlaceRecognition g2o)
+    target_link_libraries(sebmain
+        ${QT_LIBRARIES}
+        )
 
     ##########
     # NO GUI #

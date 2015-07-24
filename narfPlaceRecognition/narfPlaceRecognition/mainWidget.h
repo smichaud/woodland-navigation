@@ -6,6 +6,7 @@ using std::cout;
 using std::pair;
 #include <string>
 using std::string;
+#include "qcustomplot.h"
 #include <qfiledialog.h>
 #include <qinputdialog.h>
 #include <Eigen/Core>
@@ -25,6 +26,8 @@ class MainWidget : public QWidget, public Ui::BaseMainWidget
     bool selectedPointChanged;
     //, loadPointCloud, savePointCloud;
     string fileName;
+
+    QCustomPlot customPlot; 
 
   public:
     //! Pops up a file dialog to ask for a file to open. fileFilter e.g. "All files (*.*)"
