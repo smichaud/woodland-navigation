@@ -19,13 +19,15 @@ using namespace std;
 #include <omp.h>
 
 #include <QApplication>
+#include "mainWidget.h"
 #include "narfPlaceRecognitionLib/scanDatabase.h"
 #include "narfPlaceRecognitionLib/rangeImageMatching.h"
 #include "visMapCloud.h"
+#include "Results.hpp"
+
 #include "EXTERNALS/ais3dTools/visualization/imageWidget/imageWidget.h"
 #include "EXTERNALS/ais3dTools/visualization/aluGLViewer/alu_glviewer.h"
 #include "EXTERNALS/ais3dTools/visualization/aluGLViewerObjects/glo_pcl_pointcloud.h"
-#include "mainWidget.h"
 
 #include "EXTERNALS/ais3dTools/basics/misc.h"
 #include "EXTERNALS/ais3dTools/basics/timeutil.h"
@@ -46,8 +48,16 @@ using namespace Ais3dTools;
 G2O_USE_OPTIMIZATION_LIBRARY(csparse);
 
 
+MainWidget window;
 RangeImageMatching rangeImageMatching;
 ScanDatabase& scanDatabase = rangeImageMatching.scanDatabase;
+
+std::vector<float> confusionMatrixScores, confusionMatrixFastScores;
+std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> >
+    confusionMatrixTransformations, confusionMatrixFastTransformations;
+
+Results results(scanDatabase, window, confusionMatrixScores); // Let's get dirty/dangerous
+
 std::string statisticsDirectory = "!statistics";
 
 bool& useRotationInvariance = ScanDatabaseElement::useRotationInvariance;
@@ -94,14 +104,14 @@ int dictionarySize = 100;
 ////////////////////////////////////////////////////////////////////////////////
 template <typename T> std::string toString(const T& t);
 void printUsage (const char *progName);
+int getMatrixIndex(int scan1Index, int scan2Index);
+std::pair<int,int> getScanIndices(int matrixIndex);
 
-void recalculateAndSaveRangeImages(QApplication &application, MainWidget &window, const int &maxNoOfThreads, const float &maximumRange);
-void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector);
-void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange);
-void calculateConfusionMatrix(QApplication &application, MainWidget &window, ImageWidget &confusionMatrixWidget, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations, std::vector<float> &confusionMatrixScores, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack);
+void recalculateAndSaveRangeImages(QApplication &application, const int &maxNoOfThreads, const float &maximumRange);
+void createDatasetStatistics(MyPcl::NarfssKeypoint &keyPointDetector);
+void recalculateAndSaveAll(QApplication &application, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange);
+void calculateConfusionMatrix(QApplication &application, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack);
 template <typename ValueType> void saveResult(const std::string& valueName, ValueType value, bool datasetSpecific=true);
-
-void createCurves(MainWidget &window, std::vector<float> &confusionMatrixScores, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations);
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -205,7 +215,6 @@ int main(int argc, char** argv) {
 
     QApplication application(argc,argv);
     setlocale (LC_NUMERIC,"C");  // HACK to reset numeric locale, we need C, else parsing ASCII numbers fails
-    MainWidget window;
     window.imagesFrame->hide();
     QListWidget& visTransformationsList = *window.transformationsList;
     visTransformationsList.setSelectionMode(QAbstractItemView::SingleSelection);
@@ -300,12 +309,9 @@ int main(int argc, char** argv) {
 
     int markedTransformationIdx=-1, markedScanIdx=-1;
 
-    std::vector<float> confusionMatrixScores, confusionMatrixFastScores;
     enum ConfusionMatrixFastSource {CMFS_EMPTY, CMFS_BAG_OF_WORDS, CMFS_GLOBAL_FEATURES};
     ConfusionMatrixFastSource confusionMatrixFastSource = CMFS_EMPTY;
     (void)confusionMatrixFastSource;
-    std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > confusionMatrixTransformations,
-        confusionMatrixFastTransformations;
     ImageWidget confusionMatrixWidget;
     confusionMatrixWidget.setWindowTitle("Place recognition confusion matrix");
     confusionMatrixWidget.showRealImagesInGrayScales = true;
@@ -793,12 +799,12 @@ int main(int argc, char** argv) {
 
         // Recalculate range images
         if (window.menu_Database_RecalculateAndSaveRangeImages->isChecked()) {
-            recalculateAndSaveRangeImages(application, window, maxNoOfThreads, maximumRange);
+            recalculateAndSaveRangeImages(application, maxNoOfThreads, maximumRange);
         }
 
         // Recalculate database data
         if (window.menu_Database_RecalculateAndSaveAll->isChecked()) {
-            recalculateAndSaveAll(application, window, keyPointDetector, maxNoOfThreads, maximumRange);
+            recalculateAndSaveAll(application, keyPointDetector, maxNoOfThreads, maximumRange);
         }
 
         // Recalculate dictionary features
@@ -1174,7 +1180,7 @@ int main(int argc, char** argv) {
 
         // Calculate Confusion matrix
         if (window.menu_Database_CalculateConfusionMatrix->isChecked()) {
-            calculateConfusionMatrix(application, window, confusionMatrixWidget, confusionMatrixTransformations, confusionMatrixScores, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
+            calculateConfusionMatrix(application, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
         }
 
 
@@ -1431,7 +1437,7 @@ int main(int argc, char** argv) {
         // Create statistics regarding the current dataset
         // ===============================================
         if (window.menu_Database_CreateDatasetStatistics->isChecked()) {
-            createDatasetStatistics(window, keyPointDetector);
+            createDatasetStatistics(keyPointDetector);
         }
 
         // ================================================
@@ -2301,13 +2307,13 @@ int main(int argc, char** argv) {
             window.menu_Seb_runAll->setChecked(false);
             std::cout << "Running the following actions:" << std::endl;
             std::cout << "Database --> Recalculate and save range images" << std::endl;
-            recalculateAndSaveRangeImages(application, window, maxNoOfThreads, maximumRange);
+            recalculateAndSaveRangeImages(application, maxNoOfThreads, maximumRange);
             std::cout << "Database --> Create dataset statistics" << std::endl;
-            createDatasetStatistics(window, keyPointDetector);
+            createDatasetStatistics(keyPointDetector);
             std::cout << "Database --> Recalculate and save all" << std::endl;
-            recalculateAndSaveAll(application, window, keyPointDetector, maxNoOfThreads, maximumRange);
+            recalculateAndSaveAll(application, keyPointDetector, maxNoOfThreads, maximumRange);
             std::cout << "Database --> Calculate and save confusion matrix" << std::endl;
-            calculateConfusionMatrix(application, window, confusionMatrixWidget, confusionMatrixTransformations, confusionMatrixScores, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
+            calculateConfusionMatrix(application, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
             std::cout << "Done !" << std::endl;
         }
 
@@ -2325,7 +2331,7 @@ int main(int argc, char** argv) {
             std::cout << "Running a developpement test..." << std::endl;
             window.menu_Seb_devTest->setChecked(false);
 
-            createCurves(window, confusionMatrixScores, confusionMatrixTransformations);
+            results.plotStuff();
             std::cout << "Test done !" << std::endl;
         }
         /////////////SEB////////////////////////////////////////////////////////
@@ -2437,10 +2443,20 @@ void printUsage (const char *progName) {
         << "-h         this help\n" << "\n\n";
 }
 
+int getMatrixIndex(int scan1Index, int scan2Index) {
+    return scan2Index*scanDatabase.size()+scan1Index;
+}
+
+std::pair<int, int> getScanIndices(int matrixIndex) {
+    int first = matrixIndex % scanDatabase.size();
+    int second = static_cast<int>(matrixIndex/scanDatabase.size());
+
+    std::pair<int, int> scanPair(first, second);
+    return scanPair;
+}
 
 void recalculateAndSaveRangeImages(
         QApplication &application,
-        MainWidget &window,
         const int &maxNoOfThreads,
         const float &maximumRange) {
     window.menu_Database_RecalculateAndSaveRangeImages->setChecked(false);
@@ -2477,7 +2493,7 @@ void recalculateAndSaveRangeImages(
     window.menu_Database_SaveRangeImages->setChecked(true);
 }
 
-void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector) {
+void createDatasetStatistics(MyPcl::NarfssKeypoint &keyPointDetector) {
     window.menu_Database_CreateDatasetStatistics->setChecked(false);
 
     int noOfScans = scanDatabase.size();
@@ -2580,7 +2596,7 @@ void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPoint
     scanDatabase.saveConfigFile();
 }
 
-void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange) {
+void recalculateAndSaveAll(QApplication &application, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange) {
     window.menu_Database_RecalculateAndSaveAll->setChecked(false);
 
     int noOfScans = scanDatabase.size();
@@ -2684,7 +2700,7 @@ void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl:
     //databaseChanged = true;
 }
 
-void calculateConfusionMatrix(QApplication &application, MainWidget &window, ImageWidget &confusionMatrixWidget, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations, std::vector<float> &confusionMatrixScores, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack) {
+void calculateConfusionMatrix(QApplication &application, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack) {
     window.menu_Database_CalculateConfusionMatrix->setChecked(false);
 
     if (scanDatabase.empty()) {
@@ -2903,61 +2919,6 @@ void saveResult(const std::string& valueName, ValueType value, bool datasetSpeci
     fileOut << ss.str();
     fileOut.close();
 }
-
-void createCurves(MainWidget &window, std::vector<float> &confusionMatrixScores, std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> > &confusionMatrixTransformations)  {
-    std::cout << "===== Curves creation function" << std::endl;
-
-    int noOfScans = scanDatabase.size();
-    for (int scanIdx1=0; scanIdx1<noOfScans; ++scanIdx1) {
-        for (int scanIdx2=0; scanIdx2<noOfScans; ++scanIdx2) {
-            int confusionMatrixIdx = scanIdx2*noOfScans+scanIdx1;
-            float score = confusionMatrixScores[confusionMatrixIdx];
-
-            const Eigen::Isometry3f& transformation = confusionMatrixTransformations[confusionMatrixIdx];
-            float x, y, z, roll, pitch, yaw;
-            pcl::getTranslationAndEulerAngles(transformation, x, y, z, roll, pitch, yaw);
-            if (!std::isfinite(x)||!std::isfinite(y)||!std::isfinite(z)||!std::isfinite(roll)||!std::isfinite(pitch)||!std::isfinite(yaw)) {
-                score=x=y=z=roll=pitch=yaw = 0.0f;
-            }
-
-            // [TODO]: Get the odom and create the ROC curve - 2015-07-23 04:46pm
-            // The true/false positive/negative is calculated in CreateConfusionMatrixStatistics
-            // Compute the true/false positive/negative --> Recall rate(TP / TP+FN)
-            // Article use recall vs dist. and vs scores to match
-            //if(score > scoreTreshold) { 
-               //if(distance < maxDistanceToConsiderScansOverlapping) { 
-                   //std::cout << "True Positive" << std::endl;
-               //} else {
-                   //std::cout << "False Positive" << std::endl;
-               //}
-            //} else {
-               //if(distance < maxDistanceToConsiderScansOverlapping) { 
-                   //std::cout << "False Negative" << std::endl;
-               //} else {
-                   //std::cout << "True Negative" << std::endl;
-               //}
-            //}
-        }
-    }
-
-    std::string fileName = scanDatabase.databaseDirectory+"/"+statisticsDirectory+"/testPlot.pdf";
-    QVector<double> a(101), b(101);
-    for (int i=0; i<101; ++i) {
-        a[i] = i/50.0 - 1;
-        b[i] = a[i]*a[i];
-    }
-
-    window.customPlot.addGraph();
-    window.customPlot.graph(0)->setData(a, b);
-    window.customPlot.xAxis->setLabel("x");
-    window.customPlot.yAxis->setLabel("y");
-    window.customPlot.xAxis->setRange(-1, 1);
-    window.customPlot.yAxis->setRange(0, 1);
-    //window.customPlot.show();
-    //window.customPlot.replot();
-    window.customPlot.savePdf(QString::fromStdString(fileName));
-}
-
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"  // Do not show warnings from ROS - for some weird reason
 // some stuff appears after the end of the code...

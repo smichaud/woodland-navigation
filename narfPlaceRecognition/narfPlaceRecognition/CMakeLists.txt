@@ -31,6 +31,7 @@ IF (BUILD_GUI_ELEMENTS)
 
     ADD_EXECUTABLE(narfPlaceRecognition 
         narfPlaceRecognition.cpp
+        Results.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../EXTERNALS/qcustomplot/qcustomplot.cpp
         )
     TARGET_LINK_LIBRARIES(narfPlaceRecognition
