@@ -47,8 +47,6 @@ using namespace Ais3dTools;
 #include "g2o/types/slam3d/types_slam3d.h"
 G2O_USE_OPTIMIZATION_LIBRARY(csparse);
 
-
-MainWidget window;
 RangeImageMatching rangeImageMatching;
 ScanDatabase& scanDatabase = rangeImageMatching.scanDatabase;
 
@@ -56,7 +54,7 @@ std::vector<float> confusionMatrixScores, confusionMatrixFastScores;
 std::vector<Eigen::Isometry3f, Eigen::aligned_allocator<Eigen::Isometry3f> >
     confusionMatrixTransformations, confusionMatrixFastTransformations;
 
-Results results(scanDatabase, window, confusionMatrixScores); // Let's get dirty/dangerous
+Results results(scanDatabase, confusionMatrixScores); // Let's get dirty/dangerous
 
 std::string statisticsDirectory = "!statistics";
 
@@ -107,10 +105,10 @@ void printUsage (const char *progName);
 int getMatrixIndex(int scan1Index, int scan2Index);
 std::pair<int,int> getScanIndices(int matrixIndex);
 
-void recalculateAndSaveRangeImages(QApplication &application, const int &maxNoOfThreads, const float &maximumRange);
-void createDatasetStatistics(MyPcl::NarfssKeypoint &keyPointDetector);
-void recalculateAndSaveAll(QApplication &application, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange);
-void calculateConfusionMatrix(QApplication &application, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack);
+void recalculateAndSaveRangeImages(QApplication &application, MainWidget &window, const int &maxNoOfThreads, const float &maximumRange);
+void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector);
+void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange);
+void calculateConfusionMatrix(QApplication &application, MainWidget &window, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack);
 template <typename ValueType> void saveResult(const std::string& valueName, ValueType value, bool datasetSpecific=true);
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -215,6 +213,7 @@ int main(int argc, char** argv) {
 
     QApplication application(argc,argv);
     setlocale (LC_NUMERIC,"C");  // HACK to reset numeric locale, we need C, else parsing ASCII numbers fails
+    MainWidget window;
     window.imagesFrame->hide();
     QListWidget& visTransformationsList = *window.transformationsList;
     visTransformationsList.setSelectionMode(QAbstractItemView::SingleSelection);
@@ -799,12 +798,12 @@ int main(int argc, char** argv) {
 
         // Recalculate range images
         if (window.menu_Database_RecalculateAndSaveRangeImages->isChecked()) {
-            recalculateAndSaveRangeImages(application, maxNoOfThreads, maximumRange);
+            recalculateAndSaveRangeImages(application, window, maxNoOfThreads, maximumRange);
         }
 
         // Recalculate database data
         if (window.menu_Database_RecalculateAndSaveAll->isChecked()) {
-            recalculateAndSaveAll(application, keyPointDetector, maxNoOfThreads, maximumRange);
+            recalculateAndSaveAll(application, window, keyPointDetector, maxNoOfThreads, maximumRange);
         }
 
         // Recalculate dictionary features
@@ -1180,7 +1179,7 @@ int main(int argc, char** argv) {
 
         // Calculate Confusion matrix
         if (window.menu_Database_CalculateConfusionMatrix->isChecked()) {
-            calculateConfusionMatrix(application, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
+            calculateConfusionMatrix(application, window, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
         }
 
 
@@ -1437,7 +1436,7 @@ int main(int argc, char** argv) {
         // Create statistics regarding the current dataset
         // ===============================================
         if (window.menu_Database_CreateDatasetStatistics->isChecked()) {
-            createDatasetStatistics(keyPointDetector);
+            createDatasetStatistics(window, keyPointDetector);
         }
 
         // ================================================
@@ -2307,13 +2306,13 @@ int main(int argc, char** argv) {
             window.menu_Seb_runAll->setChecked(false);
             std::cout << "Running the following actions:" << std::endl;
             std::cout << "Database --> Recalculate and save range images" << std::endl;
-            recalculateAndSaveRangeImages(application, maxNoOfThreads, maximumRange);
+            recalculateAndSaveRangeImages(application, window, maxNoOfThreads, maximumRange);
             std::cout << "Database --> Create dataset statistics" << std::endl;
-            createDatasetStatistics(keyPointDetector);
+            createDatasetStatistics(window, keyPointDetector);
             std::cout << "Database --> Recalculate and save all" << std::endl;
-            recalculateAndSaveAll(application, keyPointDetector, maxNoOfThreads, maximumRange);
+            recalculateAndSaveAll(application, window, keyPointDetector, maxNoOfThreads, maximumRange);
             std::cout << "Database --> Calculate and save confusion matrix" << std::endl;
-            calculateConfusionMatrix(application, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
+            calculateConfusionMatrix(application, window, confusionMatrixWidget, neededTimesPerScan, maxNoOfThreads, maximumRange, useSlamHack);
             std::cout << "Done !" << std::endl;
         }
 
@@ -2331,7 +2330,8 @@ int main(int argc, char** argv) {
             std::cout << "Running a developpement test..." << std::endl;
             window.menu_Seb_devTest->setChecked(false);
 
-            results.plotStuff();
+            results.compute();
+
             std::cout << "Test done !" << std::endl;
         }
         /////////////SEB////////////////////////////////////////////////////////
@@ -2456,9 +2456,8 @@ std::pair<int, int> getScanIndices(int matrixIndex) {
 }
 
 void recalculateAndSaveRangeImages(
-        QApplication &application,
-        const int &maxNoOfThreads,
-        const float &maximumRange) {
+        QApplication &application, MainWidget &window,
+        const int &maxNoOfThreads, const float &maximumRange) {
     window.menu_Database_RecalculateAndSaveRangeImages->setChecked(false);
 
     int noOfScans = scanDatabase.size();
@@ -2493,7 +2492,7 @@ void recalculateAndSaveRangeImages(
     window.menu_Database_SaveRangeImages->setChecked(true);
 }
 
-void createDatasetStatistics(MyPcl::NarfssKeypoint &keyPointDetector) {
+void createDatasetStatistics(MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector) {
     window.menu_Database_CreateDatasetStatistics->setChecked(false);
 
     int noOfScans = scanDatabase.size();
@@ -2596,7 +2595,7 @@ void createDatasetStatistics(MyPcl::NarfssKeypoint &keyPointDetector) {
     scanDatabase.saveConfigFile();
 }
 
-void recalculateAndSaveAll(QApplication &application, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange) {
+void recalculateAndSaveAll(QApplication &application, MainWidget &window, MyPcl::NarfssKeypoint &keyPointDetector, const int &maxNoOfThreads, const float &maximumRange) {
     window.menu_Database_RecalculateAndSaveAll->setChecked(false);
 
     int noOfScans = scanDatabase.size();
@@ -2700,7 +2699,7 @@ void recalculateAndSaveAll(QApplication &application, MyPcl::NarfssKeypoint &key
     //databaseChanged = true;
 }
 
-void calculateConfusionMatrix(QApplication &application, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack) {
+void calculateConfusionMatrix(QApplication &application, MainWidget &window, ImageWidget &confusionMatrixWidget, vector<vector<double> > &neededTimesPerScan, const int &maxNoOfThreads, const float &maximumRange, const bool &useSlamHack) {
     window.menu_Database_CalculateConfusionMatrix->setChecked(false);
 
     if (scanDatabase.empty()) {
