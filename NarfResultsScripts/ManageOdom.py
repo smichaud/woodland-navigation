@@ -40,7 +40,7 @@ def extract_position(filepath):
 
 def create_path_figure(positions, metadata):
     seaborn.set_style('whitegrid')
-    seaborn.plt.title('Path of the robot')
+    seaborn.plt.title('Path of the robot', fontsize=20)
     seaborn.plt.xlabel('X position (m)')
     seaborn.plt.ylabel('Y position (m)')
     seaborn.plt.axis('equal')
@@ -53,7 +53,7 @@ def create_path_figure(positions, metadata):
     seaborn.plt.plot(x[i_split:], y[i_split:], 'ro-', markersize = 4, label='Loop 2')
     seaborn.plt.legend()
 
-    seaborn.plt.savefig('Data/paths.pdf')
+    seaborn.plt.savefig('Data/paths_plot.pdf')
     # seaborn.plt.show()
 
 def create_distances_matrix(positions, metadata):
@@ -84,14 +84,17 @@ def get_distance(positions, metadata, i1, i2):
     if i1 < metadata[0] and i2 < metadata[0]:
         extended_position = loop1_last_position + loop1_position_diff + positions[i1]
         loop_distance = numpy.linalg.norm(extended_position - pos2)
-    elif i1 < metadata[0] and i2 >= metadata[0]: # i2 is in loop 1
+    elif i1 < metadata[0]/2 and i2 >= len(positions)-metadata[0]/2:
+        extended_position = loop2_last_position + loop2_position_diff + positions[i1]
+        loop_distance = numpy.linalg.norm(extended_position - pos2)
+    elif i1 < metadata[0] and i2 >= metadata[0]:
         extended_position = loop1_last_position + loop1_position_diff + positions[i2]
         loop_distance = numpy.linalg.norm(extended_position - pos1)
     else:
         extended_position = loop2_last_position + loop2_position_diff + positions[i1]
         loop_distance = numpy.linalg.norm(extended_position - pos2)
 
-    # if i1 == 80 and i2 == 82:
+    # if i1 == 0 and i2 == 162:
         # print loop2_last_position
         # print loop2_position_diff
         # print positions[i1]

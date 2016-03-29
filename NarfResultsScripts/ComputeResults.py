@@ -3,9 +3,11 @@
 import csv
 import time
 import numpy
+
 import seaborn
-from pandas import DataFrame
+import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+from pandas import DataFrame
 
 def load_matrices(path_distances, path_scores):
     distances_matrix = numpy.load(path_distances)
@@ -31,6 +33,45 @@ def load_metadata(dataset_folder):
     metadata = [second_loop_index, loop1_odom_diff, loop2_odom_diff]
 
     return metadata
+
+def create_distances_heatmap(distances_matrix, second_loop_index):
+    seaborn.plt.title('Distances matrix', fontsize=20, y=1.1)
+
+    dataframe = DataFrame(data=distances_matrix)
+    cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
+    ax = seaborn.heatmap(dataframe, square=True, yticklabels=20, xticklabels=20, cmap=cmap1)
+    seaborn.plt.ylabel('Sample index')
+    seaborn.plt.xlabel('Sample index')
+    ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top') 
+
+    seaborn.plt.savefig('Data/distances_matrix.png', bbox_inches='tight')
+    seaborn.plt.show()
+
+def create_scores_heatmap(scores_matrix, second_loop_index):
+    seaborn.plt.title('Scores matrix', fontsize=20, y=1.1)
+
+    dataframe = DataFrame(data=scores_matrix)
+    cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
+    ax = seaborn.heatmap(dataframe, square=True, yticklabels=20, xticklabels=20, cmap=cmap1)
+    seaborn.plt.ylabel('Sample index')
+    seaborn.plt.xlabel('Sample index')
+    ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top') 
+
+    seaborn.plt.savefig('Data/scores_matrix.png', bbox_inches='tight')
+    seaborn.plt.show()
+
+def create_distances_scores_plot(distances, scores):
+    seaborn.set_style('whitegrid')
+    seaborn.plt.title('Score as function of distance')
+    seaborn.plt.xlabel('Distance between scans (m)')
+    seaborn.plt.ylabel('Place recognition score')
+    seaborn.plt.scatter(distances, scores, s=4)
+    seaborn.plt.grid(True)
+
+    seaborn.plt.savefig('Data/distances_scores_plot.pdf')
+    seaborn.plt.show()
 
 def create_lists(distances_matrix, scores_matrix):
     # Create lists for index1, index2, distances (left-lower diago excl. diago)
@@ -94,55 +135,37 @@ def compute_results(sorted_distances, sorted_scores, score_threshold):
 
     return result_distances, result_fn, result_fp, result_tn, result_tp
 
-def create_plot(x,y):
+def create_recall_plot(sorted_distances, sorted_scores, score_thresholds):
     seaborn.set_style('whitegrid')
-    seaborn.plt.title('Recall Rate for different maximum distance thresholds')
-    seaborn.plt.xlabel('Maximum distance threshold (m)')
+    seaborn.plt.title('Recall rates', fontsize=20)
+    seaborn.plt.xlabel('Maximum distance between scans to be considered as originating from the same place (m)')
     seaborn.plt.ylabel('Recall rate (%)')
-    seaborn.plt.plot(x, y, '-')
     seaborn.plt.grid(True)
+
+    for threshold in score_thresholds:
+        result_distances, fn, fp, tn, tp = compute_results(sorted_distances, sorted_scores, threshold)
+        tp = numpy.array(tp, dtype=numpy.float)
+        fn = numpy.array(fn, dtype=numpy.float)
+        recall = numpy.divide(tp, numpy.add(tp, fn))*100
+
+        seaborn.plt.plot(result_distances, recall, label='Score threshold = ' + str(threshold))
+
+    seaborn.plt.legend()
 
     seaborn.plt.savefig('Data/recall_plot.pdf')
     seaborn.plt.show()
 
-def create_distances_heatmap(distances_matrix, second_loop_index):
-    seaborn.plt.title('Distances matrix', fontsize=20)
 
-    seaborn.set(font_scale=2.0)
-    labels = ['' for i in range(0, distances_matrix.shape[0])]
-    labels[0] = '0'
-    labels[second_loop_index] = str(second_loop_index)
-    last_index = distances_matrix.shape[0]-1
-    labels[last_index] = str(last_index)
+def create_no_fp_plot(sorted_distances, sorted_scores):
+    index_to_remove = []
+    max_score = sorted_scores(len(sorted_scores)-1)
+    for i in range(len(sorted_distances)-1,0):
+        if sorted_scores[i] < max_score:
+            index_to_remove.append(i)
+        else:
+            max_score = sorted_scores[i]
 
-    dataframe = DataFrame(data=distances_matrix)
-    cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
-    fig = seaborn.heatmap(dataframe, square=True, yticklabels=labels, xticklabels=labels, cmap=cmap1)
-    seaborn.plt.ylabel('Sample index')
-    seaborn.plt.xlabel('Sample index')
-    fig.invert_yaxis()
-
-    seaborn.plt.savefig('Data/distances_matrix.png')
-    seaborn.plt.show()
-
-def create_scores_heatmap(scores_matrix, second_loop_index):
-    seaborn.plt.title('Scores matrix', fontsize=20)
-
-    labels = ['' for i in range(0, scores_matrix.shape[0])]
-    labels[0] = '0'
-    labels[second_loop_index] = str(second_loop_index)
-    last_index = scores_matrix.shape[0]-1
-    labels[last_index] = str(last_index)
-
-    dataframe = DataFrame(data=scores_matrix)
-    cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
-    fig = seaborn.heatmap(dataframe, square=True, yticklabels=labels, xticklabels=labels, cmap=cmap1)
-    seaborn.plt.ylabel('Sample index')
-    seaborn.plt.xlabel('Sample index')
-    fig.invert_yaxis()
-
-    seaborn.plt.savefig('Data/scores_matrix.png')
-    seaborn.plt.show()
+    print 'TODO and move in create_distances_scores_plot'
 
 def main():
     print("Computing place recognition results...")
@@ -161,12 +184,11 @@ def main():
     # create_distances_heatmap(distances_matrix, second_loop_index)
     # create_scores_heatmap(scores_matrix, second_loop_index)
 
-    score_threshold = 0.2
-    result_distances, fn, fp, tn, tp = compute_results(sorted_distances, sorted_scores, score_threshold)
-    tp = numpy.array(tp, dtype=numpy.float)
-    fn = numpy.array(fn, dtype=numpy.float)
-    recall = numpy.divide(tp, numpy.add(tp, fn))*100
-    create_plot(result_distances, recall)
+    # create_distances_scores_plot(sorted_distances, sorted_scores)
+
+    score_thresholds = [0.75, 0.5, 0.25, 0.1]
+    create_recall_plot(sorted_distances, sorted_scores, score_thresholds)
+    create_no_fp_plot(sorted_distances, sorted_scores)
 
     print("Done !")
 
