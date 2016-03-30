@@ -94,18 +94,6 @@ def get_distance(positions, metadata, i1, i2):
         extended_position = loop2_last_position + loop2_position_diff + positions[i1]
         loop_distance = numpy.linalg.norm(extended_position - pos2)
 
-    # if i1 == 0 and i2 == 162:
-        # print loop2_last_position
-        # print loop2_position_diff
-        # print positions[i1]
-        # print ''
-        # print extended_position
-        # print loop_distance
-
-        # print positions[80]
-        # print positions[82]
-        # print str(i1) + '-' + str(i2) + ': ' + str(direct_distance) + ' or ' + str(loop_distance)
-
     return min(direct_distance, loop_distance)
 
 def main():

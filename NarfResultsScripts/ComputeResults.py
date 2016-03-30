@@ -62,13 +62,19 @@ def create_scores_heatmap(scores_matrix, second_loop_index):
     seaborn.plt.savefig('Data/scores_matrix.png', bbox_inches='tight')
     seaborn.plt.show()
 
-def create_distances_scores_plot(distances, scores):
+def create_distances_scores_plot(sorted_distances, sorted_scores):
     seaborn.set_style('whitegrid')
     seaborn.plt.title('Score as function of distance')
     seaborn.plt.xlabel('Distance between scans (m)')
     seaborn.plt.ylabel('Place recognition score')
-    seaborn.plt.scatter(distances, scores, s=4)
     seaborn.plt.grid(True)
+
+    seaborn.plt.scatter(sorted_distances, sorted_scores, s=4, label='Pair of scans data points')
+
+    no_fp_distances, no_fp_scores = create_no_fp_data(sorted_distances, sorted_scores)
+    seaborn.plt.plot(no_fp_distances, no_fp_scores, label='Score limit to avoid FP')
+    
+    seaborn.plt.legend()
 
     seaborn.plt.savefig('Data/distances_scores_plot.pdf')
     seaborn.plt.show()
@@ -97,6 +103,19 @@ def sort_by_distance(index1, index2, distances, scores):
     sorted_scores = [scores[i] for i in sorted_indexes]
 
     return sorted_index1, sorted_index2, sorted_distances, sorted_scores
+
+def create_no_fp_data(sorted_distances, sorted_scores):
+    distances = []
+    scores = []
+    max_score = 0
+    for i in range(len(sorted_distances)-1, 0, -1):
+        distances.append(sorted_distances[i])
+        if sorted_scores[i] > max_score:
+            max_score = sorted_scores[i]
+
+        scores.append(max_score)
+
+    return distances, scores
 
 def compute_results(sorted_distances, sorted_scores, score_threshold):
     # Compute values for distance = 0
@@ -156,17 +175,6 @@ def create_recall_plot(sorted_distances, sorted_scores, score_thresholds):
     seaborn.plt.show()
 
 
-def create_no_fp_plot(sorted_distances, sorted_scores):
-    index_to_remove = []
-    max_score = sorted_scores(len(sorted_scores)-1)
-    for i in range(len(sorted_distances)-1,0):
-        if sorted_scores[i] < max_score:
-            index_to_remove.append(i)
-        else:
-            max_score = sorted_scores[i]
-
-    print 'TODO and move in create_distances_scores_plot'
-
 def main():
     print("Computing place recognition results...")
 
@@ -181,14 +189,13 @@ def main():
     index1, index2, distances, scores = create_lists(distances_matrix, scores_matrix)
     sorted_index1, sorted_index2, sorted_distances, sorted_scores = sort_by_distance(index1, index2, distances, scores)
 
-    # create_distances_heatmap(distances_matrix, second_loop_index)
-    # create_scores_heatmap(scores_matrix, second_loop_index)
+    create_distances_heatmap(distances_matrix, second_loop_index)
+    create_scores_heatmap(scores_matrix, second_loop_index)
 
-    # create_distances_scores_plot(sorted_distances, sorted_scores)
+    create_distances_scores_plot(sorted_distances, sorted_scores)
 
     score_thresholds = [0.75, 0.5, 0.25, 0.1]
     create_recall_plot(sorted_distances, sorted_scores, score_thresholds)
-    create_no_fp_plot(sorted_distances, sorted_scores)
 
     print("Done !")
 
