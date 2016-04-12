@@ -35,7 +35,7 @@ def load_metadata(dataset_folder):
     return metadata
 
 def create_distances_heatmap(distances_matrix, second_loop_index):
-    seaborn.plt.title('Distances matrix', fontsize=20, y=1.1)
+    # seaborn.plt.title('Distances matrix', fontsize=20, y=1.1)
 
     dataframe = DataFrame(data=distances_matrix)
     cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
@@ -49,7 +49,7 @@ def create_distances_heatmap(distances_matrix, second_loop_index):
     seaborn.plt.show()
 
 def create_scores_heatmap(scores_matrix, second_loop_index):
-    seaborn.plt.title('Scores matrix', fontsize=20, y=1.1)
+    # seaborn.plt.title('Scores matrix', fontsize=20, y=1.1)
 
     dataframe = DataFrame(data=scores_matrix)
     cmap1 = ListedColormap(seaborn.color_palette("gist_heat_r",512))
@@ -64,7 +64,7 @@ def create_scores_heatmap(scores_matrix, second_loop_index):
 
 def create_distances_scores_plot(sorted_distances, sorted_scores):
     seaborn.set_style('whitegrid')
-    seaborn.plt.title('Score as function of distance')
+    # seaborn.plt.title('Score as function of distance')
     seaborn.plt.xlabel('Distance between scans (m)')
     seaborn.plt.ylabel('Place recognition score')
     seaborn.plt.grid(True)
@@ -156,7 +156,7 @@ def compute_results(sorted_distances, sorted_scores, score_threshold):
 
 def create_recall_plot(sorted_distances, sorted_scores, score_thresholds):
     seaborn.set_style('whitegrid')
-    seaborn.plt.title('Recall rates', fontsize=20)
+    # seaborn.plt.title('Recall rates', fontsize=20)
     seaborn.plt.xlabel('Maximum distance between scans to be considered as originating from the same place (m)')
     seaborn.plt.ylabel('Recall rate (%)')
     seaborn.plt.grid(True)

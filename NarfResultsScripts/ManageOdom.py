@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 import os
+import sys
 import csv
+import math
 import numpy
 import seaborn
 from pandas import DataFrame
@@ -18,13 +20,21 @@ def load_data(dataset_folder):
         if line.startswith('Second loop index: '):
             line = line.replace('Second loop index: ', '')
             second_loop_index = int(line)
-        elif line.startswith('Loop 1 odometry difference: '):
-            line = line.replace('Loop 1 odometry difference: ', '')
-            loop1_odom_diff = [float(i) for i in line.split()]
-        elif line.startswith('Loop 2 odometry difference: '):
-            line = line.replace('Loop 2 odometry difference: ', '')
-            loop2_odom_diff = [float(i) for i in line.split()]
-    metadata = [second_loop_index, loop1_odom_diff, loop2_odom_diff]
+        elif line.startswith('Loop 1-1 odometry difference: '):
+            line = line.replace('Loop 1-1 odometry difference: ', '')
+            odom_diff_1_1 = [float(i) for i in line.split()]
+        elif line.startswith('Loop 1-2 odometry difference: '):
+            line = line.replace('Loop 1-2 odometry difference: ', '')
+            odom_diff_1_2 = [float(i) for i in line.split()]
+        elif line.startswith('Loop 2-2 odometry difference: '):
+            line = line.replace('Loop 2-2 odometry difference: ', '')
+            odom_diff_2_2 = [float(i) for i in line.split()]
+        elif line.startswith('Loop 2-1 odometry difference: '):
+            line = line.replace('Loop 2-1 odometry difference: ', '')
+            odom_diff_2_1 = [float(i) for i in line.split()]
+    # Where loops_odom_diff_matrix[0][1] represent diff between loop1 end and loop2 start
+    loops_odom_diff_matrix = [[odom_diff_1_1, odom_diff_1_2], [odom_diff_2_1, odom_diff_2_2]]
+    metadata = [second_loop_index, loops_odom_diff_matrix]
 
     return positions, metadata
 
@@ -40,7 +50,7 @@ def extract_position(filepath):
 
 def create_path_figure(positions, metadata):
     seaborn.set_style('whitegrid')
-    seaborn.plt.title('Path of the robot', fontsize=20)
+    # seaborn.plt.title('Path of the robot', fontsize=20)
     seaborn.plt.xlabel('X position (m)')
     seaborn.plt.ylabel('Y position (m)')
     seaborn.plt.axis('equal')
@@ -52,9 +62,10 @@ def create_path_figure(positions, metadata):
     seaborn.plt.plot(x[:i_split], y[:i_split], 'b-*', label='Loop 1')
     seaborn.plt.plot(x[i_split:], y[i_split:], 'ro-', markersize = 4, label='Loop 2')
     seaborn.plt.legend()
+    seaborn.plt.gca().invert_xaxis()
 
     seaborn.plt.savefig('Data/paths_plot.pdf')
-    # seaborn.plt.show()
+    seaborn.plt.show()
 
 def create_distances_matrix(positions, metadata):
     sample_counts = len(positions)
@@ -69,44 +80,63 @@ def create_distances_matrix(positions, metadata):
 
     return distances_matrix
 
-# This take into account that last is far from first (loop too open)
 def get_distance(positions, metadata, i1, i2):
+    loop2_first_index = metadata[0]
+    last_index = len(positions)-1
+    loops_odom_diff = metadata[1]
+
     pos1 = numpy.array(positions[i1])
     pos2 = numpy.array(positions[i2])
-    direct_distance = numpy.linalg.norm(pos2-pos1)
+    posLast1 = numpy.array(positions[loop2_first_index-1])
+    posLast2 = numpy.array(positions[last_index])
 
-    loop1_last_position = numpy.array(positions[metadata[0]-1])
-    loop1_position_diff = numpy.array(metadata[1][:3])
+    distance = numpy.linalg.norm(pos2-pos1)
 
-    loop2_last_position = numpy.array(positions[len(positions)-1])
-    loop2_position_diff = numpy.array(metadata[2][:3])
+    # Check if loop distance (in index counts) is shoter, take this distance instead
+    direct_index_count = i2-i1
+    if i1 < loop2_first_index and i2 < loop2_first_index:
+        loop_index_count = (loop2_first_index - i2) + i1
+        if loop_index_count < direct_index_count:
+            distance = numpy.linalg.norm((posLast1 - pos2) + loops_odom_diff[0][0][0:3] + pos1)
 
-    if i1 < metadata[0] and i2 < metadata[0]:
-        extended_position = loop1_last_position + loop1_position_diff + positions[i1]
-        loop_distance = numpy.linalg.norm(extended_position - pos2)
-    elif i1 < metadata[0]/2 and i2 >= len(positions)-metadata[0]/2:
-        extended_position = loop2_last_position + loop2_position_diff + positions[i1]
-        loop_distance = numpy.linalg.norm(extended_position - pos2)
-    elif i1 < metadata[0] and i2 >= metadata[0]:
-        extended_position = loop1_last_position + loop1_position_diff + positions[i2]
-        loop_distance = numpy.linalg.norm(extended_position - pos1)
+    elif i1 >= loop2_first_index and i2 >= loop2_first_index:
+        loop_index_count = (last_index + 1 - i2) + (i2 - loop2_first_index)
+        if loop_index_count < direct_index_count:
+            distance = numpy.linalg.norm((posLast2 - pos2) + loops_odom_diff[1][1][0:3] + pos1)
+
+    elif i1 < loop2_first_index and i2 >= loop2_first_index:
+        # TODO Here I am
+        i1_ratio = float(i1 + 1) / float(loop2_first_index)
+        i2_ratio = float(i2 - loop2_first_index + 1) / float(last_index - loop2_first_index + 1)
+        gap_ratio = 2 / (last_index + 1) # = avg for one difference
+        direct_ratio = math.fabs(i2_ratio - i1_ratio)
+        loop_1_2_ratio = (1-i1_ratio) + (i2_ratio) + gap_ratio
+        loop_2_1_ratio = (1-i2_ratio) + (i1_ratio) + gap_ratio
+
+        if direct_ratio <= loop_1_2_ratio and direct_ratio <= loop_2_1_ratio:
+            distance = numpy.linalg.norm(pos2-pos1) # Just repeated for better understanding
+        elif loop_1_2_ratio <= direct_ratio and loop_1_2_ratio <= loop_2_1_ratio:
+            distance = numpy.linalg.norm((posLast1 - pos1) + loops_odom_diff[0][1][0:3] + pos2)
+        elif loop_2_1_ratio <= direct_ratio and loop_2_1_ratio <= loop_1_2_ratio:
+            distance = numpy.linalg.norm((posLast1 - pos1) + loops_odom_diff[1][0][0:3] + pos2)
+
     else:
-        extended_position = loop2_last_position + loop2_position_diff + positions[i1]
-        loop_distance = numpy.linalg.norm(extended_position - pos2)
+        print "you forgot one case bro..."
 
-    return min(direct_distance, loop_distance)
+    return distance
 
-def main():
+def main(argv):
     print("Creating odom matrix and figures...")
 
     dataset_folder = '/media/D/Datasets/PlaceRecognition/SickBuilding/Output/'
+    # dataset_folder = argv[0]
     positions, metadata = load_data(dataset_folder)
 
-    create_path_figure(positions, metadata)
+    # create_path_figure(positions, metadata)
     distances_matrix = create_distances_matrix(positions, metadata)
 
     print("Done !")
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
